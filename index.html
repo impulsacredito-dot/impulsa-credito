@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Impulsa Crédito — Asesoría y Gestión Crediticia</title>
+<meta id="pageDescription" name="description" content="Impulsa Crédito: efectiviza tu tarjeta de crédito al instante.">
+<link id="faviconLink" rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- barra de progreso de scroll -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header" id="siteHeader">
+  <div class="header-bar">
+    <a href="#inicio" class="brand">
+      <span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span>
+    </a>
+
+    <nav class="main-nav" id="mainNav"></nav>
+
+    <div class="header-actions">
+      <a href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm js-wa-link" id="headerWhatsapp" data-wa-msg="default">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.6 0-3.1-.44-4.38-1.2l-.31-.19-3 .78.8-2.93-.2-.3A7.94 7.94 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.4-5.6c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>
+        <span id="headerWhatsappLabel">Contáctanos</span>
+      </a>
+      <a href="login.html" class="btn btn-ghost btn-sm" id="headerLogin">Inicia sesión</a>
+      <a href="registro.html" class="btn btn-primary btn-sm" id="headerCta">Regístrate gratis</a>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <svg class="hero-pattern" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+        <polygon points="120,120 190,190 120,260 50,190" fill="#22c55e" opacity="0.07"/>
+        <polygon points="90,340 150,400 90,460 30,400" fill="#22c55e" opacity="0.05"/>
+        <polygon points="650,80 730,80 730,160" fill="#22c55e" opacity="0.05"/>
+        <polygon points="700,380 780,460 700,540 620,460" fill="#22c55e" opacity="0.04"/>
+        <path d="M40 500 L 220 320 L 320 400 L 520 180" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.1"/>
+        <path d="M480 60 L 620 60 L 620 200" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.1"/>
+      </svg>
+    </div>
+
+    <div class="container hero-grid">
+      <div class="hero-copy" data-reveal>
+        <span class="badge" id="heroBadge"></span>
+        <h1 id="heroTitle"></h1>
+        <p class="hero-sub" id="heroSubtitle"></p>
+
+        <div class="hero-cta">
+          <a href="#solicitar" class="btn btn-primary btn-lg" id="heroCtaPrimary"></a>
+          <a href="#como-funciona" class="btn btn-outline btn-lg" id="heroCtaSecondary"></a>
+          <a href="#" target="_blank" rel="noopener" class="btn btn-outline btn-lg btn-whatsapp js-wa-link" data-wa-msg="default">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            <span id="heroCtaWhatsapp"></span>
+          </a>
+        </div>
+
+        <ul class="trust-list" id="heroTrust"></ul>
+      </div>
+
+      <!-- visual del hero: forma redondeada + foto + teléfono con el isotipo -->
+      <div class="hero-visual" data-reveal id="heroVisual">
+        <div class="hero-stage" id="heroStage">
+          <div class="hero-shape">
+            <svg class="shape-deco" viewBox="0 0 560 520" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+                  <circle cx="2" cy="2" r="1.6" fill="#ffffff" opacity="0.35"/>
+                </pattern>
+              </defs>
+              <rect x="70" y="60" width="70" height="80" fill="url(#dots)"/>
+              <path d="M330 70 q 20 -16 40 0 t 40 0 t 40 0 t 40 0" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.25"/>
+              <path d="M330 96 q 20 -16 40 0 t 40 0 t 40 0 t 40 0" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.18"/>
+              <path d="M330 122 q 20 -16 40 0 t 40 0 t 40 0 t 40 0" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.12"/>
+            </svg>
+            <div class="hero-shape-photo">
+              <img src="" alt="" id="heroPhoto" loading="eager">
+            </div>
+          </div>
+
+          <div class="phone-mock" aria-hidden="true">
+            <div class="phone-notch"></div>
+            <div class="phone-glow"></div>
+            <div class="phone-screen">
+              <img src="assets/logo-icon.png" alt="" class="phone-icon" id="heroPhoneIcon">
+              <span class="phone-brand" id="heroPhoneLabel"></span>
+            </div>
+          </div>
+
+          <div class="photo-caption" id="heroPhotoCaption"></div>
+          <div class="hero-floats" id="heroFloats"></div>
+        </div>
+      </div>
+    </div>
+
+    <svg class="hero-wave" viewBox="0 0 1440 90" preserveAspectRatio="none"><path d="M0,64 C240,10 480,10 720,40 C960,70 1200,80 1440,40 L1440,90 L0,90 Z" fill="#ffffff"/></svg>
+  </section>
+
+  <!-- ===== TARJETAS Y BANCOS ===== -->
+  <section class="partners">
+    <div class="container">
+      <p class="eyebrow center" id="partnersEyebrow"></p>
+      <h2 class="center" id="partnersTitle"></h2>
+      <p class="section-sub center" id="partnersSubtitle"></p>
+    </div>
+    <div class="marquee">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
+    <div class="container"><p class="partners-note center" id="partnersNote"></p></div>
+  </section>
+
+  <!-- ===== BENEFICIOS (mosaico / bento) ===== -->
+  <section class="bento" id="beneficios">
+    <div class="container">
+      <p class="eyebrow center" id="bentoEyebrow"></p>
+      <h2 class="center bento-title" id="bentoTitle"></h2>
+      <p class="section-sub center" id="bentoSubtitle"></p>
+      <div class="bento-grid" id="bentoGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== SIMULADOR (sección propia) ===== -->
+  <section class="simulator" id="simulador">
+    <div class="container">
+      <div class="sim-card" id="simCard"></div>
+    </div>
+  </section>
+
+  <!-- ===== NOSOTROS ===== -->
+  <section class="why" id="nosotros">
+    <div class="container why-grid">
+      <div class="why-image" data-reveal>
+        <img src="" alt="" id="whyImage" loading="lazy">
+        <div class="why-image-badge" id="whyImageBadge"></div>
+      </div>
+
+      <div class="why-copy">
+        <p class="eyebrow" data-reveal id="whyEyebrow"></p>
+        <h2 data-reveal id="whyTitle"></h2>
+        <p class="section-sub" data-reveal id="whySubtitle"></p>
+
+        <div class="why-list" id="whyList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS ===== -->
+  <section class="stats" id="statsSection">
+    <div class="container stats-grid">
+      <div class="stats-copy" data-reveal>
+        <p class="eyebrow light" id="statsEyebrow"></p>
+        <h2 id="statsTitle"></h2>
+        <p class="section-sub light" id="statsSubtitle"></p>
+      </div>
+      <div class="stats-cards" id="statsCards" data-reveal></div>
+    </div>
+  </section>
+
+  <!-- ===== CÓMO FUNCIONA ===== -->
+  <section class="steps" id="como-funciona">
+    <div class="container">
+      <p class="eyebrow center" id="stepsEyebrow"></p>
+      <h2 class="center" id="stepsTitle"></h2>
+      <p class="section-sub center" id="stepsSubtitle"></p>
+
+      <div class="steps-grid" id="stepsGrid"></div>
+
+      <div class="steps-cta" data-reveal>
+        <p id="stepsCtaText"></p>
+        <div class="steps-cta-actions">
+          <a href="#solicitar" class="btn btn-primary btn-lg" id="stepsCtaButton"></a>
+          <a href="#" target="_blank" rel="noopener" class="btn btn-link js-wa-link" data-wa-msg="steps" id="stepsCtaWhatsapp"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SOLICITAR (form funcional -> WhatsApp) ===== -->
+  <section class="apply" id="solicitar">
+    <div class="container apply-grid">
+      <div class="apply-copy" data-reveal>
+        <p class="eyebrow" id="applyEyebrow"></p>
+        <h2 id="applyTitle"></h2>
+        <p class="section-sub" id="applySubtitle"></p>
+        <ul class="trust-list dark" id="applyTrust"></ul>
+      </div>
+
+      <form class="apply-form" id="applyForm" data-reveal>
+        <div class="form-row">
+          <label for="fname" id="labelName">Nombre completo</label>
+          <input type="text" id="fname" name="fname" placeholder="Ej. María Torres" required>
+        </div>
+        <div class="form-row">
+          <label for="fphone" id="labelPhone">Celular / WhatsApp</label>
+          <input type="tel" id="fphone" name="fphone" placeholder="999 999 999" required>
+        </div>
+        <div class="form-row">
+          <label for="ftype" id="labelType">¿Qué necesitas?</label>
+          <select id="ftype" name="ftype" required>
+            <option value="" disabled selected id="ftypePlaceholder">Selecciona una opción</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="famount" id="labelAmount">Monto aproximado (S/)</label>
+          <input type="number" id="famount" name="famount" placeholder="Ej. 3000" min="0">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+          <span id="applySubmitLabel">Enviar por WhatsApp</span>
+        </button>
+        <p class="form-note" id="formNote"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <p class="eyebrow center" id="faqEyebrow"></p>
+      <h2 class="center" id="faqTitle"></h2>
+      <p class="section-sub center" id="faqSubtitle"></p>
+
+      <div class="accordion" id="accordion"></div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section class="contact" id="contacto">
+    <div class="container contact-grid">
+      <div data-reveal>
+        <p class="eyebrow light" id="contactEyebrow"></p>
+        <h2 id="contactTitle"></h2>
+        <p class="section-sub light" id="contactSubtitle"></p>
+        <div class="hours-badges" id="contactHours"></div>
+      </div>
+      <div class="contact-card" data-reveal>
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="#22c55e"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <p class="contact-label">WHATSAPP</p>
+        <p class="contact-number" id="contactNumber"></p>
+        <p class="contact-hours" id="contactHoursLabel"></p>
+        <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-block js-wa-link" data-wa-msg="default" id="contactCtaButton"></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="#inicio" class="brand">
+        <span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span>
+      </a>
+      <p id="footerTagline"></p>
+    </div>
+    <div class="footer-col">
+      <h4 id="footerNavTitle"></h4>
+      <div id="footerNav"></div>
+    </div>
+    <div class="footer-col">
+      <h4 id="footerContactTitle"></h4>
+      <div id="footerContact"></div>
+    </div>
+    <div class="footer-col">
+      <h4 id="footerLegalTitle"></h4>
+      <div id="footerLegalLinks"></div>
+      <a href="reclamaciones.html" class="claims-badge" id="claimsBadge">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8.5 4.5 6 4.5c-1 0-2 .1-2.8.3v13c.8-.2 1.8-.3 2.8-.3 2.5 0 4.5.5 6 2 1.5-1.5 3.5-2 6-2 1 0 2 .1 2.8.3v-13c-.8-.2-1.8-.3-2.8-.3-2.5 0-4.5.5-6 2zM12 6.5v13"/></svg>
+        <span><b>Libro de Reclamaciones</b><span>Registra tu reclamo o queja</span></span>
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="year"></span> <span id="footerBrandName"></span>. Todos los derechos reservados.</p>
+    <p class="footer-legal" id="footerLegal"></p>
+  </div>
+</footer>
+
+<a href="#" target="_blank" rel="noopener" class="whatsapp-float js-wa-link" data-wa-msg="default" aria-label="Escríbenos por WhatsApp">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="#ffffff"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.6 0-3.1-.44-4.38-1.2l-.31-.19-3 .78.8-2.93-.2-.3A7.94 7.94 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.4-5.6c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

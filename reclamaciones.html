@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libro de Reclamaciones — Impulsa Crédito</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="app-body claims-body">
+
+<header class="claims-header">
+  <div class="container row between">
+    <a href="index.html" class="brand"><span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span></a>
+    <a href="index.html" class="back-link" style="color:#c4d2c9">‹ Volver al inicio</a>
+  </div>
+</header>
+
+<main class="claims-main">
+  <div class="container">
+
+    <div class="claims-hero">
+      <div class="claims-book">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8.5 4.5 6 4.5c-1 0-2 .1-2.8.3v13c.8-.2 1.8-.3 2.8-.3 2.5 0 4.5.5 6 2 1.5-1.5 3.5-2 6-2 1 0 2 .1 2.8.3v-13c-.8-.2-1.8-.3-2.8-.3-2.5 0-4.5.5-6 2zM12 6.5v13"/></svg>
+      </div>
+      <div>
+        <h1 id="claimsTitle">Libro de Reclamaciones</h1>
+        <p id="claimsSubtitle"></p>
+        <div class="claims-company small" id="claimsCompany"></div>
+      </div>
+    </div>
+
+    <div class="note blue mt-16" id="claimsDefs"></div>
+
+    <form id="claimsForm" novalidate>
+      <!-- 1. Consumidor -->
+      <section class="card mt-16">
+        <div class="card-h"><div><h3><span class="sec-n">1</span> Identificación del consumidor reclamante</h3><p>Todos los campos marcados con * son obligatorios.</p></div></div>
+        <div class="grid-2">
+          <div class="field"><label>Nombres *</label><input name="nombres" placeholder="Ej. María Fernanda"><span class="error">Ingresa tus nombres</span></div>
+          <div class="field"><label>Apellidos *</label><input name="apellidos" placeholder="Ej. Torres Quispe"><span class="error">Ingresa tus apellidos</span></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Tipo de documento *</label><select name="docType"><option>DNI</option><option>Carné de extranjería</option><option>Pasaporte</option><option>RUC</option></select></div>
+          <div class="field"><label>Número de documento *</label><input name="doc" inputmode="numeric" maxlength="12" placeholder="Ej. 76543210"><span class="error">Ingresa tu número de documento</span></div>
+        </div>
+        <div class="field"><label>Domicilio *</label><input name="domicilio" placeholder="Av. / Calle, número, distrito, provincia"><span class="error">Ingresa tu domicilio</span></div>
+        <div class="grid-2">
+          <div class="field"><label>Teléfono / Celular *</label><input name="phone" inputmode="tel" maxlength="12" placeholder="999 999 999"><span class="error">Ingresa un teléfono válido</span></div>
+          <div class="field"><label>Correo electrónico *</label><input name="email" type="email" placeholder="tucorreo@ejemplo.com"><span class="error">Ingresa un correo válido</span></div>
+        </div>
+        <label class="check"><input type="checkbox" name="menor" id="menor"> <span>El consumidor es menor de edad</span></label>
+        <div class="grid-2 hidden" id="tutorBox">
+          <div class="field"><label>Nombre del padre, madre o apoderado *</label><input name="tutor" placeholder="Nombre completo"></div>
+          <div class="field"><label>Documento del apoderado *</label><input name="tutorDoc" placeholder="DNI"></div>
+        </div>
+      </section>
+
+      <!-- 2. Bien contratado -->
+      <section class="card mt-16">
+        <div class="card-h"><div><h3><span class="sec-n">2</span> Identificación del bien contratado</h3><p>Indica el servicio o producto sobre el que reclamas.</p></div></div>
+        <div class="grid-2">
+          <div class="field"><label>Tipo *</label><select name="bien"><option>Servicio</option><option>Producto</option></select></div>
+          <div class="field"><label>Monto reclamado (S/)</label><input name="monto" type="number" min="0" step="0.01" placeholder="Ej. 250.00"></div>
+        </div>
+        <div class="field"><label>Descripción del servicio o producto *</label><textarea name="descripcion" rows="3" placeholder="Ej. Efectivización de tarjeta de crédito, operación IC-XXXXXX"></textarea><span class="error">Describe el servicio o producto</span></div>
+      </section>
+
+      <!-- 3. Detalle -->
+      <section class="card mt-16">
+        <div class="card-h"><div><h3><span class="sec-n">3</span> Detalle de la reclamación y pedido</h3><p>Cuéntanos qué ocurrió y qué solución esperas.</p></div></div>
+        <div class="field"><label>Tipo *</label>
+          <div class="choice-grid">
+            <div class="choice active" data-tipo="Reclamo"><div class="radio"></div><h4>Reclamo</h4><p id="defRec"></p></div>
+            <div class="choice" data-tipo="Queja"><div class="radio"></div><h4>Queja</h4><p id="defQueja"></p></div>
+          </div>
+        </div>
+        <div class="field"><label>Detalle *</label><textarea name="detalle" rows="4" placeholder="Describe con el mayor detalle posible lo ocurrido, incluyendo fechas."></textarea><span class="error">Describe tu reclamo o queja</span></div>
+        <div class="field"><label>Pedido del consumidor *</label><textarea name="pedido" rows="3" placeholder="Indica qué solución solicitas."></textarea><span class="error">Indica tu pedido</span></div>
+        <div class="note amber mt-8" id="claimsDeadline"></div>
+        <label class="check mt-16"><input type="checkbox" name="acepta"> <span>Declaro que la información brindada es verdadera y autorizo el tratamiento de mis datos personales para la atención de mi reclamo o queja.</span><span class="error">Debes aceptar para enviar</span></label>
+        <div class="wz-actions">
+          <a href="index.html" class="btn btn-outline-dark">Cancelar</a>
+          <button type="submit" class="btn btn-primary btn-lg" id="claimsSubmit">Enviar reclamo</button>
+        </div>
+      </section>
+    </form>
+
+    <!-- Constancia -->
+    <div id="claimsResult" class="hidden"></div>
+
+    <!-- Bloques legales -->
+    <section class="card mt-24" id="terminos">
+      <h3>Términos y condiciones</h3>
+      <p class="small text-muted mt-8">Impulsa Crédito es una empresa de asesoría y gestión crediticia. El servicio de efectivización consiste en procesar un consumo con la tarjeta de crédito del cliente a través de medios de pago autorizados (POS o link de pago), abonando posteriormente el importe correspondiente, menos la comisión informada previamente, en la cuenta bancaria a nombre del titular. No otorgamos préstamos directamente ni solicitamos claves bancarias. La comisión aplicable se informa y acepta antes de cada operación. Los plazos de abono corresponden a días hábiles y pueden variar según el banco de destino.</p>
+    </section>
+
+    <section class="card mt-16" id="privacidad">
+      <h3>Política de privacidad</h3>
+      <p class="small text-muted mt-8">Tratamos tus datos personales conforme a la Ley N.° 29733, Ley de Protección de Datos Personales, y su reglamento. La información y las imágenes que nos entregas (documento de identidad, selfie y fotografías de tarjetas con datos censurados) se usan únicamente para verificar tu identidad y la titularidad de los medios de pago, prevenir fraudes y ejecutar las operaciones solicitadas. No compartimos tus datos con terceros ajenos a la prestación del servicio, salvo requerimiento de autoridad competente. Puedes ejercer tus derechos de acceso, rectificación, cancelación y oposición escribiéndonos a nuestro correo de contacto.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="claims-footer">
+  <div class="container">
+    <p class="small">© <span id="year"></span> <span id="footerBrandName"></span> · <span id="footerCompanyLine"></span></p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/app-core.js"></script>
+<script src="js/backend.js"></script>
+<script src="js/reclamos.js"></script>
+</body>
+</html>

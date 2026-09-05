@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión — Impulsa Crédito</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-wrap">
+  <aside class="auth-side">
+    <div class="blob blob-1"></div><div class="blob blob-2"></div>
+    <a href="index.html" class="auth-brand"><span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span></a>
+
+    <div class="auth-hero">
+      <h1>Tu <span class="hl">efectivo</span> te está esperando.</h1>
+      <p>Ingresa a tu cuenta para crear una nueva operación, registrar tarjetas y revisar tus comprobantes.</p>
+
+      <div class="auth-visual">
+        <div class="auth-art"></div>
+        <span class="pin pin-1"><i class="dot"></i> Procesando ahora mismo</span>
+        <span class="pin pin-2">🛡️ Pago 100% seguro</span>
+      </div>
+
+      <div class="auth-chips">
+        <span class="auth-chip"><i class="dot"></i> Datos encriptados</span>
+        <span class="auth-chip">⚡ Depósito inmediato</span>
+        <span class="auth-chip">💬 Atención <span id="pinHours">Lun a Sáb, 10 a.m. – 7 p.m.</span></span>
+      </div>
+
+      <div class="auth-stats">
+        <div><b>+500</b><span>OPERACIONES</span></div>
+        <div><b>15+</b><span>BANCOS Y TARJETAS</span></div>
+        <div><b>24h</b><span>MÁXIMO DEPÓSITO</span></div>
+      </div>
+    </div>
+
+    <p class="auth-foot">© <span id="year"></span> Impulsa Crédito · Asesoría y Gestión Crediticia</p>
+  </aside>
+
+  <main class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-top">
+        <a href="index.html" class="back-link">‹ Volver al inicio</a>
+      </div>
+      <div style="text-align:center;margin-bottom:6px;">
+        <img src="assets/logo-icon.png" alt="" style="height:54px;filter:drop-shadow(0 6px 14px rgba(34,197,94,.35))">
+      </div>
+      <h2 style="text-align:center">Inicia sesión</h2>
+      <p class="sub" style="text-align:center">Ingresa tu DNI o CE y tu contraseña para acceder.</p>
+
+      <form id="loginForm" novalidate class="mt-24">
+        <div class="field"><label>DNI o CE</label><input name="doc" placeholder="Número de documento" inputmode="numeric" maxlength="12" autocomplete="username"><span class="error">Ingresa tu documento</span></div>
+        <div class="field">
+          <div class="row between"><label>Contraseña</label><a href="#" id="forgotLink" class="small text-green">¿Olvidaste tu contraseña?</a></div>
+          <div class="pass-wrap"><input name="password" type="password" placeholder="Tu contraseña" autocomplete="current-password"><button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button></div>
+          <span class="error">Ingresa tu contraseña</span>
+        </div>
+        <div class="note red hidden" id="loginError"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-16" id="loginBtn">INGRESAR</button>
+      </form>
+
+      <p class="auth-alt">¿No tienes una cuenta? <a href="registro.html">Regístrate</a></p>
+      <div class="secure-row"><span>🛡️ Datos protegidos</span><span>🔒 Conexión segura</span></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app-core.js"></script>
+<script src="js/backend.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

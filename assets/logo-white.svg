@@ -1,0 +1,7 @@
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Impulsa Crédito">
+  <rect x="6" y="34" width="8" height="20" rx="1.5" fill="#ffffff"/>
+  <rect x="18" y="26" width="8" height="28" rx="1.5" fill="#ffffff"/>
+  <rect x="30" y="16" width="8" height="38" rx="1.5" fill="#ffffff"/>
+  <path d="M6 30 L 22 14 L 34 22 L 52 4" stroke="#22c55e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M41 4 L 52 4 L 52 15" stroke="#22c55e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

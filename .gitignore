@@ -1,0 +1,14 @@
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Temporales
+*.log
+*.tmp
+node_modules/

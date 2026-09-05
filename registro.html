@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear cuenta — Impulsa Crédito</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-wrap">
+  <!-- Panel izquierdo (marca) -->
+  <aside class="auth-side">
+    <div class="blob blob-1"></div><div class="blob blob-2"></div>
+    <a href="index.html" class="auth-brand"><span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span></a>
+
+    <div class="auth-hero">
+      <h1>Convierte tu tarjeta en <span class="hl">efectivo</span>, hoy mismo.</h1>
+      <p>Crea tu cuenta en 2 minutos, verifica tu identidad y efectiviza la línea de tu tarjeta de crédito directo a tu cuenta bancaria.</p>
+
+      <div class="auth-visual">
+        <div class="auth-art"></div>
+        <span class="pin pin-1"><i class="dot"></i> Depósito el mismo día</span>
+        <span class="pin pin-2">🔒 Datos encriptados</span>
+      </div>
+
+      <div class="auth-chips">
+        <span class="auth-chip"><i class="dot"></i> 100% digital</span>
+        <span class="auth-chip">⚡ Depósito inmediato</span>
+        <span class="auth-chip">💬 Atención <span id="pinHours">Lun a Sáb, 10 a.m. – 7 p.m.</span></span>
+      </div>
+
+      <div class="auth-stats">
+        <div><b>+500</b><span>OPERACIONES</span></div>
+        <div><b>97%</b><span>SATISFACCIÓN</span></div>
+        <div><b>Mismo día</b><span>DEPÓSITO</span></div>
+      </div>
+    </div>
+
+    <p class="auth-foot">© <span id="year"></span> Impulsa Crédito · Asesoría y Gestión Crediticia</p>
+  </aside>
+
+  <!-- Formulario -->
+  <main class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-top">
+        <a href="index.html" class="back-link">‹ Volver al inicio</a>
+        <span class="small text-muted" id="stepLabel">Paso 1 de 3</span>
+      </div>
+      <h2 id="formTitle">Crea tu cuenta</h2>
+      <p class="sub" id="formSub">Ingresa tus datos tal como figuran en tu documento.</p>
+
+      <div class="stepper"><span class="active"></span><span></span><span></span></div>
+
+      <form id="registerForm" novalidate>
+        <!-- Paso 1: datos -->
+        <div class="form-step active" data-step="1">
+          <div class="grid-2">
+            <div class="field"><label>Nombres</label><input name="nombres" placeholder="Ej. María Fernanda" autocomplete="given-name"><span class="error">Ingresa tus nombres</span></div>
+            <div class="field"><label>Apellidos</label><input name="apellidos" placeholder="Ej. Torres Quispe" autocomplete="family-name"><span class="error">Ingresa tus apellidos</span></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Tipo de documento</label>
+              <select name="docType"><option value="DNI">DNI</option><option value="CE">Carné de extranjería</option></select>
+            </div>
+            <div class="field"><label>Número de documento</label><input name="doc" placeholder="8 dígitos" inputmode="numeric" maxlength="12"><span class="error">Documento inválido (DNI: 8 dígitos)</span></div>
+          </div>
+          <div class="field"><label>Celular (WhatsApp)</label><input name="phone" placeholder="999 999 999" inputmode="tel" maxlength="9"><span class="error">Ingresa un celular de 9 dígitos</span>
+            <span class="hint">Te contactaremos por este número para confirmar tus operaciones.</span></div>
+          <div class="auth-actions">
+            <span></span>
+            <button type="button" class="btn btn-primary" data-next>Continuar →</button>
+          </div>
+        </div>
+
+        <!-- Paso 2: acceso -->
+        <div class="form-step" data-step="2">
+          <div class="field"><label>Correo electrónico</label><input name="email" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email"><span class="error">Ingresa un correo válido</span></div>
+          <div class="field"><label>Contraseña</label>
+            <div class="pass-wrap"><input name="password" type="password" placeholder="Mínimo 8 caracteres, con un número" autocomplete="new-password"><button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button></div>
+            <div class="strength"><i id="strengthBar"></i></div>
+            <span class="hint" id="strengthText">Usa letras y números.</span>
+            <span class="error">Mínimo 8 caracteres e incluye al menos un número</span>
+          </div>
+          <div class="field"><label>Confirmar contraseña</label>
+            <div class="pass-wrap"><input name="password2" type="password" placeholder="Repite tu contraseña" autocomplete="new-password"><button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button></div>
+            <span class="error">Las contraseñas no coinciden</span>
+          </div>
+          <div class="auth-actions">
+            <button type="button" class="btn btn-outline-dark" data-prev>← Atrás</button>
+            <button type="button" class="btn btn-primary" data-next>Continuar →</button>
+          </div>
+        </div>
+
+        <!-- Paso 3: confirmación -->
+        <div class="form-step" data-step="3">
+          <div class="note green" id="summary"></div>
+          <div class="field mt-16">
+            <label class="check"><input type="checkbox" name="terms"> <span>Acepto los <a href="#" class="text-green" id="termsLink">términos y condiciones</a> y la política de privacidad. Autorizo el tratamiento de mis datos para verificar mi identidad y procesar mis operaciones.</span></label>
+            <span class="error">Debes aceptar los términos para continuar</span>
+          </div>
+          <div class="auth-actions">
+            <button type="button" class="btn btn-outline-dark" data-prev>← Atrás</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Crear mi cuenta</button>
+          </div>
+        </div>
+      </form>
+
+      <p class="auth-alt">¿Ya tienes una cuenta? <a href="login.html">Inicia sesión</a></p>
+      <div class="secure-row"><span>🛡️ Datos protegidos</span><span>🔒 Conexión segura</span></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app-core.js"></script>
+<script src="js/backend.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
