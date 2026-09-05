@@ -65,10 +65,44 @@ Los archivos están en `assets/bancos/` y se listan en `partners.logos` (config.
 > corporativo). No pude descargar los logos oficiales porque son marcas registradas que
 > no están disponibles libremente en la web.
 >
-> Para usar los oficiales: descarga cada logo (idealmente **SVG o PNG con fondo
-> transparente**) desde la web o el manual de marca de cada entidad, y **reemplaza el
-> archivo** en `assets/bancos/` conservando el mismo nombre (ej. `bcp.svg`). No hace
-> falta tocar el código.
+### Cómo poner TUS logos descargados (2 formas)
+
+**Forma A — la más rápida (sin tocar código):**
+Renombra cada logo que descargaste con el nombre exacto del archivo que ya existe
+y reemplázalo dentro de `assets/bancos/`:
+
+| Entidad            | Nombre del archivo        |
+|--------------------|---------------------------|
+| Visa               | `visa.svg`                |
+| Mastercard         | `mastercard.svg`          |
+| American Express   | `amex.svg`                |
+| Diners Club        | `diners.svg`              |
+| BCP                | `bcp.svg`                 |
+| Interbank          | `interbank.svg`           |
+| BBVA               | `bbva.svg`                |
+| Scotiabank         | `scotiabank.svg`          |
+| Banco de la Nación | `banco-nacion.svg`        |
+| BanBif             | `banbif.svg`              |
+| Mibanco            | `mibanco.svg`             |
+| Banco Falabella    | `falabella.svg`           |
+| Banco Ripley       | `ripley.svg`              |
+| Caja Piura         | `caja-piura.svg`          |
+| Caja Arequipa      | `caja-arequipa.svg`       |
+
+**Forma B — si tus archivos son PNG (o quieres otros nombres):**
+Copia tus imágenes a `assets/bancos/` con el nombre que quieras y edita la lista
+`partners.logos` en `js/config.js` poniendo la ruta real. Ejemplo:
+```js
+{ name: "BCP", file: "assets/bancos/bcp.png" },
+```
+
+**Recomendaciones para que se vean bien:**
+- Fondo **transparente** (PNG o SVG). Si tu logo trae fondo blanco, igual funciona
+  porque la tarjeta del carrusel es blanca.
+- Formato horizontal, unos 400×140 px o más (el sitio lo escala solo).
+- Evita imágenes con mucho margen alrededor: se verán pequeñas.
+- Puedes agregar o quitar entidades libremente añadiendo o borrando líneas de
+  `partners.logos`.
 >
 > Ten en cuenta que mostrar logos de bancos puede sugerir una alianza comercial.
 > Si no tienes convenio con ellos, conviene mantener el aviso legal que aparece bajo
@@ -168,7 +202,43 @@ gratuitas para empezar: **Supabase** (base de datos + login + almacenamiento de 
 o **Firebase**. El código está preparado para conectarlo: toda la lógica de datos está
 centralizada en `js/app-core.js` (funciones `load`, `save` y el objeto `auth`).
 
-## Publicar gratis (hosting)
+## 🚀 Publicar en Vercel con actualizaciones automáticas
+
+El proyecto ya es un **repositorio Git** (con el primer commit hecho) y trae
+`vercel.json` configurado. Falta conectarlo, y eso solo lo puedes hacer tú porque
+requiere iniciar sesión con tus cuentas:
+
+**Paso 1 — Subir el código a GitHub** (una sola vez)
+1. Entra a https://github.com/new y crea un repositorio **privado** llamado
+   `impulsa-credito` (no marques "Add a README").
+2. En la carpeta del proyecto abre la terminal de VS Code y pega:
+   ```bash
+   git remote add origin https://github.com/TU-USUARIO/impulsa-credito.git
+   git push -u origin main
+   ```
+   Te pedirá iniciar sesión en GitHub la primera vez.
+
+**Paso 2 — Conectar Vercel** (una sola vez)
+1. Entra a https://vercel.com y regístrate con tu cuenta de GitHub.
+2. *Add New… → Project* → elige el repositorio `impulsa-credito` → **Deploy**.
+   No cambies nada: Vercel detecta que es un sitio estático.
+3. En 1 minuto tendrás tu URL: `https://impulsa-credito.vercel.app` (con HTTPS).
+4. Opcional: *Settings → Domains* para conectar tu dominio propio.
+
+**Paso 3 — A partir de ahí, cada cambio se publica solo**
+Cuando se modifique cualquier archivo, basta con:
+```bash
+git add -A
+git commit -m "descripción del cambio"
+git push
+```
+Vercel detecta el push y actualiza la web en menos de un minuto. No hay que
+volver a subir archivos a mano nunca más.
+
+> Con esto, los cambios que se hagan en esta carpeta (por ti o por Claude) se
+> reflejan en la web publicada con solo hacer `git push`.
+
+## Publicar gratis (otras opciones)
 
 Opción más fácil — **Netlify Drop** (sin comandos):
 1. Entra a https://app.netlify.com/drop
