@@ -271,3 +271,38 @@ y entra a http://localhost:5173
 
 > Nota: si editas `config.js` y no ves los cambios, recarga con **Ctrl + F5**
 > (fuerza al navegador a no usar la versión guardada en caché).
+
+## Cuentas de cliente (entrar desde cualquier dispositivo)
+
+Cada cliente se registra una sola vez con su **DNI y contraseña**, y desde
+ese momento puede entrar desde su celular, su laptop o cualquier otra
+computadora y ver su historial completo: identidad, tarjetas, cuentas
+bancarias y operaciones.
+
+Para que funcione hacen falta tres cosas, ya hechas:
+
+1. Ejecutar `supabase-setup.sql` y luego `supabase-cuentas.sql` en el
+   SQL Editor de Supabase.
+2. En Supabase, Authentication -> Sign In / Providers -> Email:
+   desactivar **Confirm email** (los clientes entran con DNI, no con correo).
+3. En `js/config.js`, seccion `backend`: `useAuth: true`.
+
+### Sobre `authDomain`
+
+Supabase guarda cada cuenta con un correo. Como tus clientes entran con
+DNI, el correo se arma solo: `dni12345678@impulsa-credito.vercel.app`.
+Ese correo **nunca se usa para enviar nada**, es solo el identificador
+interno. Supabase exige que el dominio exista de verdad en internet, por
+eso se usa el dominio del sitio.
+
+El dia que compres tu dominio propio (por ejemplo `impulsacredito.pe`),
+cambialo en `js/config.js` -> `backend.authDomain`. **Aviso importante:**
+las cuentas ya creadas quedarian con el dominio anterior, asi que hazlo
+antes de tener clientes reales, o pidenos migrarlas.
+
+### Seguridad
+
+Las reglas de Supabase (Row Level Security) hacen que cada cliente solo
+pueda leer y escribir **lo suyo**, tanto en las tablas como en las fotos.
+Un visitante sin cuenta no ve absolutamente nada. Verificado con pruebas
+reales contra el proyecto.
