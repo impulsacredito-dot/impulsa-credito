@@ -158,13 +158,19 @@
       if (!setInvalid(terms, !terms.checked)) return;
       var btn = document.getElementById("submitBtn");
       btn.disabled = true; btn.textContent = "Creando tu cuenta...";
-      var res = await IC.auth.register({
+      var datos = {
         nombres: field(reg, "nombres").value, apellidos: field(reg, "apellidos").value,
         docType: field(reg, "docType").value, doc: field(reg, "doc").value,
         phone: field(reg, "phone").value, email: field(reg, "email").value, password: field(reg, "password").value
-      });
+      };
+      var res;
+      if (IC.cloud && IC.cloud.activo) {
+        res = await IC.cloud.registrar(datos);              // cuenta real en la nube
+      } else {
+        res = await IC.auth.register(datos);                // respaldo: solo este navegador
+        if (res.ok && IC.backend) { try { await IC.backend.cliente(res.user); } catch (err) {} }
+      }
       if (!res.ok) { btn.disabled = false; btn.textContent = "Crear mi cuenta"; IC.toast(res.error, "err"); return; }
-      if (IC.backend) { try { await IC.backend.cliente(res.user); } catch (err) {} }
       IC.confetti();
       btn.textContent = "¡Cuenta creada! Entrando...";
       setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 1100);
@@ -184,7 +190,9 @@
       if (!ok) return;
       var btn = document.getElementById("loginBtn");
       btn.disabled = true; btn.textContent = "Verificando...";
-      var res = await IC.auth.login(doc.value, pass.value);
+      var res = (IC.cloud && IC.cloud.activo)
+        ? await IC.cloud.login(doc.value, pass.value)
+        : await IC.auth.login(doc.value, pass.value);
       if (!res.ok) { btn.disabled = false; btn.textContent = "INGRESAR"; err.textContent = res.error; err.classList.remove("hidden"); return; }
       btn.textContent = "¡Bienvenido! Entrando...";
       setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 500);

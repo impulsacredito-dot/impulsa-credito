@@ -1,0 +1,303 @@
+/* =====================================================================
+   IMPULSA CRÉDITO — Cuentas en la nube (Supabase Auth)
+   =====================================================================
+   Permite que cada cliente entre desde CUALQUIER dispositivo con su
+   DNI y contraseña, y vea su historial completo: identidad, tarjetas,
+   cuentas bancarias y operaciones.
+
+   Se activa cuando en js/config.js:
+     backend.provider = "supabase"  y  backend.useAuth = true
+
+   Si está desactivado, la plataforma sigue funcionando con los datos
+   guardados en el navegador (modo local).
+   ===================================================================== */
+(function () {
+  "use strict";
+
+  var CFG = window.SITE_CONFIG || {};
+  var B = CFG.backend || {};
+  var base = (B.supabaseUrl || "").replace(/\/+$/, "");
+  var KEY = B.supabaseAnonKey || "";
+  var BUCKET = B.bucket || "documentos";
+  var activo = B.provider === "supabase" && B.useAuth === true && !!base && !!KEY;
+  var SES = "ic_sesion_v1";
+
+  /* Dominio interno: el cliente entra con su DNI, no con correo.
+     Supabase EXIGE que el dominio exista de verdad en internet, por eso
+     usamos el dominio del sitio. Cuando tengas tu dominio propio, cámbialo
+     en js/config.js -> backend.authDomain */
+  var DOMINIO = (B.authDomain || "impulsa-credito.vercel.app").replace(/^@/, "").trim();
+  function correoInterno(doc) {
+    return "dni" + String(doc).replace(/[^A-Za-z0-9]/g, "") + "@" + DOMINIO;
+  }
+
+  var sesion = null;   // { access_token, refresh_token, user }
+  var perfil = null;   // objeto del cliente en memoria
+
+  /* ---------- utilidades de red ---------- */
+  function cab(extra) {
+    var h = { apikey: KEY, "Content-Type": "application/json" };
+    h.Authorization = "Bearer " + (sesion && sesion.access_token ? sesion.access_token : KEY);
+    for (var k in extra) h[k] = extra[k];
+    return h;
+  }
+  async function api(ruta, opts) {
+    var res = await fetch(base + ruta, opts);
+    var texto = await res.text();
+    var datos = null;
+    try { datos = texto ? JSON.parse(texto) : null; } catch (e) { datos = texto; }
+    if (!res.ok) {
+      var msg = (datos && (datos.msg || datos.message || datos.error_description || datos.error)) || ("Error " + res.status);
+      var err = new Error(msg); err.status = res.status; err.datos = datos;
+      throw err;
+    }
+    return datos;
+  }
+  function guardarSesion(s) {
+    sesion = s;
+    try { localStorage.setItem(SES, JSON.stringify({ access_token: s.access_token, refresh_token: s.refresh_token })); } catch (e) {}
+  }
+  function borrarSesion() {
+    sesion = null; perfil = null;
+    try { localStorage.removeItem(SES); } catch (e) {}
+  }
+
+  /* ---------- traducción de errores al español ---------- */
+  function traducir(msg) {
+    msg = String(msg || "");
+    if (/already registered|already been registered/i.test(msg)) return "Ya existe una cuenta con ese documento. Inicia sesión.";
+    if (/Invalid login credentials/i.test(msg)) return "Documento o contraseña incorrectos.";
+    if (/Email not confirmed/i.test(msg)) return "La cuenta necesita activación. Escríbenos por WhatsApp y la activamos al instante.";
+    if (/email_address_invalid|Email address .* is invalid/i.test(msg)) return "No pudimos crear la cuenta. Escríbenos por WhatsApp y te registramos nosotros.";
+    if (/signups? (not allowed|disabled)/i.test(msg)) return "El registro está temporalmente cerrado. Escríbenos por WhatsApp.";
+    if (/Password should be at least/i.test(msg)) return "La contraseña debe tener al menos 8 caracteres.";
+    if (/rate limit|too many/i.test(msg)) return "Demasiados intentos. Espera un momento e inténtalo de nuevo.";
+    if (/Failed to fetch|NetworkError/i.test(msg)) return "Sin conexión a internet. Revisa tu red e inténtalo otra vez.";
+    return msg;
+  }
+
+  /* ---------- subir imagen al almacenamiento del cliente ---------- */
+  async function subirFoto(subruta, dataURL) {
+    if (!dataURL || !sesion) return null;
+    var blob = await (await fetch(dataURL)).blob();
+    var ruta = sesion.user.id + "/" + subruta;
+    var res = await fetch(base + "/storage/v1/object/" + BUCKET + "/" + encodeURI(ruta), {
+      method: "POST",
+      headers: { apikey: KEY, Authorization: "Bearer " + sesion.access_token, "Content-Type": blob.type || "image/jpeg" },
+      body: blob
+    });
+    if (!res.ok) throw new Error("No se pudo subir la imagen");
+    return ruta;
+  }
+  function sello() { return new Date().toISOString().replace(/[:.]/g, "-"); }
+
+  /* ---------- armar el objeto que usa la plataforma ---------- */
+  function vacio() {
+    return { identity: { front: null, back: null, selfie: null, status: "pending", submittedAt: null },
+             cards: [], accounts: [], ops: [], notifications: [] };
+  }
+
+  async function cargarTodo() {
+    var uid = sesion.user.id;
+    var q = "?user_id=eq." + uid + "&order=creado_en.desc";
+
+    var p = await api("/rest/v1/perfiles?id=eq." + uid + "&select=*", { headers: cab() });
+    var docs = await api("/rest/v1/documentos" + q + "&select=*", { headers: cab() });
+    var tarj = await api("/rest/v1/tarjetas" + q + "&select=*", { headers: cab() });
+    var ctas = await api("/rest/v1/cuentas" + q + "&select=*", { headers: cab() });
+    var ops = await api("/rest/v1/operaciones" + q + "&select=*", { headers: cab() });
+
+    var datos = p && p[0] ? p[0] : {};
+    var u = vacio();
+    u.id = uid;
+    u.nombres = datos.nombres || ""; u.apellidos = datos.apellidos || "";
+    u.docType = datos.tipo_doc || "DNI"; u.doc = datos.documento || "";
+    u.phone = datos.celular || ""; u.email = datos.email || "";
+
+    if (docs && docs.length) {
+      u.identity = { front: null, back: null, selfie: null,
+                     status: docs[0].estado === "verificado" ? "verified" : "review",
+                     submittedAt: new Date(docs[0].creado_en).getTime(), remoto: true };
+    }
+    u.cards = (tarj || []).map(function (t) {
+      return { id: "c" + t.id, remoteId: t.id, bank: t.banco, brand: t.marca, last4: t.ultimos4,
+               holder: t.titular, payDay: t.dia_pago, primary: !!t.principal,
+               photoFront: null, photoBack: null, remoto: true,
+               status: t.estado === "verificada" ? "verified" : "review",
+               createdAt: new Date(t.creado_en).getTime() };
+    });
+    u.accounts = (ctas || []).map(function (c) {
+      return { id: "a" + c.id, remoteId: c.id, bank: c.banco, type: c.tipo, currency: c.moneda,
+               number: c.numero, cci: c.cci, holder: c.titular, primary: !!c.principal,
+               createdAt: new Date(c.creado_en).getTime() };
+    });
+    u.ops = (ops || []).map(function (o) {
+      return { id: "op" + o.id, remoteId: o.id, code: o.codigo, type: o.tipo,
+               cardId: o.tarjeta_id ? "c" + o.tarjeta_id : null,
+               accountId: o.cuenta_id ? "a" + o.cuenta_id : null,
+               amount: Number(o.monto), commission: Number(o.comision), net: Number(o.neto),
+               commissionPct: Number((CFG.platform || {}).commissionPercent || 1),
+               status: o.estado, createdAt: new Date(o.creado_en).getTime(),
+               completedAt: o.estado === "completada" ? new Date(o.creado_en).getTime() : null,
+               history: [] };
+    });
+    perfil = u;
+    return u;
+  }
+
+  /* =====================================================================
+     API pública
+  ===================================================================== */
+  var cloud = {
+    activo: activo,
+    usuario: function () { return perfil; },
+
+    /* restaura la sesión guardada al abrir la web */
+    async init() {
+      if (!activo) return null;
+      var guardada = null;
+      try { guardada = JSON.parse(localStorage.getItem(SES) || "null"); } catch (e) {}
+      if (!guardada || !guardada.refresh_token) return null;
+      try {
+        var s = await api("/auth/v1/token?grant_type=refresh_token", {
+          method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: guardada.refresh_token })
+        });
+        guardarSesion(s);
+        return await cargarTodo();
+      } catch (e) { borrarSesion(); return null; }
+    },
+
+    async registrar(d) {
+      try {
+        var s = await api("/auth/v1/signup", {
+          method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ email: correoInterno(d.doc), password: d.password,
+                                 data: { nombres: d.nombres, apellidos: d.apellidos, documento: d.doc } })
+        });
+        if (!s.access_token) {
+          // si el proyecto pide confirmar correo, iniciamos sesión igual
+          s = await api("/auth/v1/token?grant_type=password", {
+            method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ email: correoInterno(d.doc), password: d.password })
+          });
+        }
+        guardarSesion(s);
+        await api("/rest/v1/perfiles", {
+          method: "POST", headers: cab({ Prefer: "return=minimal" }),
+          body: JSON.stringify({ id: s.user.id, nombres: d.nombres.trim(), apellidos: d.apellidos.trim(),
+                                 tipo_doc: d.docType, documento: String(d.doc).trim(),
+                                 celular: d.phone.trim(), email: (d.email || "").trim() })
+        });
+        var u = await cargarTodo();
+        return { ok: true, user: u };
+      } catch (e) { return { ok: false, error: traducir(e.message) }; }
+    },
+
+    async login(doc, password) {
+      try {
+        var s = await api("/auth/v1/token?grant_type=password", {
+          method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ email: correoInterno(doc), password: password })
+        });
+        guardarSesion(s);
+        var u = await cargarTodo();
+        return { ok: true, user: u };
+      } catch (e) { return { ok: false, error: traducir(e.message) }; }
+    },
+
+    async logout() {
+      try { await api("/auth/v1/logout", { method: "POST", headers: cab() }); } catch (e) {}
+      borrarSesion();
+    },
+
+    /* ---------- envío de documentos de identidad ---------- */
+    async enviarIdentidad(imgs, u) {
+      var t = sello(), dni = (u && u.doc) || "sin-dni";
+      var f = await subirFoto("identidad/" + dni + "-dni-frontal-" + t + ".jpg", imgs.front);
+      var b = await subirFoto("identidad/" + dni + "-dni-posterior-" + t + ".jpg", imgs.back);
+      var s = await subirFoto("identidad/" + dni + "-selfie-" + t + ".jpg", imgs.selfie);
+      await api("/rest/v1/documentos", {
+        method: "POST", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ user_id: sesion.user.id, documento: u.doc,
+                               nombre: (u.nombres + " " + u.apellidos).trim(), celular: u.phone,
+                               dni_frontal: f, dni_posterior: b, selfie: s, estado: "en_revision" })
+      });
+      return await cargarTodo();
+    },
+
+    /* ---------- tarjetas ---------- */
+    async agregarTarjeta(c, u) {
+      var t = sello(), dni = (u && u.doc) || "sin-dni";
+      var ff = c.photoFront ? await subirFoto("tarjetas/" + dni + "-" + c.bank + "-" + c.last4 + "-frontal-" + t + ".jpg", c.photoFront) : null;
+      var fb = c.photoBack ? await subirFoto("tarjetas/" + dni + "-" + c.bank + "-" + c.last4 + "-posterior-" + t + ".jpg", c.photoBack) : null;
+      await api("/rest/v1/tarjetas", {
+        method: "POST", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ user_id: sesion.user.id, documento: u.doc,
+                               nombre: (u.nombres + " " + u.apellidos).trim(),
+                               banco: c.bank, marca: c.brand, ultimos4: c.last4, titular: c.holder,
+                               dia_pago: c.payDay || null, principal: !!c.primary,
+                               foto_frontal: ff, foto_posterior: fb, estado: "en_revision" })
+      });
+      return await cargarTodo();
+    },
+
+    /* ---------- cuentas bancarias ---------- */
+    async agregarCuenta(a, u) {
+      await api("/rest/v1/cuentas", {
+        method: "POST", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ user_id: sesion.user.id, documento: u.doc,
+                               nombre: (u.nombres + " " + u.apellidos).trim(),
+                               banco: a.bank, tipo: a.type, moneda: a.currency,
+                               numero: a.number, cci: a.cci || null, titular: a.holder,
+                               principal: !!a.primary })
+      });
+      return await cargarTodo();
+    },
+
+    /* ---------- operaciones ---------- */
+    async crearOperacion(op, card, acc, u) {
+      await api("/rest/v1/operaciones", {
+        method: "POST", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ user_id: sesion.user.id, codigo: op.code, documento: u.doc,
+                               nombre: (u.nombres + " " + u.apellidos).trim(), celular: u.phone,
+                               tipo: op.type,
+                               banco_tarjeta: card ? card.bank : null, ultimos4: card ? card.last4 : null,
+                               banco_cuenta: acc ? acc.bank : null, numero_cuenta: acc ? acc.number : null,
+                               tarjeta_id: card && card.remoteId ? card.remoteId : null,
+                               cuenta_id: acc && acc.remoteId ? acc.remoteId : null,
+                               monto: op.amount, comision: op.commission, neto: op.net, estado: op.status })
+      });
+      return await cargarTodo();
+    },
+
+    async cambiarEstadoOperacion(remoteId, estado) {
+      await api("/rest/v1/operaciones?id=eq." + remoteId, {
+        method: "PATCH", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ estado: estado })
+      });
+      return await cargarTodo();
+    },
+
+    async actualizarPerfil(campos) {
+      await api("/rest/v1/perfiles?id=eq." + sesion.user.id, {
+        method: "PATCH", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify(campos)
+      });
+      return await cargarTodo();
+    },
+
+    async cambiarPassword(nueva) {
+      await api("/auth/v1/user", {
+        method: "PUT", headers: cab(), body: JSON.stringify({ password: nueva })
+      });
+    },
+
+    recargar: cargarTodo
+  };
+
+  window.IC = window.IC || {};
+  window.IC.cloud = cloud;
+
+  if (activo) console.info("[Impulsa Crédito] Cuentas en la nube ACTIVAS: los clientes pueden entrar desde cualquier dispositivo.");
+})();

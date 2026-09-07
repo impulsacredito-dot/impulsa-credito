@@ -58,7 +58,14 @@ var SITE_CONFIG = {
     provider: "supabase",           // "local" o "supabase"
     supabaseUrl: "https://sqbihengbsbgletrwyhk.supabase.co",
     supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxYmloZW5nYnNiZ2xldHJ3eWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTg5NTUsImV4cCI6MjEwNDM3NDk1NX0.HHT6HkBXm1Tuh-9tMMiDuZopuALyL3U46vylkmS2Cjg",
-    bucket: "documentos"            // carpeta de fotos (no cambiar)
+    bucket: "documentos",           // carpeta de fotos (no cambiar)
+    // true = cada cliente tiene cuenta y entra desde cualquier dispositivo
+    // (requiere haber ejecutado supabase-cuentas.sql)
+    useAuth: true,
+    // Los clientes entran con DNI. Por dentro Supabase necesita un correo,
+    // así que se arma solo: dni12345678@<authDomain>. Debe ser un dominio
+    // que exista de verdad. Cuando compres tu dominio, ponlo aquí.
+    authDomain: "impulsa-credito.vercel.app"
   },
 
   /* ---------------------------------------------------------------

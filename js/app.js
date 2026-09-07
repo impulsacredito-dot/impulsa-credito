@@ -4,8 +4,8 @@
 (function () {
   "use strict";
   var IC = window.IC, CFG = IC.cfg, P = IC.p, esc = IC.esc;
-  var user = IC.auth.requireSession();
-  if (!user) return;
+  var NUBE = !!(IC.cloud && IC.cloud.activo);   // cuentas en la nube activas
+  var user = null;
 
   /* ---------- iconos ---------- */
   /* Set de iconos lineales, alineado al manual de marca (trazo redondeado) */
@@ -60,7 +60,15 @@
   var sidebar = document.getElementById("sidebar");
   var viewEl = document.getElementById("view");
 
-  function refreshUser() { user = IC.auth.current() || user; }
+  function refreshUser() {
+    user = (NUBE ? IC.cloud.usuario() : IC.auth.current()) || user;
+  }
+  /* guarda un cambio: en la nube (servidor) o en este navegador */
+  async function guardar(accionNube, accionLocal) {
+    if (NUBE) { user = await accionNube(); }
+    else { IC.auth.update(accionLocal); refreshUser(); }
+    return user;
+  }
   function fullName() { return user.nombres + " " + user.apellidos; }
   function renderShell() {
     refreshUser();
@@ -88,7 +96,7 @@
     });
   }
   document.getElementById("logoutBtn").addEventListener("click", function () {
-    IC.modal({ title: "Cerrar sesión", text: "¿Seguro que deseas salir de tu cuenta?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Salir", cls: "btn-dark", onClick: function () { IC.auth.logout(); window.location.href = P.loginHref || "login.html"; } }] });
+    IC.modal({ title: "Cerrar sesión", text: "¿Seguro que deseas salir de tu cuenta?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Salir", cls: "btn-dark", onClick: async function () { if (NUBE) { await IC.cloud.logout(); } else { IC.auth.logout(); } window.location.href = P.loginHref || "login.html"; } }] });
   });
   var backdrop = document.getElementById("sidebarBackdrop");
   function setMenu(open) {
@@ -108,10 +116,15 @@
       html: list.length ? list.map(function (n) { return '<div class="notif-item"><b>' + esc(n.title) + "</b>" + esc(n.text) + '<br><span>' + IC.fmtDateTime(n.at) + "</span></div>"; }).join("") : "<p>No tienes notificaciones.</p>",
       actions: [{ label: "Cerrar", cls: "btn-outline-dark" }]
     });
-    IC.auth.update(function (u) { (u.notifications || []).forEach(function (n) { n.read = true; }); });
+    if (NUBE) { (user.notifications || []).forEach(function (n) { n.read = true; }); }
+    else { IC.auth.update(function (u) { (u.notifications || []).forEach(function (n) { n.read = true; }); }); }
     renderShell();
   });
-  function notify(title, text) { IC.auth.update(function (u) { u.notifications = u.notifications || []; u.notifications.push({ id: IC.uid("n"), title: title, text: text, at: Date.now(), read: false }); }); }
+  function notify(title, text) {
+    var n = { id: IC.uid("n"), title: title, text: text, at: Date.now(), read: false };
+    if (NUBE) { user.notifications = user.notifications || []; user.notifications.push(n); }
+    else { IC.auth.update(function (u) { u.notifications = u.notifications || []; u.notifications.push(n); }); }
+  }
 
   /* ---------- router ---------- */
   var ROUTES = [
@@ -346,12 +359,21 @@
         if (data[s.key]) setImage(data[s.key]);
         body.querySelector("#camBtn").addEventListener("click", function () { openCamera(s.capture, s.shape, setImage); });
         body.querySelector("#prev").addEventListener("click", function () { if (step > 0) { step--; render(); } });
-        next.addEventListener("click", function () {
+        next.addEventListener("click", async function () {
           if (!data[s.key]) return;
           if (step < 2) { step++; render(); return; }
           next.disabled = true; next.textContent = "Enviando...";
-          IC.auth.update(function (u) { u.identity = { front: data.front, back: data.back, selfie: data.selfie, status: "review", submittedAt: Date.now() }; });
-          if (IC.backend) { try { IC.backend.identidad(IC.auth.current(), data); } catch (e) {} }
+          try {
+            if (NUBE) { user = await IC.cloud.enviarIdentidad(data, user); }
+            else {
+              IC.auth.update(function (u) { u.identity = { front: data.front, back: data.back, selfie: data.selfie, status: "review", submittedAt: Date.now() }; });
+              if (IC.backend) { try { IC.backend.identidad(IC.auth.current(), data); } catch (e) {} }
+              refreshUser();
+            }
+          } catch (err) {
+            next.disabled = false; next.textContent = "Enviar para revisión ✓";
+            IC.toast("No se pudieron enviar las fotos. Revisa tu conexión.", "err"); return;
+          }
           notify("Documentos recibidos", "Estamos verificando tu identidad. Te avisaremos cuando esté lista.");
           IC.confetti();
           body.innerHTML = '<div style="text-align:center;padding:20px 0"><div class="success-anim">' + ic("check", 40) + '</div><h3>¡Documentos enviados!</h3><p class="text-muted mt-8">Revisaremos tu identidad en horario de ' + esc(P.verificationHours || "oficina") + '.<br>Mientras tanto, ya puedes registrar tu tarjeta.</p><div class="row mt-24" style="justify-content:center"><a href="#/tarjetas/nueva" class="btn btn-primary">Registrar mi tarjeta →</a><a href="#/inicio" class="btn btn-outline-dark">Ir al inicio</a></div></div>';
@@ -442,13 +464,25 @@
       el.querySelector("#howBtn").addEventListener("click", function () {
         IC.modal({ title: "¿Cómo registro mi tarjeta?", html: "<ol style='padding-left:18px;font-size:.9rem;line-height:1.7'><li>Elige tu banco y escribe los <b>últimos 4 dígitos</b>.</li><li>Sube la foto frontal de la tarjeta.</li><li>En el editor, <b>arrastra sobre los números</b> para taparlos (deja visible tu nombre y los últimos 4).</li><li>Presiona <b>Listo</b> y luego <b>Registrar</b>.</li></ol><p class='small mt-8'>Nunca te pediremos el CVV ni tu clave.</p>" });
       });
-      el.querySelector("#saveCard").addEventListener("click", function () {
+      el.querySelector("#saveCard").addEventListener("click", async function () {
         var btn = this; btn.disabled = true; btn.textContent = "Registrando...";
-        IC.auth.update(function (u) {
-          if (state.primary) u.cards.forEach(function (c) { c.primary = false; });
-          u.cards.push({ id: IC.uid("c"), bank: state.bank, brand: state.brand, last4: state.last4, holder: state.holder.trim(), payDay: state.payDay, primary: state.primary, photoFront: state.front, photoBack: state.back, status: "review", createdAt: Date.now() });
-        });
-        if (IC.backend) { try { var uu = IC.auth.current(); IC.backend.tarjeta(uu, uu.cards[uu.cards.length - 1]); } catch (e) {} }
+        var nueva = { id: IC.uid("c"), bank: state.bank, brand: state.brand, last4: state.last4,
+                      holder: state.holder.trim(), payDay: state.payDay, primary: state.primary,
+                      photoFront: state.front, photoBack: state.back, status: "review", createdAt: Date.now() };
+        try {
+          if (NUBE) { user = await IC.cloud.agregarTarjeta(nueva, user); }
+          else {
+            IC.auth.update(function (u) {
+              if (state.primary) u.cards.forEach(function (c) { c.primary = false; });
+              u.cards.push(nueva);
+            });
+            if (IC.backend) { try { var uu = IC.auth.current(); IC.backend.tarjeta(uu, uu.cards[uu.cards.length - 1]); } catch (e) {} }
+            refreshUser();
+          }
+        } catch (err) {
+          btn.disabled = false; btn.textContent = "Registrar Tarjeta de Crédito";
+          IC.toast("No se pudo registrar la tarjeta. Revisa tu conexión.", "err"); return;
+        }
         notify("Tarjeta registrada", state.bank + " •••• " + state.last4 + " está en verificación.");
         IC.confetti(); IC.toast("Tarjeta registrada. La verificaremos pronto.");
         setTimeout(function () { location.hash = "#/tarjetas"; }, 700);
@@ -486,13 +520,27 @@
       el.querySelector("#number").addEventListener("input", function () { this.value = this.value.replace(/\D/g, "").slice(0, 20); validate(); });
       el.querySelector("#holder").addEventListener("input", validate);
       el.querySelector("#cci").addEventListener("input", function () { this.value = this.value.replace(/\D/g, "").slice(0, 20); });
-      el.querySelector("#save").addEventListener("click", function () {
+      el.querySelector("#save").addEventListener("click", async function () {
+        var btn = this; btn.disabled = true; btn.textContent = "Guardando...";
         var primary = el.querySelector("#primary").checked;
-        IC.auth.update(function (u) {
-          if (primary) u.accounts.forEach(function (a) { a.primary = false; });
-          u.accounts.push({ id: IC.uid("a"), bank: bank, type: el.querySelector("#type").value, currency: el.querySelector("#currency").value, number: el.querySelector("#number").value, cci: el.querySelector("#cci").value, holder: el.querySelector("#holder").value.trim(), primary: primary, createdAt: Date.now() });
-        });
-        if (IC.backend) { try { var ua = IC.auth.current(); IC.backend.cuenta(ua, ua.accounts[ua.accounts.length - 1]); } catch (e) {} }
+        var nueva = { id: IC.uid("a"), bank: bank, type: el.querySelector("#type").value,
+                      currency: el.querySelector("#currency").value, number: el.querySelector("#number").value,
+                      cci: el.querySelector("#cci").value, holder: el.querySelector("#holder").value.trim(),
+                      primary: primary, createdAt: Date.now() };
+        try {
+          if (NUBE) { user = await IC.cloud.agregarCuenta(nueva, user); }
+          else {
+            IC.auth.update(function (u) {
+              if (primary) u.accounts.forEach(function (a) { a.primary = false; });
+              u.accounts.push(nueva);
+            });
+            if (IC.backend) { try { var ua = IC.auth.current(); IC.backend.cuenta(ua, ua.accounts[ua.accounts.length - 1]); } catch (e) {} }
+            refreshUser();
+          }
+        } catch (err) {
+          btn.disabled = false; btn.textContent = "Guardar cuenta";
+          IC.toast("No se pudo guardar la cuenta. Revisa tu conexión.", "err"); return;
+        }
         IC.toast("Cuenta guardada"); location.hash = "#/cuentas";
       });
     } };
@@ -546,13 +594,26 @@
           body.querySelectorAll("[data-card]").forEach(function (x) { x.addEventListener("click", function () { state.cardId = x.dataset.card; render(); }); });
           body.querySelectorAll("[data-acc]").forEach(function (x) { x.addEventListener("click", function () { state.accountId = x.dataset.acc; render(); }); });
           body.querySelector("#prev").addEventListener("click", function () { state.step = 0; render(); });
-          body.querySelector("#next").addEventListener("click", function () {
+          body.querySelector("#next").addEventListener("click", async function () {
             calc();
             if (!state.cardId || !state.accountId) { IC.toast("Selecciona una tarjeta y una cuenta.", "err"); return; }
+            var btn = this; btn.disabled = true; btn.textContent = "Creando...";
             var c = IC.commission(state.amount);
             var op = { id: IC.uid("op"), code: IC.opCode(), type: state.type, cardId: state.cardId, accountId: state.accountId, amount: state.amount, commissionPct: c.pct, commission: c.commission, net: c.net, status: "pend_pago", createdAt: Date.now(), history: [{ at: Date.now(), status: "pend_pago", text: "Operación creada" }] };
-            IC.auth.update(function (u) { u.ops.push(op); });
-            if (IC.backend) { try { IC.backend.operacion(IC.auth.current(), op, cardById(op.cardId), accountById(op.accountId)); } catch (e) {} }
+            try {
+              if (NUBE) {
+                user = await IC.cloud.crearOperacion(op, cardById(op.cardId), accountById(op.accountId), user);
+                var creada = user.ops.filter(function (o) { return o.code === op.code; })[0];
+                if (creada) op = creada;
+              } else {
+                IC.auth.update(function (u) { u.ops.push(op); });
+                if (IC.backend) { try { IC.backend.operacion(IC.auth.current(), op, cardById(op.cardId), accountById(op.accountId)); } catch (e) {} }
+                refreshUser();
+              }
+            } catch (err) {
+              btn.disabled = false; btn.textContent = "Confirmar operación ›";
+              IC.toast("No se pudo crear la operación. Revisa tu conexión.", "err"); return;
+            }
             notify("Operación " + op.code + " creada", "Realiza el pago con tu tarjeta para continuar.");
             state.op = op; state.step = 2; render(); IC.confetti();
           });
@@ -582,9 +643,19 @@
       '<div class="wz-actions"><div class="row">' + (op.status === "pend_pago" || op.status === "activa" ? '<button class="btn btn-danger btn-sm" id="cancel">Cancelar operación</button>' : "") + (op.status === "completada" ? '<a href="#/comprobantes/' + op.id + '" class="btn btn-soft btn-sm">' + ic("receipt", 14) + " Ver comprobante</a>" : "") + (P.demoTools !== false && op.status === "pend_pago" ? '<button class="btn btn-outline-dark btn-sm" id="simulate" title="Solo para pruebas">Simular pago confirmado (demo)</button>' : "") + '</div><a href="' + IC.waLink(msg) + '" target="_blank" rel="noopener" class="btn btn-primary">' + WA_SVG + " Consultar por WhatsApp</a></div></div></div>";
     return { title: "Operación", html: html, mount: function (el) {
       var c = el.querySelector("#cancel");
-      if (c) c.addEventListener("click", function () { IC.modal({ title: "Cancelar operación", text: "¿Deseas cancelar la operación " + op.code + "?", actions: [{ label: "No", cls: "btn-outline-dark" }, { label: "Sí, cancelar", cls: "btn-danger", onClick: function () { IC.auth.update(function (u) { var o = u.ops.find(function (x) { return x.id === op.id; }); o.status = "cancelada"; o.history.push({ at: Date.now(), status: "cancelada", text: "Cancelada por el usuario" }); }); IC.toast("Operación cancelada"); navigate(); } }] }); });
+      if (c) c.addEventListener("click", function () { IC.modal({ title: "Cancelar operación", text: "¿Deseas cancelar la operación " + op.code + "?", actions: [{ label: "No", cls: "btn-outline-dark" }, { label: "Sí, cancelar", cls: "btn-danger", onClick: async function () {
+        try {
+          if (NUBE) { user = await IC.cloud.cambiarEstadoOperacion(op.remoteId, "cancelada"); }
+          else { IC.auth.update(function (u) { var o = u.ops.find(function (x) { return x.id === op.id; }); o.status = "cancelada"; o.history.push({ at: Date.now(), status: "cancelada", text: "Cancelada por el usuario" }); }); refreshUser(); }
+        } catch (e) { IC.toast("No se pudo cancelar. Revisa tu conexión.", "err"); return; }
+        IC.toast("Operación cancelada"); navigate(); } }] }); });
       var s = el.querySelector("#simulate");
-      if (s) s.addEventListener("click", function () { IC.auth.update(function (u) { var o = u.ops.find(function (x) { return x.id === op.id; }); o.status = "completada"; o.completedAt = Date.now(); o.history.push({ at: Date.now(), status: "completada", text: "Pago confirmado y depósito realizado" }); }); notify("¡Depósito realizado!", "La operación " + op.code + " fue completada. Ya puedes ver tu comprobante."); IC.confetti(); IC.toast("Pago confirmado y depósito realizado"); navigate(); });
+      if (s) s.addEventListener("click", async function () {
+        try {
+          if (NUBE) { user = await IC.cloud.cambiarEstadoOperacion(op.remoteId, "completada"); }
+          else { IC.auth.update(function (u) { var o = u.ops.find(function (x) { return x.id === op.id; }); o.status = "completada"; o.completedAt = Date.now(); o.history.push({ at: Date.now(), status: "completada", text: "Pago confirmado y depósito realizado" }); }); refreshUser(); }
+        } catch (e) { IC.toast("No se pudo actualizar. Revisa tu conexión.", "err"); return; }
+        notify("¡Depósito realizado!", "La operación " + op.code + " fue completada. Ya puedes ver tu comprobante."); IC.confetti(); IC.toast("Pago confirmado y depósito realizado"); navigate(); });
     } };
   }
 
@@ -630,25 +701,48 @@
       '<div class="card mt-16"><div class="card-h"><h3>Zona de riesgo</h3></div><p class="small text-muted">Elimina tu cuenta y todos tus datos de este dispositivo. Esta acción no se puede deshacer.</p><button class="btn btn-danger mt-16" id="deleteAcc">Eliminar mi cuenta</button></div></div></div>';
     return { title: "Ajustes", html: html, mount: function (el) {
       IC.bindPassToggles(el);
-      el.querySelector("#saveProfile").addEventListener("click", function () {
+      el.querySelector("#saveProfile").addEventListener("click", async function () {
         var n = el.querySelector("#nombres").value.trim(), a = el.querySelector("#apellidos").value.trim(), p = el.querySelector("#phone").value.trim(), e = el.querySelector("#email").value.trim();
         if (n.length < 2 || a.length < 2 || !/^\d{9}$/.test(p)) { IC.toast("Revisa los datos ingresados.", "err"); return; }
-        IC.auth.update(function (u) { u.nombres = n; u.apellidos = a; u.phone = p; u.email = e; }); IC.toast("Perfil actualizado"); renderShell();
+        try {
+          if (NUBE) { user = await IC.cloud.actualizarPerfil({ nombres: n, apellidos: a, celular: p, email: e }); }
+          else { IC.auth.update(function (u) { u.nombres = n; u.apellidos = a; u.phone = p; u.email = e; }); refreshUser(); }
+        } catch (err) { IC.toast("No se pudo guardar. Revisa tu conexión.", "err"); return; }
+        IC.toast("Perfil actualizado"); renderShell();
       });
       el.querySelector("#savePass").addEventListener("click", async function () {
         var p0 = el.querySelector("#pass0").value, p1 = el.querySelector("#pass1").value;
-        if (await IC.sha256(p0 + "|" + user.doc) !== user.passHash) { IC.toast("La contraseña actual no es correcta.", "err"); return; }
         if (p1.length < 8 || !/\d/.test(p1)) { IC.toast("La nueva contraseña debe tener 8+ caracteres y un número.", "err"); return; }
-        var h = await IC.sha256(p1 + "|" + user.doc);
-        IC.auth.update(function (u) { u.passHash = h; }); IC.toast("Contraseña actualizada"); el.querySelector("#pass0").value = ""; el.querySelector("#pass1").value = "";
+        if (NUBE) {
+          var v = await IC.cloud.login(user.doc, p0);
+          if (!v.ok) { IC.toast("La contraseña actual no es correcta.", "err"); return; }
+          try { await IC.cloud.cambiarPassword(p1); }
+          catch (e) { IC.toast("No se pudo cambiar la contraseña.", "err"); return; }
+        } else {
+          if (await IC.sha256(p0 + "|" + user.doc) !== user.passHash) { IC.toast("La contraseña actual no es correcta.", "err"); return; }
+          var h = await IC.sha256(p1 + "|" + user.doc);
+          IC.auth.update(function (u) { u.passHash = h; });
+        }
+        IC.toast("Contraseña actualizada"); el.querySelector("#pass0").value = ""; el.querySelector("#pass1").value = "";
       });
       el.querySelector("#deleteAcc").addEventListener("click", function () {
-        IC.modal({ title: "Eliminar cuenta", text: "Se borrarán tus datos, tarjetas, cuentas y operaciones de este dispositivo. ¿Continuar?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Eliminar todo", cls: "btn-danger", onClick: function () { IC.auth.deleteAccount(); window.location.href = "index.html"; } }] });
+        IC.modal({ title: "Eliminar cuenta", text: "Se borrarán tus datos, tarjetas, cuentas y operaciones de este dispositivo. ¿Continuar?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Eliminar todo", cls: "btn-danger", onClick: async function () { if (NUBE) { await IC.cloud.logout(); IC.toast("Sesión cerrada. Escríbenos por WhatsApp para borrar definitivamente tus datos."); } else { IC.auth.deleteAccount(); } window.location.href = "index.html"; } }] });
       });
     } };
   }
 
   /* ---------- arranque ---------- */
-  renderShell();
-  navigate();
+  (async function iniciar() {
+    if (NUBE) {
+      var v = document.getElementById("view");
+      v.innerHTML = '<div class="empty" style="padding:80px 16px"><div class="ic">' + ic("refresh", 24) + "</div><b>Cargando tu cuenta…</b></div>";
+      user = await IC.cloud.init();
+      if (!user) { window.location.href = (P.loginHref || "login.html") + "?next=1"; return; }
+    } else {
+      user = IC.auth.requireSession();
+      if (!user) return;
+    }
+    renderShell();
+    navigate();
+  })();
 })();
