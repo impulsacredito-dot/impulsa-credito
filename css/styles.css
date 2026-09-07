@@ -651,6 +651,9 @@ h2{font-size:var(--fs-h2);}
 }
 
 @media (max-width: 720px){
+  /* En celular el titular va PRIMERO: el visitante debe leer que ofreces
+     antes de ver la foto. La imagen pasa debajo, sin desaparecer. */
+  .hero-visual{order:0;margin-bottom:0;margin-top:26px;}
   .brand-logo{height:var(--logo-h-mobile);}
   .site-header .brand-lockup .bl-tag{display:none;}
   .site-footer .brand-lockup{font-size:40px;}
