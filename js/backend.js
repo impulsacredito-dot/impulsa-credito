@@ -48,9 +48,11 @@
   async function subirImagen(ruta, dataURL) {
     if (!dataURL) return null;
     var blob = await (await fetch(dataURL)).blob();
+    // sin "x-upsert": el bucket solo permite crear archivos nuevos (más seguro).
+    // Cada archivo lleva fecha y hora en el nombre, así que nunca se repite.
     var res = await fetch(base + "/storage/v1/object/" + BUCKET + "/" + encodeURI(ruta), {
       method: "POST",
-      headers: headers({ "Content-Type": blob.type || "image/jpeg", "x-upsert": "true" }),
+      headers: headers({ "Content-Type": blob.type || "image/jpeg" }),
       body: blob
     });
     if (!res.ok) throw new Error("Storage " + ruta + " → " + res.status + " " + (await res.text()).slice(0, 200));

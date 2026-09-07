@@ -55,9 +55,9 @@ var SITE_CONFIG = {
      (Instrucciones detalladas en README.md)
   --------------------------------------------------------------- */
   backend: {
-    provider: "local",              // "local" o "supabase"
-    supabaseUrl: "",                // Ej: https://abcdefgh.supabase.co
-    supabaseAnonKey: "",            // llave "anon public"
+    provider: "supabase",           // "local" o "supabase"
+    supabaseUrl: "https://sqbihengbsbgletrwyhk.supabase.co",
+    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxYmloZW5nYnNiZ2xldHJ3eWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTg5NTUsImV4cCI6MjEwNDM3NDk1NX0.HHT6HkBXm1Tuh-9tMMiDuZopuALyL3U46vylkmS2Cjg",
     bucket: "documentos"            // carpeta de fotos (no cambiar)
   },
 
