@@ -327,19 +327,29 @@
         "</tr></thead><tbody>" +
         datos.clientes.map(function (c, i) {
           var id = c.docs[0];
-          return "<tr><td><b>" + esc(nombre(c)) + "</b><br><span class=\"ad-sub\">" + esc(c.perfil.email || "") + "</span></td>" +
-            "<td>" + esc(c.perfil.tipo_doc || "") + " " + esc(c.perfil.documento || "") + "</td>" +
-            "<td>" + esc(c.perfil.celular || "—") + "</td>" +
+          /* Con varias tarjetas la fila se hacia larguisima: mostramos las
+             dos primeras y el resto se ve completo en la ficha. */
+          var muestra = c.tarjetas.slice(0, 2);
+          var resto = c.tarjetas.length - muestra.length;
+          var celdaTarjetas = c.tarjetas.length
+            ? '<ul class="ad-mini-lista">' + muestra.map(function (t) {
+                return "<li>" + (t.principal ? '<i class="ad-punto" title="Principal"></i>' : '<i class="ad-punto vacio"></i>') +
+                  "<span><b>" + esc(t.banco || "") + "</b> " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + "</span>" +
+                  chip(t.estado) +
+                  ((t.foto_frontal || t.foto_posterior) ? "" : '<span class="ad-chip err">sin foto</span>') + "</li>";
+              }).join("") +
+              (resto > 0 ? '<li class="mas">y ' + resto + (resto === 1 ? " tarjeta más" : " tarjetas más") + "</li>" : "") +
+              "</ul>"
+            : '<span class="ad-sub">—</span>';
+
+          return "<tr>" +
+            '<td class="ad-col-cliente"><b>' + esc(nombre(c)) + "</b>" +
+              (c.perfil.email ? '<span class="ad-sub">' + esc(c.perfil.email) + "</span>" : "") + "</td>" +
+            '<td class="nowrap">' + esc(c.perfil.tipo_doc || "DNI") + " " + esc(c.perfil.documento || "") + "</td>" +
+            '<td class="nowrap">' + esc(c.perfil.celular || "—") + "</td>" +
             "<td>" + (id ? chip(id.estado) : '<span class="ad-chip">Sin subir</span>') + "</td>" +
-            "<td>" + (c.tarjetas.length
-              ? "<b>" + c.tarjetas.length + "</b><br>" + c.tarjetas.map(function (t) {
-                  var conFoto = t.foto_frontal || t.foto_posterior;
-                  return '<span class="ad-sub">' + esc(t.banco || "") + " " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") +
-                    " " + chip(t.estado) +
-                    (conFoto ? "" : ' <span class="ad-chip err">sin foto</span>') + "</span>";
-                }).join("<br>")
-              : '<span class="ad-sub">—</span>') + "</td>" +
-            "<td>" + c.cuentas.length + "</td><td>" + c.ops.length + "</td>" +
+            '<td class="ad-col-tarjetas">' + celdaTarjetas + "</td>" +
+            '<td class="num">' + c.cuentas.length + '</td><td class="num">' + c.ops.length + "</td>" +
             '<td><div class="ad-acc-op">' +
               '<button class="btn btn-primary btn-sm" data-ficha="' + i + '">Ver ficha</button>' +
               '<button class="btn btn-outline-dark btn-sm" data-wac="' + i + '">WhatsApp</button>' +
@@ -389,9 +399,10 @@
           bloqueFotos("Documentos de identidad", fotosId) +
 
           '<h4 class="ad-sub-titulo">Tarjetas registradas</h4>' +
-          (c.tarjetas.length ? c.tarjetas.map(function (t) {
+          (c.tarjetas.length ? c.tarjetas.map(function (t, nt) {
             var f = [["Frente", t.foto_frontal], ["Reverso", t.foto_posterior]].filter(function (x) { return x[1]; });
-            return '<div class="ad-sub-bloque"><p class="ad-detalle" style="margin-top:0"><b>' + esc(t.banco || "") + "</b> " +
+            return '<div class="ad-sub-bloque"><span class="ad-num-tarjeta">Tarjeta ' + (nt + 1) + " de " + c.tarjetas.length + "</span>" +
+              '<p class="ad-detalle" style="margin-top:6px"><b>' + esc(t.banco || "") + "</b> " +
               esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + " · Titular: " + esc(t.titular || "—") +
               (t.dia_pago ? " · Paga el " + esc(t.dia_pago) : "") +
               (t.principal ? " · <b>principal</b>" : "") + " " + chip(t.estado) + "</p>" +
