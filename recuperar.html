@@ -18,73 +18,82 @@
 </head>
 <body class="auth-body">
 
-<div class="auth-split">
+<div class="auth-wrap">
+  <aside class="auth-side">
+    <div class="blob blob-1"></div><div class="blob blob-2"></div>
+    <a href="index.html" class="auth-brand"><span class="brand-lockup"><img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt=""><span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span></span></a>
 
-  <!-- lado visual -->
-  <aside class="auth-aside">
-    <a href="index.html" class="auth-back">‹ Volver al inicio</a>
-    <div class="auth-aside-inner">
-      <span class="brand-lockup auth-brand">
-        <img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt="">
-        <span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span>
-      </span>
-      <h2 class="auth-title">Tu cuenta, <span class="hl">de vuelta</span> en un minuto.</h2>
-      <p class="auth-lead">Elige una contraseña nueva y sigue efectivizando tu tarjeta con normalidad.</p>
-      <div class="auth-art" id="authArt"></div>
-      <ul class="auth-points">
-        <li>Datos encriptados</li>
-        <li>Solo tú puedes cambiarla</li>
-      </ul>
+    <div class="auth-hero">
+      <h1>Tu cuenta, de vuelta en un <span class="hl">minuto</span>.</h1>
+      <p>Elige una contraseña nueva y sigue efectivizando tu tarjeta con normalidad.</p>
+
+      <div class="auth-visual">
+        <div class="auth-art"></div>
+        <span class="pin pin-1"><i class="dot"></i> Enlace verificado</span>
+        <span class="pin pin-2">🛡️ Solo tú puedes cambiarla</span>
+      </div>
+
+      <div class="auth-chips">
+        <span class="auth-chip"><i class="dot"></i> Datos encriptados</span>
+        <span class="auth-chip">🔒 Enlace de un solo uso</span>
+        <span class="auth-chip">💬 Atención <span id="pinHours">Lun a Sáb, 10 a.m. – 7 p.m.</span></span>
+      </div>
     </div>
   </aside>
 
-  <!-- formulario -->
-  <main class="auth-main">
+  <main class="auth-form-side">
     <div class="auth-card">
+      <div class="auth-top">
+        <a href="login.html" class="back-link">‹ Volver a iniciar sesión</a>
+      </div>
+      <div style="text-align:center;margin-bottom:6px;">
+        <img src="assets/logo-icon.png" class="js-brand-mark" alt="" style="height:54px;filter:drop-shadow(0 6px 14px rgba(34,197,94,.35))">
+      </div>
 
-      <!-- estado: enlace válido -->
+      <!-- ===== enlace válido: elegir contraseña ===== -->
       <div id="recForm">
-        <h1>Crea tu contraseña nueva</h1>
-        <p class="auth-sub">Debe tener al menos 8 caracteres e incluir un número.</p>
+        <h2 style="text-align:center">Crea tu contraseña nueva</h2>
+        <p class="sub" style="text-align:center">Debe tener al menos 8 caracteres e incluir un número.</p>
 
-        <form id="recFormEl" novalidate>
+        <form id="recFormEl" novalidate class="mt-24">
           <div class="field">
             <label for="recPass">Contraseña nueva</label>
             <div class="pass-wrap">
-              <input type="password" id="recPass" autocomplete="new-password" placeholder="Mínimo 8 caracteres, con un número" required>
+              <input type="password" id="recPass" autocomplete="new-password" placeholder="Mínimo 8 caracteres, con un número">
               <button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button>
             </div>
           </div>
           <div class="field">
             <label for="recPass2">Repite la contraseña</label>
             <div class="pass-wrap">
-              <input type="password" id="recPass2" autocomplete="new-password" placeholder="Repite tu contraseña" required>
+              <input type="password" id="recPass2" autocomplete="new-password" placeholder="Repite tu contraseña">
               <button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button>
             </div>
           </div>
-          <p class="form-error hidden" id="recError"></p>
-          <button class="btn btn-primary btn-block btn-lg" id="recBtn" type="submit">Guardar contraseña</button>
+          <div class="note red hidden" id="recError"></div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block mt-16" id="recBtn">Guardar contraseña</button>
         </form>
       </div>
 
-      <!-- estado: enlace inválido o caducado -->
+      <!-- ===== enlace caducado o inválido ===== -->
       <div id="recInvalido" class="hidden">
-        <h1>Este enlace ya no sirve</h1>
-        <p class="auth-sub">Los enlaces caducan por seguridad. Pide uno nuevo desde la pantalla de acceso: solo toma un momento.</p>
-        <a class="btn btn-primary btn-block btn-lg" href="login.html">Ir a iniciar sesión</a>
-        <p class="auth-alt">¿Necesitas ayuda? <a href="#" class="js-wa-link" data-wa-msg="default" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
+        <h2 style="text-align:center">Este enlace ya no sirve</h2>
+        <p class="sub" style="text-align:center">Los enlaces caducan por seguridad. Pide uno nuevo desde la pantalla de acceso: solo toma un momento.</p>
+        <a class="btn btn-primary btn-lg btn-block mt-24" href="login.html">Ir a iniciar sesión</a>
+        <p class="auth-alt">¿Necesitas ayuda? <a href="#" class="js-wa-link" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
       </div>
 
-      <!-- estado: listo -->
+      <!-- ===== listo ===== -->
       <div id="recListo" class="hidden">
         <div class="rec-ok">
           <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
-        <h1>Contraseña actualizada</h1>
-        <p class="auth-sub">Ya puedes entrar con tu DNI y tu contraseña nueva.</p>
-        <a class="btn btn-primary btn-block btn-lg" href="login.html">Iniciar sesión</a>
+        <h2 style="text-align:center">Contraseña actualizada</h2>
+        <p class="sub" style="text-align:center">Ya puedes entrar con tu DNI y tu contraseña nueva.</p>
+        <a class="btn btn-primary btn-lg btn-block mt-24" href="login.html">Iniciar sesión</a>
       </div>
 
+      <div class="secure-row"><span>🛡️ Datos protegidos</span><span>🔒 Conexión segura</span></div>
     </div>
   </main>
 </div>
@@ -92,6 +101,7 @@
 <script src="js/config.js"></script>
 <script src="js/app-core.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/recuperar.js"></script>
 </body>
 </html>

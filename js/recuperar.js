@@ -31,12 +31,8 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (window.IC && IC.bindPassToggles) IC.bindPassToggles(document);
-
-    // logo e ilustración de marca, igual que en registro e inicio de sesión
-    document.querySelectorAll(".js-brand-mark").forEach(function (img) {
-      if (CFG.brand) img.src = CFG.brand.icon || CFG.brand.logo;
-    });
+    // el logo, la ilustración animada, el horario y los ojos de contraseña
+    // los pinta auth.js, que se carga justo antes que este archivo
     document.querySelectorAll(".js-wa-link").forEach(function (a) {
       if (window.IC && IC.waLink) a.href = IC.waLink();
     });
