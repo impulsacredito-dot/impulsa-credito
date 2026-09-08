@@ -129,7 +129,13 @@ var SITE_CONFIG = {
     maxCards: 30,
     maxAccounts: 10,
     verificationHours: "10:00 a.m. a 7:00 p.m. (lunes a sábado)",
-    depositMessage: "Recibirás tu dinero el mismo día hábil, una vez confirmado el pago.",
+    // ⏱️ CUÁNTO TARDA EL DEPÓSITO. Se muestra en varios sitios de la web.
+    //    Cambia estos dos textos si tu tiempo real es otro: es lo primero
+    //    que quiere saber un cliente que está esperando su dinero.
+    depositTime: "en minutos",                    // corto, para etiquetas
+    depositTimeLong: "en minutos, máximo el mismo día hábil",   // largo, para frases
+
+    depositMessage: "Apenas confirmamos el cobro, te transferimos el dinero a tu cuenta en minutos (máximo el mismo día hábil). El cobro se hace con TU tarjeta, por POS o link de pago oficial, y recibes comprobante.",
     cardBrands: ["Visa", "Mastercard", "American Express", "Diners Club"],
     accountTypes: ["Ahorros", "Corriente"],
     banks: [
@@ -172,16 +178,17 @@ var SITE_CONFIG = {
     titleBefore: "Convierte tu tarjeta en",
     titleHighlight: "efectivo",        // palabra resaltada (caja verde)
     titleAfter: "al instante.",
-    subtitle: "Efectivizamos la línea de tu tarjeta de crédito y te depositamos el dinero directo a tu cuenta bancaria el mismo día. 100% digital, sin papeles y con la mejor comisión del mercado.",
+    subtitle: "Efectivizamos la línea de tu tarjeta de crédito y te depositamos el dinero directo a tu cuenta bancaria, en minutos. Solo 1% de comisión, 100% digital y sin papeles.",
 
     ctaPrimary: { label: "Regístrate gratis", href: "registro.html" },
     ctaSecondary: { label: "Inicia sesión", href: "login.html" },
     ctaWhatsappLabel: "Contáctanos",
 
     trust: [
+      "Comisión de solo 1%",
+      "Depósito en minutos",
       "100% digital",
-      "Todas las tarjetas y bancos del Perú",
-      "Depósito el mismo día"
+      "Todas las tarjetas y bancos del Perú"
     ],
 
     photo: "assets/img/hero-efectivo.jpg",
@@ -192,7 +199,7 @@ var SITE_CONFIG = {
     floatCards: [
       { kind: "check", text: "Depósito confirmado" },
       { kind: "stat", label: "Efectivizado", value: "S/ 5,000" },
-      { kind: "stat", label: "Tiempo de depósito", value: "Mismo día", positive: true }
+      { kind: "stat", label: "Tiempo de depósito", value: "En minutos", positive: true }
     ]
   },
 
@@ -374,9 +381,11 @@ var SITE_CONFIG = {
     items: [
       { q: "¿Qué es Impulsa Crédito?", a: "Somos una empresa de asesoría y gestión crediticia. Nuestro servicio principal es la efectivización de tarjetas de crédito: convertimos la línea disponible de tu tarjeta en dinero depositado en tu cuenta bancaria. Además, te asesoramos gratis para acceder a préstamos con las mejores condiciones." },
       { q: "¿Qué significa efectivizar mi tarjeta?", a: "Es usar la línea de crédito disponible de tu tarjeta para obtener dinero en efectivo (transferido a tu cuenta), pagando una comisión menor a la de una disposición de efectivo o retiro en cajero del banco." },
-      { q: "¿Cuánto cobran de comisión?", a: "Cobramos una comisión por operación que depende del monto y del tipo de tarjeta. Te la confirmamos por WhatsApp antes de realizar la operación. Sin costos ocultos." },
+      { q: "¿Cuánto cobran de comisión?", a: "El 1% del monto que efectivices. Por ejemplo: si efectivizas S/ 1,000, la comisión es S/ 10 y recibes S/ 990 en tu cuenta. Te la confirmamos antes de realizar la operación. Sin costos ocultos." },
+      { q: "¿Cómo me cobran? ¿Tengo que ir a algún sitio?", a: "El cobro se hace con TU PROPIA tarjeta, igual que cuando compras en una tienda. Tienes dos formas: (1) te enviamos por WhatsApp un link de pago seguro y pagas desde tu celular sin moverte de casa, o (2) coordinamos el cobro con un POS. En ambos casos recibes tu comprobante. Nunca te pedimos tu clave, tu CVV ni nos quedamos con tu tarjeta." },
+      { q: "¿En qué momento recibo el dinero?", a: "Apenas se confirma el cobro con tu tarjeta, transferimos a tu cuenta. Normalmente llega en minutos y, como máximo, el mismo día hábil. El tiempo exacto depende del banco de destino. Puedes seguir el estado de tu operación desde tu cuenta." },
       { q: "¿Con qué tarjetas y bancos trabajan?", a: "Aceptamos tarjetas Visa, Mastercard, American Express y Diners de cualquier banco del Perú: BCP, Interbank, BBVA, Scotiabank, Banco de la Nación, BanBif, cajas y financieras. El depósito lo hacemos al banco que prefieras." },
-      { q: "¿Cuánto demora el depósito?", a: "Una vez confirmado el pago con tu tarjeta, transferimos el dinero a tu cuenta el mismo día hábil, normalmente en minutos. El tiempo puede variar según el banco de destino." },
+      { q: "¿Puedo elegir a qué banco me depositan?", a: "Sí. Depositamos al banco que prefieras, siempre que la cuenta esté a tu nombre. No hacemos depósitos a terceros. Puedes registrar varias cuentas y elegir cuál usar en cada operación." },
       { q: "¿Es seguro?", a: "Sí. El cobro se realiza a través de un POS o link de pago oficial, con comprobante. Nunca pedimos claves bancarias ni retenemos tu tarjeta física." },
       { q: "¿Qué necesito para empezar?", a: "Solo necesitas: (1) DNI vigente, (2) una tarjeta de crédito con línea disponible, y (3) una cuenta bancaria a tu nombre para recibir el dinero." },
       { q: "¿También ayudan a conseguir préstamos?", a: "Sí. Además de la efectivización, ofrecemos asesoría gratuita para préstamos personales, hipotecarios, vehiculares y para negocio: comparamos entidades financieras y te acompañamos hasta la aprobación." }
