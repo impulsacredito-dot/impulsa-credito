@@ -593,3 +593,29 @@ button{font-family:inherit;}
   .auth-form-side{padding-top:0;}
   .auth-card{margin-top:-14px;}
 }
+
+/* ------------------------------------------------------------
+   Los 4 pasos de bienvenida, en celular.
+   Los botones se recortaban: "Agregar tarjeta" se leía
+   "regar tarjet". Son los que guían al cliente, no pueden fallar.
+------------------------------------------------------------ */
+@media (max-width:560px){
+  .todo-item{
+    flex-wrap:wrap;
+    row-gap:12px;
+    padding:16px;
+  }
+  /* el texto ocupa la fila junto al número */
+  .todo-item > div:not(.num){flex:1 1 auto;min-width:0;}
+  /* el botón baja a su propia fila, a lo ancho y sin recortes */
+  .todo-item > a,
+  .todo-item > button{
+    flex:1 0 100%;
+    width:100%;
+    justify-content:center;
+    white-space:nowrap;
+    overflow:visible;
+    padding-left:14px;
+    padding-right:14px;
+  }
+}
