@@ -236,9 +236,11 @@
               IC.closeModal();
               if (r.ok) {
                 IC.modal({
-                  title: "Revisa tu correo",
-                  html: "<p>Si <b>" + IC.esc(correo) + "</b> corresponde a una cuenta nuestra, ahí encontrarás el enlace para crear tu contraseña nueva.</p>" +
-                        '<p class="muted mt-8">Puede tardar un par de minutos. Si no lo ves, mira en la carpeta de spam o correo no deseado.</p>',
+                  title: "Ya va en camino",
+                  html: "<p>Acabamos de enviar un correo a <b>" + IC.esc(correo) + "</b> con el enlace para crear tu contraseña nueva.</p>" +
+                        '<p class="muted mt-8">Suele llegar en menos de un minuto. Si no aparece, revisa la carpeta de <b>spam</b> o <b>promociones</b>: a veces se esconde ahí.</p>' +
+                        '<p class="muted mt-8">¿Sigue sin llegar? Escríbenos por WhatsApp al <b>' +
+                        IC.esc((IC.cfg.contact && IC.cfg.contact.whatsappDisplay) || "") + '</b> y te ayudamos en el momento.</p>',
                   actions: [{ label: "Entendido", cls: "btn-primary" }]
                 });
               } else {

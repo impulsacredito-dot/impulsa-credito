@@ -18,16 +18,22 @@
     });
   }
 
-  /* Lee el permiso que viene en el enlace y limpia la barra de direcciones */
+  /* Lee lo que trae el enlace del correo y limpia la barra de direcciones.
+     Hay dos formatos posibles:
+       - codigo  : el enlace nuevo, que solo se canjea al guardar
+       - permiso : el formato antiguo, que ya viene canjeado en el # */
   function leerToken() {
-    var h = (location.hash || "").replace(/^#/, "");
-    if (!h) return null;
-    var p = new URLSearchParams(h);
-    var t = p.get("access_token");
-    var err = p.get("error_description") || p.get("error");
-    // que no quede el permiso a la vista ni en el historial
-    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-    return { token: t, error: err, tipo: p.get("type") };
+    var q = new URLSearchParams(location.search || "");
+    var h = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+
+    var codigo = q.get("token_hash") || q.get("token") || h.get("token_hash");
+    var permiso = h.get("access_token");
+    var err = h.get("error_description") || h.get("error") ||
+              q.get("error_description") || q.get("error");
+
+    // que no quede nada a la vista ni en el historial
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    return { codigo: codigo, permiso: permiso, error: err };
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -39,8 +45,8 @@
 
     var datos = leerToken();
 
-    if (!datos || !datos.token) { ver("recInvalido"); return; }
-    if (datos.error) { ver("recInvalido"); return; }
+    if (!datos || datos.error) { ver("recInvalido"); return; }
+    if (!datos.codigo && !datos.permiso) { ver("recInvalido"); return; }
     ver("recForm");
 
     $("recFormEl").addEventListener("submit", async function (e) {
@@ -58,7 +64,14 @@
       }
 
       btn.disabled = true; btn.textContent = "Guardando...";
-      var res = await IC.cloud.fijarPassword(datos.token, p1.value);
+
+      /* El codigo se canjea AQUI, no al abrir la pagina */
+      var permiso = datos.permiso;
+      if (!permiso) {
+        try { permiso = await IC.cloud.canjearCodigo(datos.codigo); }
+        catch (ex) { ver("recInvalido"); return; }
+      }
+      var res = await IC.cloud.fijarPassword(permiso, p1.value);
       if (res.ok) {
         /* Le recordamos con que datos entrar: el motivo mas comun de no
            poder acceder despues es no recordar el documento exacto. */

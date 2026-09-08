@@ -251,6 +251,19 @@
       }
     },
 
+    /* Canjea el codigo del correo por un permiso temporal.
+       Se llama SOLO cuando el cliente pulsa "Guardar", nunca al abrir la
+       pagina: asi los antivirus y filtros de correo, que visitan los
+       enlaces para revisarlos, no consumen el codigo antes que el. */
+    async canjearCodigo(tokenHash) {
+      var r = await api("/auth/v1/verify", {
+        method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "recovery", token_hash: tokenHash })
+      });
+      if (!r || !r.access_token) throw new Error("expired token");
+      return r.access_token;
+    },
+
     /* Guarda la contraseña nueva usando el token que trae el enlace del correo.
        Devuelve tambien con que datos debe entrar, para no dejarlo adivinando. */
     async fijarPassword(accessToken, nueva) {
