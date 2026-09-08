@@ -396,7 +396,9 @@
             '<td class="num">' + c.cuentas.length + '</td><td class="num">' + c.ops.length + "</td>" +
             '<td><div class="ad-acc-op">' +
               '<button class="btn btn-primary btn-sm" data-ficha="' + i + '">Ver ficha</button>' +
-              '<button class="btn btn-outline-dark btn-sm" data-wac="' + i + '">WhatsApp</button>' +
+              '<button class="btn btn-outline-dark btn-sm ad-wa" data-wac="' + i + '" title="Escribir por WhatsApp" aria-label="Escribir por WhatsApp">' +
+                '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.5-.3z"/><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>' +
+              "</button>" +
             "</div></td></tr>";
         }).join("") + "</tbody></table></div>"
         : '<div class="ad-vacio"><h3>Sin resultados</h3><p>Prueba con otro nombre o quita los filtros.</p></div>');

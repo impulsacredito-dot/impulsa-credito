@@ -318,3 +318,8 @@
   .ad-filtros{width:100%;}
   .ad-filtro{flex:1;text-align:center;padding:9px 8px;}
 }
+
+/* boton de WhatsApp compacto en la tabla */
+.ad-wa{padding:8px 10px;display:inline-flex;align-items:center;justify-content:center;}
+.ad-wa svg{display:block;}
+.ad-wa:hover{color:#128c7e;border-color:#128c7e;}
