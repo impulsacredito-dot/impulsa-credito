@@ -25,6 +25,7 @@
   var sesion = null;
   var datos = { pendientes: [], clientes: [], ops: [] };
   var vista = "pendientes";
+  var fichaDe = null;   // cliente cuya ficha se esta viendo
   var cacheFotos = {};
 
   function $(id) { return document.getElementById(id); }
@@ -292,7 +293,7 @@
     $("adBadge").style.display = n ? "" : "none";
 
     document.querySelectorAll(".ad-tab").forEach(function (b) {
-      b.classList.toggle("on", b.dataset.v === vista);
+      b.classList.toggle("on", b.dataset.v === vista || (vista === "ficha" && b.dataset.v === "clientes"));
     });
 
     if (vista === "pendientes") {
@@ -322,7 +323,7 @@
         return;
       }
       cont.innerHTML = '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
-        "<th>Cliente</th><th>Documento</th><th>Celular</th><th>Identidad</th><th>Tarjetas</th><th>Cuentas</th><th>Operaciones</th><th></th>" +
+        "<th>Cliente</th><th>Documento</th><th>Celular</th><th>Identidad</th><th>Tarjetas</th><th>Cuentas</th><th>Ops.</th><th></th>" +
         "</tr></thead><tbody>" +
         datos.clientes.map(function (c, i) {
           var id = c.docs[0];
@@ -330,12 +331,94 @@
             "<td>" + esc(c.perfil.tipo_doc || "") + " " + esc(c.perfil.documento || "") + "</td>" +
             "<td>" + esc(c.perfil.celular || "—") + "</td>" +
             "<td>" + (id ? chip(id.estado) : '<span class="ad-chip">Sin subir</span>') + "</td>" +
-            "<td>" + c.tarjetas.length + "</td><td>" + c.cuentas.length + "</td><td>" + c.ops.length + "</td>" +
-            '<td><button class="btn btn-outline-dark btn-sm" data-wac="' + i + '">WhatsApp</button></td></tr>';
+            "<td>" + (c.tarjetas.length
+              ? "<b>" + c.tarjetas.length + "</b><br>" + c.tarjetas.map(function (t) {
+                  return '<span class="ad-sub">' + esc(t.banco || "") + " " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + "</span>";
+                }).join("<br>")
+              : '<span class="ad-sub">—</span>') + "</td>" +
+            "<td>" + c.cuentas.length + "</td><td>" + c.ops.length + "</td>" +
+            '<td><div class="ad-acc-op">' +
+              '<button class="btn btn-primary btn-sm" data-ficha="' + i + '">Ver ficha</button>' +
+              '<button class="btn btn-outline-dark btn-sm" data-wac="' + i + '">WhatsApp</button>' +
+            "</div></td></tr>";
         }).join("") + "</tbody></table></div>";
       cont.querySelectorAll("[data-wac]").forEach(function (b) {
         b.addEventListener("click", function () { waCliente(datos.clientes[+b.dataset.wac].perfil); });
       });
+      cont.querySelectorAll("[data-ficha]").forEach(function (b) {
+        b.addEventListener("click", function () { fichaDe = +b.dataset.ficha; vista = "ficha"; render(); });
+      });
+      return;
+    }
+
+    /* ---------- ficha completa de un cliente ---------- */
+    if (vista === "ficha") {
+      var c = datos.clientes[fichaDe];
+      if (!c) { vista = "clientes"; render(); return; }
+      var p = c.perfil, idn = c.docs[0];
+
+      function dato(k, v) { return '<div class="ad-dato"><span>' + k + "</span><b>" + esc(v || "—") + "</b></div>"; }
+      function bloqueFotos(titulo, lista) {
+        if (!lista.length) return "";
+        return '<h4 class="ad-sub-titulo">' + esc(titulo) + "</h4>" +
+          '<div class="ad-fotos">' + lista.map(function (x) {
+            return "<figure><figcaption>" + esc(x[0]) + "</figcaption>" +
+              '<div class="ad-foto" data-foto="' + esc(x[1] || "") + '"><span class="ad-cargando"></span></div></figure>';
+          }).join("") + "</div>";
+      }
+
+      var fotosId = idn ? [["DNI — frente", idn.dni_frontal], ["DNI — reverso", idn.dni_posterior], ["Selfie", idn.selfie]]
+                         .filter(function (x) { return x[1]; }) : [];
+
+      cont.innerHTML =
+        '<button class="btn btn-outline-dark btn-sm" id="volverClientes" style="margin-bottom:16px">‹ Volver a Clientes</button>' +
+        '<article class="ad-card">' +
+          '<header class="ad-card-head"><div><span class="ad-tipo t-id">Ficha del cliente</span>' +
+          "<h3>" + esc(nombre(c)) + "</h3>" +
+          '<p class="ad-meta">Registrado el ' + (p.creado_en ? IC.fmtDateTime(new Date(p.creado_en)) : "—") + "</p></div>" +
+          "<div>" + (idn ? chip(idn.estado) : '<span class="ad-chip">Identidad sin subir</span>') + "</div></header>" +
+          '<div class="ad-datos">' +
+            dato("Documento", (p.tipo_doc || "DNI") + " " + (p.documento || "")) +
+            dato("Celular", p.celular) + dato("Correo", p.email) +
+            dato("Tarjetas", String(c.tarjetas.length)) + dato("Cuentas", String(c.cuentas.length)) +
+            dato("Operaciones", String(c.ops.length)) +
+          "</div>" +
+          bloqueFotos("Documentos de identidad", fotosId) +
+
+          '<h4 class="ad-sub-titulo">Tarjetas registradas</h4>' +
+          (c.tarjetas.length ? c.tarjetas.map(function (t) {
+            var f = [["Frente", t.foto_frontal], ["Reverso", t.foto_posterior]].filter(function (x) { return x[1]; });
+            return '<div class="ad-sub-bloque"><p class="ad-detalle" style="margin-top:0"><b>' + esc(t.banco || "") + "</b> " +
+              esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + " · Titular: " + esc(t.titular || "—") +
+              (t.dia_pago ? " · Paga el " + esc(t.dia_pago) : "") +
+              (t.principal ? " · <b>principal</b>" : "") + " " + chip(t.estado) + "</p>" +
+              (f.length ? '<div class="ad-fotos">' + f.map(function (x) {
+                return "<figure><figcaption>" + esc(x[0]) + "</figcaption>" +
+                  '<div class="ad-foto" data-foto="' + esc(x[1]) + '"><span class="ad-cargando"></span></div></figure>';
+              }).join("") + "</div>" : "") + "</div>";
+          }).join("") : '<p class="ad-sub">Todavía no registró ninguna tarjeta.</p>') +
+
+          '<h4 class="ad-sub-titulo">Cuentas donde recibe el dinero</h4>' +
+          (c.cuentas.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr><th>Banco</th><th>Tipo</th><th>Moneda</th><th>Número</th><th>CCI</th><th>Titular</th></tr></thead><tbody>' +
+            c.cuentas.map(function (a) {
+              return "<tr><td><b>" + esc(a.banco || "") + "</b></td><td>" + esc(a.tipo || "") + "</td><td>" + esc(a.moneda || "") +
+                "</td><td>" + esc(a.numero || "") + "</td><td>" + esc(a.cci || "—") + "</td><td>" + esc(a.titular || "") + "</td></tr>";
+            }).join("") + "</tbody></table></div>" : '<p class="ad-sub">Todavía no registró ninguna cuenta.</p>') +
+
+          '<h4 class="ad-sub-titulo">Operaciones</h4>' +
+          (c.ops.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr><th>Código</th><th>Monto</th><th>Comisión</th><th>Recibe</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>' +
+            c.ops.map(function (o) {
+              return "<tr><td><b>" + esc(o.codigo || "") + "</b></td><td>" + IC.money(o.monto) + "</td><td>" + IC.money(o.comision) +
+                "</td><td><b>" + IC.money(o.neto) + "</b></td><td>" + chip(o.estado) + "</td><td>" + IC.fmtDate(new Date(o.creado_en)) + "</td></tr>";
+            }).join("") + "</tbody></table></div>" : '<p class="ad-sub">Todavía no hizo ninguna operación.</p>') +
+
+          '<footer class="ad-acciones"><button class="btn btn-outline-dark btn-sm" id="waFicha">Escribir por WhatsApp</button>' +
+          '<span class="ad-sub">Carpeta de sus fotos en Supabase: <code>' + esc(p.id || "") + "</code></span></footer>" +
+        "</article>";
+
+      pintarFotos(cont);
+      $("volverClientes").addEventListener("click", function () { vista = "clientes"; render(); });
+      $("waFicha").addEventListener("click", function () { waCliente(p); });
       return;
     }
 

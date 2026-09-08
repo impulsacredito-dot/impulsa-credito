@@ -201,3 +201,27 @@
 /* botones de accion dentro de la tabla de operaciones */
 .ad-acc-op{display:flex;gap:6px;flex-wrap:wrap;}
 .ad-acc-op .btn{white-space:nowrap;}
+
+/* ---------------- Ficha del cliente ---------------- */
+.ad-datos{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
+  gap:12px;margin:18px 0 4px;
+}
+.ad-dato{background:#f7faf8;border:1px solid #eef1ef;border-radius:12px;padding:12px 14px;}
+.ad-dato span{
+  display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;color:#6b7a72;margin-bottom:4px;
+}
+.ad-dato b{font-size:.92rem;font-weight:700;word-break:break-word;}
+.ad-sub-titulo{
+  font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+  color:#6b7a72;margin:26px 0 10px;padding-top:16px;border-top:1px solid #eef1ef;
+}
+.ad-sub-bloque{
+  background:#f7faf8;border:1px solid #eef1ef;border-radius:14px;
+  padding:16px;margin-bottom:12px;
+}
+.ad-card code{
+  background:#eef1ef;padding:2px 7px;border-radius:6px;
+  font-size:.72rem;word-break:break-all;
+}
