@@ -68,7 +68,7 @@
   function traducir(msg) {
     msg = String(msg || "");
     if (/already registered|already been registered/i.test(msg)) return "Ya existe una cuenta con ese documento. Inicia sesión.";
-    if (/Invalid login credentials/i.test(msg)) return "Documento o contraseña incorrectos.";
+    if (/Invalid login credentials/i.test(msg)) return "Datos incorrectos. Revisa tu contraseña, o prueba escribiendo tu correo en lugar del documento.";
     if (/Email not confirmed/i.test(msg)) return "La cuenta necesita activación. Escríbenos por WhatsApp y la activamos al instante.";
     if (/email_address_invalid|Email address .* is invalid/i.test(msg)) return "No pudimos crear la cuenta. Escríbenos por WhatsApp y te registramos nosotros.";
     if (/signups? (not allowed|disabled)/i.test(msg)) return "El registro está temporalmente cerrado. Escríbenos por WhatsApp.";
@@ -222,7 +222,7 @@
             method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
             body: JSON.stringify({ doc: correo, clave: password })
           });
-          if (!r) return { ok: false, error: "Documento o contraseña incorrectos." };
+          if (!r) return { ok: false, error: "No encontramos esa combinación. Revisa que el documento esté completo y sin espacios, o entra escribiendo tu correo." };
           correo = r;
         }
 
@@ -251,15 +251,24 @@
       }
     },
 
-    /* Guarda la contraseña nueva usando el token que trae el enlace del correo */
+    /* Guarda la contraseña nueva usando el token que trae el enlace del correo.
+       Devuelve tambien con que datos debe entrar, para no dejarlo adivinando. */
     async fijarPassword(accessToken, nueva) {
       try {
-        await api("/auth/v1/user", {
-          method: "PUT",
-          headers: { apikey: KEY, "Content-Type": "application/json", Authorization: "Bearer " + accessToken },
-          body: JSON.stringify({ password: nueva })
-        });
-        return { ok: true };
+        var cab = { apikey: KEY, "Content-Type": "application/json", Authorization: "Bearer " + accessToken };
+        await api("/auth/v1/user", { method: "PUT", headers: cab, body: JSON.stringify({ password: nueva }) });
+
+        var correo = null, documento = null;
+        try {
+          var u = await api("/auth/v1/user", { headers: cab });
+          correo = u && u.email;
+          if (u && u.id) {
+            var perf = await api("/rest/v1/perfiles?id=eq." + u.id + "&select=documento", { headers: cab });
+            if (perf && perf[0]) documento = perf[0].documento;
+          }
+        } catch (e) { /* si no se puede leer, se muestra el mensaje generico */ }
+
+        return { ok: true, correo: correo, documento: documento };
       } catch (e) { return { ok: false, error: traducir(e.message) }; }
     },
 

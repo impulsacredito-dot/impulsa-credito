@@ -1,0 +1,109 @@
+<!--
+=====================================================================
+IMPULSA CRÉDITO — Correo de recuperación de contraseña
+=====================================================================
+El correo que Supabase envía viene en inglés y sin diseño. Este lo
+reemplaza: está en español, con tus colores y tu logo.
+
+CÓMO PONERLO:
+  1. Supabase → Authentication → Emails (o "Email Templates")
+  2. Pestaña "Reset Password"
+  3. En "Subject heading" escribe:
+        Recupera tu contraseña — Impulsa Crédito
+  4. Borra todo el contenido del cuadro grande y pega TODO este archivo
+  5. Save
+
+No cambies {{ .ConfirmationURL }}: es donde Supabase mete el enlace
+seguro de cada cliente.
+=====================================================================
+-->
+<div style="margin:0;padding:0;background:#f4f6f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f5;padding:28px 14px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(17,17,17,.08);">
+
+          <!-- Cabecera -->
+          <tr>
+            <td style="background:#111111;padding:26px 30px;">
+              <span style="color:#ffffff;font-size:20px;font-weight:800;letter-spacing:-.3px;">
+                Impulsa <span style="color:#22c55e;">Crédito</span>
+              </span>
+              <div style="color:rgba(255,255,255,.55);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;margin-top:5px;">
+                Asesoría y Gestión Crediticia
+              </div>
+            </td>
+          </tr>
+
+          <!-- Contenido -->
+          <tr>
+            <td style="padding:32px 30px 10px;">
+              <h1 style="margin:0 0 12px;font-size:21px;font-weight:800;color:#111111;letter-spacing:-.3px;">
+                Recupera tu contraseña
+              </h1>
+              <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#3d4a44;">
+                Recibimos una solicitud para cambiar la contraseña de tu cuenta en Impulsa Crédito.
+                Pulsa el botón y elige una nueva. Solo te tomará un minuto.
+              </p>
+
+              <!-- Botón -->
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 22px;">
+                <tr>
+                  <td align="center" style="background:#22c55e;border-radius:999px;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;padding:15px 34px;font-size:15px;font-weight:800;color:#06210f;text-decoration:none;">
+                      Crear mi contraseña nueva
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#6b7a72;">
+                Si el botón no funciona, copia y pega esta dirección en tu navegador:
+              </p>
+              <p style="margin:0 0 22px;font-size:12px;line-height:1.5;word-break:break-all;">
+                <a href="{{ .ConfirmationURL }}" style="color:#15803d;">{{ .ConfirmationURL }}</a>
+              </p>
+
+              <!-- Aviso -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                     style="background:#f7faf8;border:1px solid #e3e8e5;border-radius:12px;">
+                <tr>
+                  <td style="padding:15px 17px;font-size:13px;line-height:1.6;color:#3d4a44;">
+                    <b style="color:#111;">Ten en cuenta:</b><br>
+                    El enlace caduca en 1 hora y solo se puede usar una vez.<br>
+                    <b>Si tú no pediste este cambio</b>, ignora este correo: tu contraseña seguirá igual.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Ayuda -->
+          <tr>
+            <td style="padding:22px 30px 26px;">
+              <p style="margin:0;font-size:13px;line-height:1.65;color:#6b7a72;">
+                ¿Necesitas ayuda? Escríbenos por WhatsApp al
+                <a href="https://wa.me/51928266183" style="color:#15803d;font-weight:700;text-decoration:none;">928 266 183</a>
+                de lunes a sábado, de 10:00 a.m. a 7:00 p.m.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Pie -->
+          <tr>
+            <td style="background:#f7faf8;border-top:1px solid #eef1ef;padding:18px 30px;">
+              <p style="margin:0;font-size:11px;line-height:1.6;color:#8a978f;">
+                Impulsa Crédito · Asesoría y Gestión Crediticia<br>
+                <a href="https://impulsacredito.com" style="color:#8a978f;">impulsacredito.com</a>
+                · contacto@impulsacredito.com<br>
+                Este correo se envió automáticamente, no hace falta responderlo.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

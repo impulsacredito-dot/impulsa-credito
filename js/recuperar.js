@@ -60,6 +60,16 @@
       btn.disabled = true; btn.textContent = "Guardando...";
       var res = await IC.cloud.fijarPassword(datos.token, p1.value);
       if (res.ok) {
+        /* Le recordamos con que datos entrar: el motivo mas comun de no
+           poder acceder despues es no recordar el documento exacto. */
+        var recordatorio = $("recDatos");
+        if (recordatorio && (res.documento || res.correo)) {
+          recordatorio.innerHTML =
+            "<b>Entra con estos datos:</b>" +
+            (res.documento ? "<span>Documento: <b>" + res.documento + "</b></span>" : "") +
+            (res.correo ? "<span>O tu correo: <b>" + res.correo + "</b></span>" : "");
+          recordatorio.classList.remove("hidden");
+        }
         ver("recListo");
         if (window.IC && IC.confetti) IC.confetti();
       } else {
