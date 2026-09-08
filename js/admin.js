@@ -323,7 +323,7 @@
         return;
       }
       cont.innerHTML = '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
-        "<th>Cliente</th><th>Documento</th><th>Celular</th><th>Identidad</th><th>Tarjetas</th><th>Cuentas</th><th>Ops.</th><th></th>" +
+        "<th>Cliente</th><th>Documento</th><th>Celular</th><th>DNI y selfie</th><th>Tarjetas</th><th>Cuentas</th><th>Ops.</th><th></th>" +
         "</tr></thead><tbody>" +
         datos.clientes.map(function (c, i) {
           var id = c.docs[0];
@@ -333,7 +333,10 @@
             "<td>" + (id ? chip(id.estado) : '<span class="ad-chip">Sin subir</span>') + "</td>" +
             "<td>" + (c.tarjetas.length
               ? "<b>" + c.tarjetas.length + "</b><br>" + c.tarjetas.map(function (t) {
-                  return '<span class="ad-sub">' + esc(t.banco || "") + " " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + "</span>";
+                  var conFoto = t.foto_frontal || t.foto_posterior;
+                  return '<span class="ad-sub">' + esc(t.banco || "") + " " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") +
+                    " " + chip(t.estado) +
+                    (conFoto ? "" : ' <span class="ad-chip err">sin foto</span>') + "</span>";
                 }).join("<br>")
               : '<span class="ad-sub">—</span>') + "</td>" +
             "<td>" + c.cuentas.length + "</td><td>" + c.ops.length + "</td>" +
