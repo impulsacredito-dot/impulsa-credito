@@ -124,7 +124,8 @@
   display:grid;place-items:center;opacity:0;transition:opacity .18s ease;
 }
 .ad-foto:hover .ad-zoom{opacity:1;}
-.ad-sinfoto{font-size:.78rem;color:#98a59e;}
+.ad-sinfoto{font-size:.78rem;color:#98a59e;text-align:center;line-height:1.6;padding:0 10px;}
+.ad-sinfoto a{color:var(--green,#22c55e);font-weight:700;}
 
 .ad-cargando{
   width:20px;height:20px;border-radius:50%;

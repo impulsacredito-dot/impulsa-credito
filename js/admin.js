@@ -119,9 +119,17 @@
       var n = nodos[i], ruta = n.getAttribute("data-foto");
       var u = await urlFoto(ruta);
       if (u) {
-        n.innerHTML = '<img src="' + u + '" alt="" loading="lazy">' +
+        n.innerHTML = '<img src="' + u + '" alt="">' +
           '<a class="ad-zoom" href="' + u + '" target="_blank" rel="noopener" title="Ver en grande">' +
           '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></a>';
+        // si el archivo esta dañado o no es una imagen, no dejamos el icono roto
+        (function (caja, enlace) {
+          var img = caja.querySelector("img");
+          img.addEventListener("error", function () {
+            caja.innerHTML = '<span class="ad-sinfoto">La imagen no se pudo abrir.<br>' +
+              '<a href="' + enlace + '" target="_blank" rel="noopener">Descargar archivo</a></span>';
+          });
+        })(n, u);
       } else {
         n.innerHTML = '<span class="ad-sinfoto">Sin foto</span>';
       }
@@ -332,11 +340,40 @@
     $("adLogin").classList.add("hidden");
     $("adPanel").classList.remove("hidden");
     $("adView").innerHTML = '<div class="ad-vacio"><span class="ad-cargando grande"></span><p>Cargando solicitudes...</p></div>';
-    await cargar(); render();
+    try {
+      await cargar();
+      render();
+    } catch (e) {
+      $("adView").innerHTML = '<div class="ad-vacio"><h3>No se pudieron cargar las solicitudes</h3>' +
+        "<p>" + esc(e.message || "Revisa tu conexión a internet.") + "</p>" +
+        '<button class="btn btn-primary btn-sm" style="margin-top:16px" onclick="location.reload()">Reintentar</button></div>';
+    }
     return true;
   }
 
-  document.addEventListener("DOMContentLoaded", async function () {
+  /* Si algo falla de forma inesperada, mostramos el acceso y avisamos,
+     en lugar de dejar una pantalla vacia sin explicacion. */
+  function rescatar(motivo) {
+    try {
+      var login = $("adLogin"), panel = $("adPanel"), err = $("adLoginError");
+      if (login) login.classList.remove("hidden");
+      if (panel) panel.classList.add("hidden");
+      if (err) {
+        err.textContent = "Hubo un problema al abrir el panel: " + motivo + ". Vuelve a entrar.";
+        err.classList.remove("hidden");
+      }
+      try { localStorage.removeItem(SES); } catch (e) {}
+    } catch (e) {}
+  }
+  window.addEventListener("error", function (ev) {
+    if (document.getElementById("adPanel") && document.getElementById("adPanel").classList.contains("hidden")) return;
+    rescatar((ev && ev.message) || "error inesperado");
+  });
+  window.addEventListener("unhandledrejection", function (ev) {
+    rescatar((ev && ev.reason && ev.reason.message) || "no respondio el servidor");
+  });
+
+  async function arrancar() {
     if (window.IC && IC.bindPassToggles) IC.bindPassToggles(document);
 
     document.querySelectorAll(".ad-tab").forEach(function (b) {
@@ -383,5 +420,11 @@
         await entrarConSesion();
       } catch (e) { try { localStorage.removeItem(SES); } catch (e2) {} }
     }
-  });
+  }
+
+  /* Arranca ya si el documento esta listo; si no, en cuanto lo este.
+     Asi funciona aunque el navegador cargue los scripts en otro orden. */
+  function inicio() { arrancar().catch(function (e) { rescatar(e.message || "no se pudo iniciar"); }); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", inicio);
+  else inicio();
 })();
