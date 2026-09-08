@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear contraseña nueva — Impulsa Crédito</title>
+<meta name="description" content="Crea una contraseña nueva para tu cuenta de Impulsa Crédito.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://impulsacredito.com/recuperar">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#111111">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-split">
+
+  <!-- lado visual -->
+  <aside class="auth-aside">
+    <a href="index.html" class="auth-back">‹ Volver al inicio</a>
+    <div class="auth-aside-inner">
+      <span class="brand-lockup auth-brand">
+        <img class="bl-mark js-brand-mark" src="assets/logo-icon.png" alt="">
+        <span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span>
+      </span>
+      <h2 class="auth-title">Tu cuenta, <span class="hl">de vuelta</span> en un minuto.</h2>
+      <p class="auth-lead">Elige una contraseña nueva y sigue efectivizando tu tarjeta con normalidad.</p>
+      <div class="auth-art" id="authArt"></div>
+      <ul class="auth-points">
+        <li>Datos encriptados</li>
+        <li>Solo tú puedes cambiarla</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- formulario -->
+  <main class="auth-main">
+    <div class="auth-card">
+
+      <!-- estado: enlace válido -->
+      <div id="recForm">
+        <h1>Crea tu contraseña nueva</h1>
+        <p class="auth-sub">Debe tener al menos 8 caracteres e incluir un número.</p>
+
+        <form id="recFormEl" novalidate>
+          <div class="field">
+            <label for="recPass">Contraseña nueva</label>
+            <div class="pass-wrap">
+              <input type="password" id="recPass" autocomplete="new-password" placeholder="Mínimo 8 caracteres, con un número" required>
+              <button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="recPass2">Repite la contraseña</label>
+            <div class="pass-wrap">
+              <input type="password" id="recPass2" autocomplete="new-password" placeholder="Repite tu contraseña" required>
+              <button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button>
+            </div>
+          </div>
+          <p class="form-error hidden" id="recError"></p>
+          <button class="btn btn-primary btn-block btn-lg" id="recBtn" type="submit">Guardar contraseña</button>
+        </form>
+      </div>
+
+      <!-- estado: enlace inválido o caducado -->
+      <div id="recInvalido" class="hidden">
+        <h1>Este enlace ya no sirve</h1>
+        <p class="auth-sub">Los enlaces caducan por seguridad. Pide uno nuevo desde la pantalla de acceso: solo toma un momento.</p>
+        <a class="btn btn-primary btn-block btn-lg" href="login.html">Ir a iniciar sesión</a>
+        <p class="auth-alt">¿Necesitas ayuda? <a href="#" class="js-wa-link" data-wa-msg="default" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
+      </div>
+
+      <!-- estado: listo -->
+      <div id="recListo" class="hidden">
+        <div class="rec-ok">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h1>Contraseña actualizada</h1>
+        <p class="auth-sub">Ya puedes entrar con tu DNI y tu contraseña nueva.</p>
+        <a class="btn btn-primary btn-block btn-lg" href="login.html">Iniciar sesión</a>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app-core.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/recuperar.js"></script>
+</body>
+</html>

@@ -4,5 +4,7 @@ Disallow: /app
 Disallow: /app.html
 Disallow: /admin
 Disallow: /admin.html
+Disallow: /recuperar
+Disallow: /recuperar.html
 
 Sitemap: https://impulsacredito.com/sitemap.xml

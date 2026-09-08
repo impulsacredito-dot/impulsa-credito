@@ -22,13 +22,15 @@
   var activo = B.provider === "supabase" && B.useAuth === true && !!base && !!KEY;
   var SES = "ic_sesion_v1";
 
-  /* Dominio interno: el cliente entra con su DNI, no con correo.
-     Supabase EXIGE que el dominio exista de verdad en internet, por eso
-     usamos el dominio del sitio. Cuando tengas tu dominio propio, cámbialo
-     en js/config.js -> backend.authDomain */
-  var DOMINIO = (B.authDomain || "impulsacredito.com").replace(/^@/, "").trim();
-  function correoInterno(doc) {
-    return "dni" + String(doc).replace(/[^A-Za-z0-9]/g, "") + "@" + DOMINIO;
+  /* Cada cliente se registra con SU CORREO REAL. Eso es lo que permite
+     que pueda recuperar su contraseña solo, sin depender de nosotros.
+     Para entrar sigue escribiendo su DNI: la función correo_de_documento
+     de Supabase hace la traducción por detrás (ver supabase-recuperacion.sql). */
+  function pareceCorreo(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v || "").trim()); }
+
+  /* A dónde vuelve el cliente tras pinchar el enlace del correo */
+  function urlRecuperar() {
+    return new URL((CFG.platform && CFG.platform.recoverHref) || "recuperar.html", document.baseURI).href;
   }
 
   var sesion = null;   // { access_token, refresh_token, user }
@@ -70,6 +72,10 @@
     if (/Email not confirmed/i.test(msg)) return "La cuenta necesita activación. Escríbenos por WhatsApp y la activamos al instante.";
     if (/email_address_invalid|Email address .* is invalid/i.test(msg)) return "No pudimos crear la cuenta. Escríbenos por WhatsApp y te registramos nosotros.";
     if (/signups? (not allowed|disabled)/i.test(msg)) return "El registro está temporalmente cerrado. Escríbenos por WhatsApp.";
+    if (/User already registered|duplicate key/i.test(msg)) return "Ya existe una cuenta con ese correo. Inicia sesión o recupera tu contraseña.";
+    if (/correo_de_documento|function .* does not exist/i.test(msg)) return "El sistema de acceso está en mantenimiento. Escríbenos por WhatsApp.";
+    if (/New password should be different/i.test(msg)) return "La contraseña nueva debe ser distinta a la anterior.";
+    if (/expired|invalid.*token/i.test(msg)) return "El enlace ya caducó. Pide uno nuevo desde «Olvidé mi contraseña».";
     if (/Password should be at least/i.test(msg)) return "La contraseña debe tener al menos 8 caracteres.";
     if (/rate limit|too many/i.test(msg)) return "Demasiados intentos. Espera un momento e inténtalo de nuevo.";
     if (/Failed to fetch|NetworkError/i.test(msg)) return "Sin conexión a internet. Revisa tu red e inténtalo otra vez.";
@@ -183,14 +189,14 @@
       try {
         var s = await api("/auth/v1/signup", {
           method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ email: correoInterno(d.doc), password: d.password,
+          body: JSON.stringify({ email: String(d.email || "").trim(), password: d.password,
                                  data: { nombres: d.nombres, apellidos: d.apellidos, documento: d.doc } })
         });
         if (!s.access_token) {
           // si el proyecto pide confirmar correo, iniciamos sesión igual
           s = await api("/auth/v1/token?grant_type=password", {
             method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
-            body: JSON.stringify({ email: correoInterno(d.doc), password: d.password })
+            body: JSON.stringify({ email: String(d.email || "").trim(), password: d.password })
           });
         }
         guardarSesion(s);
@@ -207,13 +213,53 @@
 
     async login(doc, password) {
       try {
+        var correo = String(doc || "").trim();
+
+        /* Si escribió su DNI, preguntamos a Supabase cuál es su correo.
+           La función solo responde si la contraseña también es correcta. */
+        if (!pareceCorreo(correo)) {
+          var r = await api("/rest/v1/rpc/correo_de_documento", {
+            method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ doc: correo, clave: password })
+          });
+          if (!r) return { ok: false, error: "Documento o contraseña incorrectos." };
+          correo = r;
+        }
+
         var s = await api("/auth/v1/token?grant_type=password", {
           method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ email: correoInterno(doc), password: password })
+          body: JSON.stringify({ email: correo, password: password })
         });
         guardarSesion(s);
         var u = await cargarTodo();
         return { ok: true, user: u };
+      } catch (e) { return { ok: false, error: traducir(e.message) }; }
+    },
+
+    /* Le manda al cliente el enlace para crear una contraseña nueva.
+       Responde siempre ok: así nadie puede averiguar qué correos existen. */
+    async pedirRecuperacion(correo) {
+      try {
+        await api("/auth/v1/recover?redirect_to=" + encodeURIComponent(urlRecuperar()), {
+          method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ email: String(correo || "").trim() })
+        });
+        return { ok: true };
+      } catch (e) {
+        if (/rate limit|too many/i.test(e.message)) return { ok: false, error: traducir(e.message) };
+        return { ok: true };   // no delatamos si el correo existe o no
+      }
+    },
+
+    /* Guarda la contraseña nueva usando el token que trae el enlace del correo */
+    async fijarPassword(accessToken, nueva) {
+      try {
+        await api("/auth/v1/user", {
+          method: "PUT",
+          headers: { apikey: KEY, "Content-Type": "application/json", Authorization: "Bearer " + accessToken },
+          body: JSON.stringify({ password: nueva })
+        });
+        return { ok: true };
       } catch (e) { return { ok: false, error: traducir(e.message) }; }
     },
 

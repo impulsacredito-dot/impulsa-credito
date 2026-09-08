@@ -131,7 +131,8 @@
       var b = document.createElement("button");
       b.className = "btn btn-sm " + (a.cls || "btn-primary");
       b.textContent = a.label;
-      b.addEventListener("click", function () { if (a.onClick) a.onClick(); if (!a.keepOpen) closeModal(); });
+      // se le pasa el propio boton, util cuando la accion tarda y hay que deshabilitarlo
+      b.addEventListener("click", function () { if (a.onClick) a.onClick(b); if (!a.keepOpen) closeModal(); });
       actions.appendChild(b);
     });
     bg.addEventListener("click", function (e) { if (e.target === bg && !opts.persistent) closeModal(); });

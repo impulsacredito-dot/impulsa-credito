@@ -550,3 +550,13 @@ button{font-family:inherit;}
   .list-item b,.list-item span{overflow-wrap:anywhere;}
   .status{white-space:nowrap;}
 }
+
+/* ---------- Crear contraseña nueva (recuperar.html) ---------- */
+.rec-ok{
+  width:62px;height:62px;border-radius:50%;margin:0 auto 18px;
+  background:rgba(34,197,94,.15);color:#15803d;
+  display:grid;place-items:center;
+  animation:recPop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes recPop{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
+#recListo{text-align:center;}

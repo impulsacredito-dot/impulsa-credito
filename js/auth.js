@@ -199,10 +199,53 @@
     });
     document.getElementById("forgotLink").addEventListener("click", function (e) {
       e.preventDefault();
+
+      /* Sin cuentas en la nube no hay correo que enviar: lo vemos con un asesor */
+      if (!(IC.cloud && IC.cloud.activo)) {
+        IC.modal({
+          title: "Recuperar contraseña",
+          html: "<p>Escríbenos por WhatsApp indicando tu número de documento y te ayudamos a restablecerla en el momento.</p>",
+          actions: [
+            { label: "Cerrar", cls: "btn-outline-dark" },
+            { label: "Escribir por WhatsApp", onClick: function () { window.open(IC.waLink("Hola, olvidé mi contraseña de la plataforma Impulsa Crédito. Mi documento es: "), "_blank"); } }
+          ]
+        });
+        return;
+      }
+
       IC.modal({
         title: "Recuperar contraseña",
-        html: "<p>Por seguridad, la recuperación se realiza con un asesor. Escríbenos por WhatsApp indicando tu número de documento y te ayudaremos a restablecerla.</p>",
-        actions: [{ label: "Cerrar", cls: "btn-outline-dark" }, { label: "Escribir por WhatsApp", onClick: function () { window.open(IC.waLink("Hola, olvidé mi contraseña de la plataforma Impulsa Crédito. Mi documento es: "), "_blank"); } }]
+        html: '<p class="muted">Escribe el correo con el que te registraste. Te enviaremos un enlace para crear una contraseña nueva.</p>' +
+              '<div class="field mt-8"><label for="recoverMail">Tu correo</label>' +
+              '<input type="email" id="recoverMail" placeholder="tucorreo@ejemplo.com" autocomplete="email"></div>' +
+              '<p class="form-error hidden" id="recoverErr"></p>',
+        actions: [
+          { label: "Cancelar", cls: "btn-outline-dark" },
+          { label: "Enviar enlace", keepOpen: true, onClick: async function (boton) {
+              var campo = document.getElementById("recoverMail");
+              var aviso = document.getElementById("recoverErr");
+              var correo = (campo && campo.value || "").trim();
+              if (!validators.email(correo)) {
+                aviso.textContent = "Escribe un correo válido.";
+                aviso.classList.remove("hidden");
+                if (campo) campo.focus();
+                return;
+              }
+              if (boton) { boton.disabled = true; boton.textContent = "Enviando..."; }
+              var r = await IC.cloud.pedirRecuperacion(correo);
+              IC.closeModal();
+              if (r.ok) {
+                IC.modal({
+                  title: "Revisa tu correo",
+                  html: "<p>Si <b>" + IC.esc(correo) + "</b> corresponde a una cuenta nuestra, ahí encontrarás el enlace para crear tu contraseña nueva.</p>" +
+                        '<p class="muted mt-8">Puede tardar un par de minutos. Si no lo ves, mira en la carpeta de spam o correo no deseado.</p>',
+                  actions: [{ label: "Entendido", cls: "btn-primary" }]
+                });
+              } else {
+                IC.toast(r.error || "No se pudo enviar. Inténtalo en unos minutos.", "err");
+              }
+            } }
+        ]
       });
     });
   }

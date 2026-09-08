@@ -118,6 +118,7 @@ var SITE_CONFIG = {
     loginHref: "login.html",
     registerHref: "registro.html",
     appHref: "app.html",
+    recoverHref: "recuperar.html",  // pagina donde el cliente pone su contraseña nueva
     commissionPercent: 1,          // comisión por operación (%)
     minAmount: 100,                // monto mínimo por operación (S/)
     maxAmount: 20000,              // monto máximo por operación (S/)
