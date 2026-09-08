@@ -571,3 +571,25 @@ button{font-family:inherit;}
 .rec-datos b:first-child{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:#15803d;}
 .rec-datos span{color:#3d4a44;}
 .rec-datos span b{color:#111;font-weight:800;}
+
+/* ------------------------------------------------------------
+   En CELULAR el formulario debe verse sin bajar.
+   Antes había que recorrer 1,3 pantallas de presentación antes
+   de llegar al primer campo, y ahí se pierden registros.
+   La presentación se resume: logo, titular y una frase.
+------------------------------------------------------------ */
+@media (max-width:720px){
+  .auth-side{padding:18px 20px 22px;}
+  .auth-brand .brand-lockup{font-size:38px;}
+  .auth-hero{margin:6px 0 0;}
+  .auth-hero h1{font-size:clamp(1.35rem,5.4vw,1.7rem);line-height:1.2;margin-bottom:6px;}
+  .auth-hero p{font-size:.87rem;line-height:1.5;}
+  /* lo demás cuenta lo mismo que el formulario ya explica */
+  .auth-visual,
+  .auth-stats,
+  .auth-foot{display:none;}
+  .auth-chips{margin-top:14px;gap:6px;}
+  .auth-chip{font-size:.68rem;padding:6px 10px;}
+  .auth-form-side{padding-top:0;}
+  .auth-card{margin-top:-14px;}
+}
