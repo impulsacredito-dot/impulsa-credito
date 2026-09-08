@@ -43,9 +43,10 @@
 .ad-panel{max-width:1180px;margin:0 auto;padding:0 20px 60px;}
 .ad-top{
   display:flex;align-items:center;justify-content:space-between;gap:18px;
-  flex-wrap:wrap;padding:20px 0 16px;
+  flex-wrap:wrap;padding:24px 0 18px;
 }
-.ad-brand.sm{font-size:21px;}
+.ad-brand.sm{font-size:34px;}
+.ad-brand.sm .bl-tag{font-size:.2em;letter-spacing:.13em;}
 .ad-top-acciones{display:flex;gap:10px;flex-wrap:wrap;}
 
 /* ---------------- Pestañas ---------------- */
@@ -167,7 +168,11 @@
   box-shadow:0 2px 14px rgba(17,17,17,.07);
 }
 .ad-kpi span{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7a72;margin-bottom:8px;}
-.ad-kpi b{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;}
+.ad-kpi b{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;display:block;}
+.ad-kpi small{
+  display:block;margin-top:6px;font-size:.72rem;color:#8a978f;line-height:1.4;
+}
+.ad-kpi.verde small{color:rgba(255,255,255,.6);}
 .ad-kpi.verde{background:var(--black, #111);color:#fff;}
 .ad-kpi.verde span{color:rgba(255,255,255,.62);}
 .ad-kpi.verde b{color:var(--green-light, #4ade80);}
@@ -323,3 +328,7 @@
 .ad-wa{padding:8px 10px;display:inline-flex;align-items:center;justify-content:center;}
 .ad-wa svg{display:block;}
 .ad-wa:hover{color:#128c7e;border-color:#128c7e;}
+
+@media (max-width:720px){
+  .ad-brand.sm{font-size:28px;}
+}

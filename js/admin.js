@@ -28,6 +28,8 @@
   var fichaDe = null;   // cliente cuya ficha se esta viendo
   var busqueda = "";     // texto escrito en el buscador
   var filtro = "todos";  // todos | pendientes | activos | sin_identidad
+  var busquedaOps = "";  // buscador de la pestaña Operaciones
+  var filtroOps = "todas";  // todas | pend_pago | completada | cancelada
   var cacheFotos = {};
 
   function $(id) { return document.getElementById(id); }
@@ -502,18 +504,60 @@
       cont.innerHTML = '<div class="ad-vacio"><h3>Sin operaciones</h3><p>Aquí verás cada efectivización solicitada.</p></div>';
       return;
     }
-    var total = datos.ops.reduce(function (a, o) { return a + Number(o.monto || 0); }, 0);
-    var comis = datos.ops.reduce(function (a, o) { return a + Number(o.comision || 0); }, 0);
+    /* Solo lo COMPLETADO es dinero ganado de verdad: una operacion
+       cancelada no deja comision. Antes se sumaba todo y la cifra
+       enganaba. */
+    function suma(campo, estados) {
+      return datos.ops.reduce(function (a, o) {
+        return estados.indexOf(o.estado) >= 0 ? a + Number(o[campo] || 0) : a;
+      }, 0);
+    }
+    var cobrado    = suma("comision", ["completada"]);
+    var efectivo   = suma("monto",    ["completada"]);
+    var porCobrar  = suma("comision", ["pend_pago", "activa"]);
+    var enEspera   = suma("monto",    ["pend_pago", "activa"]);
+    var nComp = datos.ops.filter(function (o) { return o.estado === "completada"; }).length;
+    var nPend = datos.ops.filter(function (o) { return o.estado === "pend_pago" || o.estado === "activa"; }).length;
+    var nCanc = datos.ops.filter(function (o) { return o.estado === "cancelada"; }).length;
+
+    /* buscador y filtro por estado */
+    var qo = busquedaOps.trim().toLowerCase();
+    var ops = datos.ops.filter(function (o) {
+      if (filtroOps === "pend_pago" && !(o.estado === "pend_pago" || o.estado === "activa")) return false;
+      if (filtroOps === "completada" && o.estado !== "completada") return false;
+      if (filtroOps === "cancelada" && o.estado !== "cancelada") return false;
+      if (!qo) return true;
+      return ((o.codigo || "") + " " + (o.nombre || "") + " " + (o.documento || "") + " " +
+              (o.banco_tarjeta || "") + " " + (o.ultimos4 || "")).toLowerCase().indexOf(qo) >= 0;
+    });
+
+    var filtrosOps = [["todas", "Todas (" + datos.ops.length + ")"],
+                      ["pend_pago", "Por pagar (" + nPend + ")"],
+                      ["completada", "Completadas (" + nComp + ")"],
+                      ["cancelada", "Canceladas (" + nCanc + ")"]];
+
     cont.innerHTML =
       '<div class="ad-kpis">' +
-        '<div class="ad-kpi"><span>Operaciones</span><b>' + datos.ops.length + "</b></div>" +
-        '<div class="ad-kpi"><span>Monto total</span><b>' + IC.money(total) + "</b></div>" +
-        '<div class="ad-kpi verde"><span>Tus comisiones</span><b>' + IC.money(comis) + "</b></div>" +
+        '<div class="ad-kpi"><span>Efectivizado</span><b>' + IC.money(efectivo) + "</b>" +
+          '<small>' + nComp + (nComp === 1 ? " operación completada" : " operaciones completadas") + "</small></div>" +
+        '<div class="ad-kpi"><span>Esperando pago</span><b>' + IC.money(enEspera) + "</b>" +
+          '<small>' + nPend + (nPend === 1 ? " operación" : " operaciones") + " · " + IC.money(porCobrar) + " de comisión</small></div>" +
+        '<div class="ad-kpi verde"><span>Tus comisiones cobradas</span><b>' + IC.money(cobrado) + "</b>" +
+          "<small>solo operaciones completadas</small></div>" +
       "</div>" +
-      '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
+      '<div class="ad-barra">' +
+        '<div class="ad-buscador">' +
+          '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+          '<input id="adBuscarOps" type="search" placeholder="Buscar por código, cliente, DNI o tarjeta" value="' + esc(busquedaOps) + '">' +
+        "</div>" +
+        '<div class="ad-filtros">' + filtrosOps.map(function (f) {
+          return '<button class="ad-filtro' + (filtroOps === f[0] ? " on" : "") + '" data-fo="' + f[0] + '">' + f[1] + "</button>";
+        }).join("") + "</div>" +
+      "</div>" +
+      (ops.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
       "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th>Monto</th><th>Comisión</th><th>Recibe</th><th>Estado</th><th>Fecha</th><th>Acción</th>" +
       "</tr></thead><tbody>" +
-      datos.ops.map(function (o, i) {
+      ops.map(function (o, i) {
         return "<tr><td><b>" + esc(o.codigo || "") + "</b></td>" +
           "<td>" + esc(o.nombre || "") + "<br><span class=\"ad-sub\">" + esc(o.documento || "") + "</span></td>" +
           "<td>" + esc(o.banco_tarjeta || "—") + " ···· " + esc(o.ultimos4 || "") + "</td>" +
@@ -527,14 +571,28 @@
               '<button class="btn btn-primary btn-sm" data-ok="' + i + '">Completada</button>' +
               '<button class="btn btn-outline-dark btn-sm" data-cx="' + i + '">Cancelar</button></div>') +
           "</td></tr>";
-      }).join("") + "</tbody></table></div>";
+      }).join("") + "</tbody></table></div>"
+      : '<div class="ad-vacio"><h3>Sin resultados</h3><p>Prueba con otro código o quita los filtros.</p></div>');
 
+    var campoOps = $("adBuscarOps");
+    if (campoOps) {
+      campoOps.addEventListener("input", function () {
+        busquedaOps = campoOps.value;
+        var pos = campoOps.selectionStart;
+        render();
+        var nc = $("adBuscarOps");
+        if (nc) { nc.focus(); try { nc.setSelectionRange(pos, pos); } catch (e) {} }
+      });
+    }
+    cont.querySelectorAll("[data-fo]").forEach(function (b) {
+      b.addEventListener("click", function () { filtroOps = b.dataset.fo; render(); });
+    });
     cont.querySelectorAll("[data-ok]").forEach(function (b) {
-      b.addEventListener("click", function () { confirmarCompletada(datos.ops[+b.dataset.ok]); });
+      b.addEventListener("click", function () { confirmarCompletada(ops[+b.dataset.ok]); });
     });
     cont.querySelectorAll("[data-cx]").forEach(function (b) {
       b.addEventListener("click", function () {
-        var op = datos.ops[+b.dataset.cx];
+        var op = ops[+b.dataset.cx];
         IC.modal({
           title: "Cancelar operación",
           html: "<p>Vas a cancelar la operación <b>" + esc(op.codigo || "") + "</b> de " + esc(op.nombre || "") + ".</p>",
