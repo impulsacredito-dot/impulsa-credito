@@ -616,7 +616,28 @@
           body.querySelector("#next").addEventListener("click", async function () {
             calc();
             if (!state.cardId || !state.accountId) { IC.toast("Selecciona una tarjeta y una cuenta.", "err"); return; }
-            var btn = this; btn.disabled = true; btn.textContent = "Creando...";
+            var btn = this;
+
+            /* Aviso de posible repeticion: ya hay una operacion igual sin pagar.
+               No la bloqueamos (puede ser a proposito), solo preguntamos. */
+            var igual = (user.ops || []).filter(function (o) {
+              return (o.status === "pend_pago" || o.status === "activa") &&
+                     o.cardId === state.cardId && Number(o.amount) === Number(state.amount);
+            })[0];
+            if (igual && !btn.dataset.confirmado) {
+              IC.modal({
+                title: "Ya tienes una operacion igual pendiente",
+                html: "<p>La operacion <b>" + esc(igual.code) + "</b> por <b>" + IC.money(igual.amount) +
+                      "</b> con la misma tarjeta sigue esperando el pago.</p>" +
+                      '<p class="muted mt-8">Si creas otra, tendras que pagar las dos por separado.</p>',
+                actions: [
+                  { label: "Ver la que tengo", cls: "btn-outline-dark", onClick: function () { location.hash = "#/operacion/" + igual.id; } },
+                  { label: "Crear otra igual", cls: "btn-primary", onClick: function () { btn.dataset.confirmado = "1"; btn.click(); } }
+                ]
+              });
+              return;
+            }
+            btn.disabled = true; btn.textContent = "Creando...";
             var c = IC.commission(state.amount);
             var op = { id: IC.uid("op"), code: IC.opCode(), type: state.type, cardId: state.cardId, accountId: state.accountId, amount: state.amount, commissionPct: c.pct, commission: c.commission, net: c.net, status: "pend_pago", createdAt: Date.now(), history: [{ at: Date.now(), status: "pend_pago", text: "Operación creada" }] };
             try {
