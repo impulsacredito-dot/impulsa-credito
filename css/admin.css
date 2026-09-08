@@ -332,3 +332,8 @@
 @media (max-width:720px){
   .ad-brand.sm{font-size:28px;}
 }
+
+/* Operaciones: importes y fechas nunca se parten en dos lineas */
+.ad-tabla.ops td.dinero{white-space:nowrap;text-align:right;}
+.ad-tabla.ops th.dinero{text-align:right;}
+.ad-tabla.ops td.fecha{white-space:nowrap;font-size:.78rem;color:#6b7a72;}

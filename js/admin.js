@@ -554,17 +554,18 @@
           return '<button class="ad-filtro' + (filtroOps === f[0] ? " on" : "") + '" data-fo="' + f[0] + '">' + f[1] + "</button>";
         }).join("") + "</div>" +
       "</div>" +
-      (ops.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
-      "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th>Monto</th><th>Comisión</th><th>Recibe</th><th>Estado</th><th>Fecha</th><th>Acción</th>" +
+      (ops.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla ops"><thead><tr>' +
+      "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th class=\"dinero\">Monto</th><th class=\"dinero\">Comisión</th><th class=\"dinero\">Recibe</th><th>Estado</th><th>Fecha</th><th>Acción</th>" +
       "</tr></thead><tbody>" +
       ops.map(function (o, i) {
         return "<tr><td><b>" + esc(o.codigo || "") + "</b></td>" +
           "<td>" + esc(o.nombre || "") + "<br><span class=\"ad-sub\">" + esc(o.documento || "") + "</span></td>" +
           "<td>" + esc(o.banco_tarjeta || "—") + " ···· " + esc(o.ultimos4 || "") + "</td>" +
           "<td>" + esc(o.banco_cuenta || "—") + "<br><span class=\"ad-sub\">" + esc(o.numero_cuenta || "") + "</span></td>" +
-          "<td>" + IC.money(o.monto) + "</td><td>" + IC.money(o.comision) + "</td><td><b>" + IC.money(o.neto) + "</b></td>" +
+          '<td class="dinero">' + IC.money(o.monto) + '</td><td class="dinero">' + IC.money(o.comision) +
+          '</td><td class="dinero"><b>' + IC.money(o.neto) + "</b></td>" +
           "<td>" + chip(o.estado) + "</td>" +
-          "<td>" + IC.fmtDate(new Date(o.creado_en)) + "</td>" +
+          '<td class="fecha">' + IC.fmtDate(new Date(o.creado_en)) + "</td>" +
           "<td>" + (o.estado === "completada" || o.estado === "cancelada"
             ? '<span class="ad-sub">—</span>'
             : '<div class="ad-acc-op">' +
