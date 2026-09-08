@@ -262,7 +262,7 @@
   function renderSimulator(grid, s) {
     var plat = CFG.platform || {};
     var pct = Number(plat.commissionPercent || 5);
-    var min = Number(plat.minAmount || 100), max = Number(plat.maxAmount || 20000);
+    var min = Number(plat.minAmount || 100), max = Number(plat.maxAmount || 30000);
     var amount = Math.min(Math.max(Number(s.quick && s.quick[0]) || 1000, min), max);
     var money = function (n) { return "S/ " + Number(n).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
 

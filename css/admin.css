@@ -197,3 +197,7 @@
   .ad-acciones .btn,.ad-acciones-der{width:100%;}
   .ad-acciones-der .btn{flex:1;}
 }
+
+/* botones de accion dentro de la tabla de operaciones */
+.ad-acc-op{display:flex;gap:6px;flex-wrap:wrap;}
+.ad-acc-op .btn{white-space:nowrap;}

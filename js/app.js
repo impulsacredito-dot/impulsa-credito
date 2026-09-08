@@ -548,7 +548,7 @@
 
   /* ---------- NUEVA OPERACIÓN ---------- */
   function viewNewOp() {
-    var state = { step: 0, type: "efectivizar", cardId: (user.cards.find(function (c) { return c.primary; }) || user.cards[0] || {}).id, accountId: (user.accounts.find(function (a) { return a.primary; }) || user.accounts[0] || {}).id, amount: Math.min(1000, P.maxAmount || 20000) };
+    var state = { step: 0, type: "efectivizar", cardId: (user.cards.find(function (c) { return c.primary; }) || user.cards[0] || {}).id, accountId: (user.accounts.find(function (a) { return a.primary; }) || user.accounts[0] || {}).id, amount: Math.min(1000, P.maxAmount || 30000) };
     var html = '<div class="wizard" style="max-width:900px"><div class="wizard-top"><div class="wz-steps">' + ["TIPO", "OPERACIÓN", "COMPLETADO"].map(function (l, i) { return '<div class="wz-step"><i>' + (i + 1) + "</i>" + l + "</div>" + (i < 2 ? '<div class="wz-line"></div>' : ""); }).join("") + '</div></div><div class="card" id="body"></div></div>';
     return { title: "Nueva Operación", html: html, mount: function (el) {
       var body = el.querySelector("#body");
@@ -575,7 +575,7 @@
             body.querySelector("#prev").addEventListener("click", function () { state.step = 0; render(); });
             return;
           }
-          var min = P.minAmount || 100, max = P.maxAmount || 20000;
+          var min = P.minAmount || 100, max = P.maxAmount || 30000;
           body.innerHTML = '<div class="row between"><div><h3>' + (state.type === "autopago" ? "Autopago de tarjeta" : "Efectivizar tarjeta") + '</h3><p class="small text-muted">Elige tu tarjeta, tu cuenta y el monto</p></div><div style="text-align:right"><b class="text-green small">Paso 2 de 3</b><div class="small text-muted">66% completado</div></div></div>' +
             '<div class="grid-2 mt-24"><div><div class="field"><label>Tarjeta de crédito a usar</label><div class="list" id="cards">' + user.cards.map(function (c) { return '<div class="list-item choice-item' + (c.id === state.cardId ? " active" : "") + '" data-card="' + c.id + '" style="cursor:pointer;' + (c.id === state.cardId ? "border-color:var(--green);background:#f0fdf4" : "") + '">' + bankDot(c.bank) + '<div class="body"><b>' + esc(c.bank) + " •••• " + esc(c.last4) + "</b><span>" + esc(c.brand || "") + "</span></div>" + statusBadge(c.status) + "</div>"; }).join("") + "</div></div>" +
             '<div class="field"><label>' + (state.type === "autopago" ? "Cuenta desde donde pagarás" : "Cuenta donde recibirás el dinero") + '</label><div class="list" id="accounts">' + user.accounts.map(function (a) { return '<div class="list-item' + (a.id === state.accountId ? " active" : "") + '" data-acc="' + a.id + '" style="cursor:pointer;' + (a.id === state.accountId ? "border-color:var(--green);background:#f0fdf4" : "") + '">' + bankDot(a.bank) + '<div class="body"><b>' + esc(a.bank) + " · " + esc(a.type) + "</b><span>" + esc(a.number) + "</span></div></div>"; }).join("") + "</div></div></div>" +

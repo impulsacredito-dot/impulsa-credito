@@ -185,6 +185,44 @@
     });
   }
 
+  /* Marca la operación como completada o cancelada y avisa al cliente */
+  async function cambiarOperacion(op, estado) {
+    await api("/rest/v1/operaciones?id=eq." + op.id, {
+      method: "PATCH", headers: cab({ Prefer: "return=minimal" }),
+      body: JSON.stringify({ estado: estado })
+    });
+    var titulo = estado === "completada" ? "¡Depósito realizado!" : "Operación cancelada";
+    var texto = estado === "completada"
+      ? ("Ya depositamos " + IC.money(op.neto) + " en tu cuenta " + (op.banco_cuenta || "") +
+         ". Tu comprobante de la operación " + (op.codigo || "") + " ya está disponible.")
+      : ("La operación " + (op.codigo || "") + " fue cancelada. Si crees que es un error, escríbenos por WhatsApp.");
+    try {
+      await api("/rest/v1/avisos", {
+        method: "POST", headers: cab({ Prefer: "return=minimal" }),
+        body: JSON.stringify({ user_id: op.user_id, titulo: titulo, texto: texto,
+                               tipo: estado === "completada" ? "ok" : "alerta" })
+      });
+    } catch (e) { /* el aviso es un extra: el cambio de estado ya quedó guardado */ }
+    IC.toast(estado === "completada" ? "Marcada como completada. El cliente ya fue avisado." : "Operación cancelada.",
+             estado === "completada" ? "ok" : "err");
+    await cargar(); render();
+  }
+
+  function confirmarCompletada(op) {
+    IC.modal({
+      title: "¿Ya depositaste el dinero?",
+      html: "<p>Vas a dar por <b>completada</b> la operación <b>" + esc(op.codigo || "") + "</b> de " +
+            esc(op.nombre || "") + ".</p>" +
+            '<p class="muted mt-8">Confirma solo si ya hiciste la transferencia de <b>' + IC.money(op.neto) +
+            "</b> a la cuenta " + esc(op.banco_cuenta || "") + " " + esc(op.numero_cuenta || "") +
+            ". El cliente recibirá el aviso y su comprobante quedará disponible.</p>",
+      actions: [
+        { label: "Todavía no", cls: "btn-outline-dark" },
+        { label: "Sí, ya deposité", cls: "btn-primary", onClick: function () { cambiarOperacion(op, "completada"); } }
+      ]
+    });
+  }
+
   function waCliente(p) {
     var tel = String((p && p.celular) || "").replace(/\D/g, "");
     if (!tel) { IC.toast("Este cliente no dejó su celular.", "err"); return; }
@@ -198,7 +236,7 @@
     var m = {
       en_revision: ["En revisión", "warn"], verificado: ["Verificado", "ok"], verificada: ["Verificada", "ok"],
       rechazado: ["Rechazado", "err"], completada: ["Completada", "ok"], en_proceso: ["En proceso", "warn"],
-      cancelada: ["Cancelada", "err"]
+      cancelada: ["Cancelada", "err"], pend_pago: ["Pendiente de pago", "warn"], activa: ["Activa", "warn"]
     };
     var v = m[estado] || [estado || "—", ""];
     return '<span class="ad-chip ' + v[1] + '">' + esc(v[0]) + "</span>";
@@ -315,17 +353,40 @@
         '<div class="ad-kpi verde"><span>Tus comisiones</span><b>' + IC.money(comis) + "</b></div>" +
       "</div>" +
       '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
-      "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th>Monto</th><th>Comisión</th><th>Recibe</th><th>Estado</th><th>Fecha</th>" +
+      "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th>Monto</th><th>Comisión</th><th>Recibe</th><th>Estado</th><th>Fecha</th><th>Acción</th>" +
       "</tr></thead><tbody>" +
-      datos.ops.map(function (o) {
+      datos.ops.map(function (o, i) {
         return "<tr><td><b>" + esc(o.codigo || "") + "</b></td>" +
           "<td>" + esc(o.nombre || "") + "<br><span class=\"ad-sub\">" + esc(o.documento || "") + "</span></td>" +
           "<td>" + esc(o.banco_tarjeta || "—") + " ···· " + esc(o.ultimos4 || "") + "</td>" +
           "<td>" + esc(o.banco_cuenta || "—") + "<br><span class=\"ad-sub\">" + esc(o.numero_cuenta || "") + "</span></td>" +
           "<td>" + IC.money(o.monto) + "</td><td>" + IC.money(o.comision) + "</td><td><b>" + IC.money(o.neto) + "</b></td>" +
           "<td>" + chip(o.estado) + "</td>" +
-          "<td>" + IC.fmtDate(new Date(o.creado_en)) + "</td></tr>";
+          "<td>" + IC.fmtDate(new Date(o.creado_en)) + "</td>" +
+          "<td>" + (o.estado === "completada" || o.estado === "cancelada"
+            ? '<span class="ad-sub">—</span>'
+            : '<div class="ad-acc-op">' +
+              '<button class="btn btn-primary btn-sm" data-ok="' + i + '">Completada</button>' +
+              '<button class="btn btn-outline-dark btn-sm" data-cx="' + i + '">Cancelar</button></div>') +
+          "</td></tr>";
       }).join("") + "</tbody></table></div>";
+
+    cont.querySelectorAll("[data-ok]").forEach(function (b) {
+      b.addEventListener("click", function () { confirmarCompletada(datos.ops[+b.dataset.ok]); });
+    });
+    cont.querySelectorAll("[data-cx]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var op = datos.ops[+b.dataset.cx];
+        IC.modal({
+          title: "Cancelar operación",
+          html: "<p>Vas a cancelar la operación <b>" + esc(op.codigo || "") + "</b> de " + esc(op.nombre || "") + ".</p>",
+          actions: [
+            { label: "Volver", cls: "btn-outline-dark" },
+            { label: "Sí, cancelar", cls: "btn-danger", onClick: function () { cambiarOperacion(op, "cancelada"); } }
+          ]
+        });
+      });
+    });
   }
 
   /* ---------------- arranque ---------------- */

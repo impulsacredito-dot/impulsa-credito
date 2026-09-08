@@ -121,7 +121,11 @@ var SITE_CONFIG = {
     recoverHref: "recuperar.html",  // pagina donde el cliente pone su contraseña nueva
     commissionPercent: 1,          // comisión por operación (%)
     minAmount: 100,                // monto mínimo por operación (S/)
-    maxAmount: 20000,              // monto máximo por operación (S/)
+    maxAmount: 30000,              // monto máximo por operación (S/)
+    // false = el cliente NO puede marcar su propia operación como pagada.
+    // Solo tú puedes darla por completada desde el panel de administración.
+    // Ponlo en true unicamente si quieres volver a hacer pruebas.
+    demoTools: false,
     maxCards: 30,
     maxAccounts: 10,
     verificationHours: "10:00 a.m. a 7:00 p.m. (lunes a sábado)",
