@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /app
 Disallow: /app.html
+Disallow: /admin
+Disallow: /admin.html
 
 Sitemap: https://impulsacredito.com/sitemap.xml

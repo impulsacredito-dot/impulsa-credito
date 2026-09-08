@@ -116,7 +116,7 @@
       html: list.length ? list.map(function (n) { return '<div class="notif-item"><b>' + esc(n.title) + "</b>" + esc(n.text) + '<br><span>' + IC.fmtDateTime(n.at) + "</span></div>"; }).join("") : "<p>No tienes notificaciones.</p>",
       actions: [{ label: "Cerrar", cls: "btn-outline-dark" }]
     });
-    if (NUBE) { (user.notifications || []).forEach(function (n) { n.read = true; }); }
+    if (NUBE) { IC.cloud.marcarAvisosLeidos(); (user.notifications || []).forEach(function (n) { n.read = true; }); }
     else { IC.auth.update(function (u) { (u.notifications || []).forEach(function (n) { n.read = true; }); }); }
     renderShell();
   });

@@ -106,6 +106,9 @@
     var tarj = await api("/rest/v1/tarjetas" + q + "&select=*", { headers: cab() });
     var ctas = await api("/rest/v1/cuentas" + q + "&select=*", { headers: cab() });
     var ops = await api("/rest/v1/operaciones" + q + "&select=*", { headers: cab() });
+    var avisos = [];
+    // la tabla de avisos existe solo si ya ejecutaste supabase-admin.sql
+    try { avisos = await api("/rest/v1/avisos?user_id=eq." + uid + "&order=creado_en.desc&select=*", { headers: cab() }); } catch (e) { avisos = []; }
 
     var datos = p && p[0] ? p[0] : {};
     var u = vacio();
@@ -114,16 +117,19 @@
     u.docType = datos.tipo_doc || "DNI"; u.doc = datos.documento || "";
     u.phone = datos.celular || ""; u.email = datos.email || "";
 
+    function estadoDoc(e) { return e === "verificado" || e === "verificada" ? "verified" : (e === "rechazado" ? "rejected" : "review"); }
+
     if (docs && docs.length) {
       u.identity = { front: null, back: null, selfie: null,
-                     status: docs[0].estado === "verificado" ? "verified" : "review",
+                     status: estadoDoc(docs[0].estado),
+                     motivo: docs[0].motivo || null,
                      submittedAt: new Date(docs[0].creado_en).getTime(), remoto: true };
     }
     u.cards = (tarj || []).map(function (t) {
       return { id: "c" + t.id, remoteId: t.id, bank: t.banco, brand: t.marca, last4: t.ultimos4,
                holder: t.titular, payDay: t.dia_pago, primary: !!t.principal,
                photoFront: null, photoBack: null, remoto: true,
-               status: t.estado === "verificada" ? "verified" : "review",
+               status: estadoDoc(t.estado), motivo: t.motivo || null,
                createdAt: new Date(t.creado_en).getTime() };
     });
     u.accounts = (ctas || []).map(function (c) {
@@ -141,6 +147,11 @@
                completedAt: o.estado === "completada" ? new Date(o.creado_en).getTime() : null,
                history: [] };
     });
+    u.notifications = (avisos || []).map(function (a) {
+      return { id: "av" + a.id, remoteId: a.id, title: a.titulo, text: a.texto || "",
+               at: new Date(a.creado_en).getTime(), read: !!a.leido };
+    });
+
     perfil = u;
     return u;
   }
@@ -291,6 +302,20 @@
       await api("/auth/v1/user", {
         method: "PUT", headers: cab(), body: JSON.stringify({ password: nueva })
       });
+    },
+
+    /* la campana los marca como vistos */
+    async marcarAvisosLeidos() {
+      if (!perfil || !sesion) return;
+      var sinLeer = (perfil.notifications || []).filter(function (n) { return !n.read && n.remoteId; });
+      if (!sinLeer.length) return;
+      try {
+        await api("/rest/v1/avisos?user_id=eq." + sesion.user.id + "&leido=is.false", {
+          method: "PATCH", headers: cab({ Prefer: "return=minimal" }),
+          body: JSON.stringify({ leido: true })
+        });
+        (perfil.notifications || []).forEach(function (n) { n.read = true; });
+      } catch (e) { /* si falla, se reintenta la proxima vez que abra la campana */ }
     },
 
     recargar: cargarTodo

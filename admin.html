@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administración — Impulsa Crédito</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="ad-body">
+
+<!-- ==================== ACCESO ==================== -->
+<div class="ad-login" id="adLogin">
+  <div class="ad-login-card">
+    <span class="brand-lockup ad-brand">
+      <img class="bl-mark" src="assets/logo-icon.png" alt="">
+      <span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Asesoría y Gestión Crediticia</span></span>
+    </span>
+
+    <h1>Panel de administración</h1>
+    <p class="ad-login-sub">Acceso exclusivo del equipo. Aquí se revisan los documentos de los clientes.</p>
+
+    <form id="adLoginForm" novalidate>
+      <div class="field">
+        <label for="adEmail">Correo</label>
+        <input type="email" id="adEmail" autocomplete="username" placeholder="contacto@impulsacredito.com" required>
+      </div>
+      <div class="field">
+        <label for="adPass">Contraseña</label>
+        <div class="pass-wrap">
+          <input type="password" id="adPass" autocomplete="current-password" placeholder="Tu contraseña" required>
+          <button type="button" class="pass-toggle" aria-label="Mostrar contraseña"></button>
+        </div>
+      </div>
+      <p class="form-error hidden" id="adLoginError"></p>
+      <button class="btn btn-primary btn-block btn-lg" id="adLoginBtn" type="submit">Entrar</button>
+    </form>
+
+    <p class="ad-login-nota">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Los datos de los clientes están protegidos en el servidor: sin permisos de administrador esta página no muestra nada.
+    </p>
+  </div>
+</div>
+
+<!-- ==================== PANEL ==================== -->
+<div class="ad-panel hidden" id="adPanel">
+  <header class="ad-top">
+    <span class="brand-lockup ad-brand sm">
+      <img class="bl-mark" src="assets/logo-icon.png" alt="">
+      <span class="bl-text"><span class="bl-name">Impulsa <b>Crédito</b></span><span class="bl-tag">Administración</span></span>
+    </span>
+    <div class="ad-top-acciones">
+      <button class="btn btn-outline-dark btn-sm" id="adRefrescar">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Actualizar
+      </button>
+      <button class="btn btn-ghost-dark btn-sm" id="adSalir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <nav class="ad-tabs">
+    <button class="ad-tab on" data-v="pendientes">Por revisar <span class="ad-badge" id="adBadge">0</span></button>
+    <button class="ad-tab" data-v="clientes">Clientes</button>
+    <button class="ad-tab" data-v="ops">Operaciones</button>
+  </nav>
+
+  <main class="ad-view" id="adView"></main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app-core.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
