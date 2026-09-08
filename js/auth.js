@@ -236,11 +236,11 @@
               IC.closeModal();
               if (r.ok) {
                 IC.modal({
-                  title: "Ya va en camino",
-                  html: "<p>Acabamos de enviar un correo a <b>" + IC.esc(correo) + "</b> con el enlace para crear tu contraseña nueva.</p>" +
-                        '<p class="muted mt-8">Suele llegar en menos de un minuto. Si no aparece, revisa la carpeta de <b>spam</b> o <b>promociones</b>: a veces se esconde ahí.</p>' +
+                  title: "Revisa tu correo",
+                  html: "<p>Enviamos a <b>" + IC.esc(correo) + "</b> el enlace para crear tu contraseña nueva.</p>" +
+                        '<p class="muted mt-8">Suele llegar en menos de un minuto. Si no aparece, revisa <b>spam</b> o <b>promociones</b>.</p>' +
                         '<p class="muted mt-8">¿Sigue sin llegar? Escríbenos por WhatsApp al <b>' +
-                        IC.esc((IC.cfg.contact && IC.cfg.contact.whatsappDisplay) || "") + '</b> y te ayudamos en el momento.</p>',
+                        IC.esc((IC.cfg.contact && IC.cfg.contact.whatsappDisplay) || "") + "</b>.</p>",
                   actions: [{ label: "Entendido", cls: "btn-primary" }]
                 });
               } else {
