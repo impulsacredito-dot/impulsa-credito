@@ -3,4 +3,4 @@ Allow: /
 Disallow: /app
 Disallow: /app.html
 
-Sitemap: https://impulsa-credito.vercel.app/sitemap.xml
+Sitemap: https://impulsacredito.com/sitemap.xml

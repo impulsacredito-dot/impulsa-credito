@@ -65,7 +65,7 @@ var SITE_CONFIG = {
     // Los clientes entran con DNI. Por dentro Supabase necesita un correo,
     // así que se arma solo: dni12345678@<authDomain>. Debe ser un dominio
     // que exista de verdad. Cuando compres tu dominio, ponlo aquí.
-    authDomain: "impulsa-credito.vercel.app"
+    authDomain: "impulsacredito.com"
   },
 
   /* ---------------------------------------------------------------
@@ -91,9 +91,9 @@ var SITE_CONFIG = {
      Formato: código de país + número, sin espacios, sin "+".
   --------------------------------------------------------------- */
   contact: {
-    whatsapp: "51999999999",          // <-- CAMBIA ESTE NÚMERO
-    whatsappDisplay: "999 999 999",   // cómo se muestra en pantalla
-    email: "contacto@impulsacredito.pe",
+    whatsapp: "51928266183",          // numero real (con 51 delante, sin espacios)
+    whatsappDisplay: "928 266 183",   // cómo se muestra en pantalla
+    email: "contacto@impulsacredito.com",
     city: "Lima, Perú",
     hoursLabel: "Lunes a Sábado, 10:00 a.m. – 7:00 p.m.",
     hoursShort: ["Lunes a Sábado", "10:00 a.m. – 7:00 p.m."],

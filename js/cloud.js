@@ -26,7 +26,7 @@
      Supabase EXIGE que el dominio exista de verdad en internet, por eso
      usamos el dominio del sitio. Cuando tengas tu dominio propio, cámbialo
      en js/config.js -> backend.authDomain */
-  var DOMINIO = (B.authDomain || "impulsa-credito.vercel.app").replace(/^@/, "").trim();
+  var DOMINIO = (B.authDomain || "impulsacredito.com").replace(/^@/, "").trim();
   function correoInterno(doc) {
     return "dni" + String(doc).replace(/[^A-Za-z0-9]/g, "") + "@" + DOMINIO;
   }
