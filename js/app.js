@@ -253,16 +253,35 @@
     canvas.addEventListener("pointerup", function (e) {
       if (!drawing) return;
       var r = norm(drawing, pos(e)); drawing = null;
-      if (r.w > 6 && r.h > 6) rects.push(r);
+      // Un arrastre casi recto sobre los numeros es lo natural: le damos
+      // grosor minimo para que tape de verdad en vez de ignorarlo.
+      if (r.w > 8 || r.h > 8) {
+        if (r.h < 16) { r.y = Math.max(0, r.y - 8); r.h = 16; }
+        if (r.w < 16) { r.x = Math.max(0, r.x - 8); r.w = 16; }
+        rects.push(r);
+      }
       redraw();
     });
     container.querySelector("[data-undo]").addEventListener("click", function () { rects.pop(); redraw(); });
     container.querySelector("[data-clear]").addEventListener("click", function () { rects = []; redraw(); });
     container.querySelector("[data-cancel]").addEventListener("click", onCancel);
-    container.querySelector("[data-done]").addEventListener("click", function () {
-      if (!rects.length && !confirm("No has tapado ningún dato. ¿Deseas continuar de todos modos?")) return;
+    function terminar() {
       redraw();
       IC.compressImage(canvas.toDataURL("image/jpeg", 0.85), 1100, 0.8).then(onDone);
+    }
+    container.querySelector("[data-done]").addEventListener("click", function () {
+      if (rects.length) { terminar(); return; }
+      // Sin confirm() del navegador: algunos lo bloquean y el editor se quedaba trabado.
+      IC.modal({
+        title: "No tapaste ningún dato",
+        html: "<p>Por tu seguridad conviene tapar el número completo de la tarjeta, la fecha de vencimiento y el CVV. " +
+              "Deja visibles solo tu <b>nombre</b> y los <b>últimos 4 dígitos</b>.</p>" +
+              '<p class="muted mt-8">Arrastra el dedo o el mouse por encima de los números para taparlos.</p>',
+        actions: [
+          { label: "Volver a taparlos", cls: "btn-primary" },
+          { label: "Continuar así", cls: "btn-outline-dark", onClick: terminar }
+        ]
+      });
     });
   }
 
