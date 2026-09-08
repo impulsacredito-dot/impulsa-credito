@@ -334,7 +334,7 @@
           var celdaTarjetas = c.tarjetas.length
             ? '<ul class="ad-mini-lista">' + muestra.map(function (t) {
                 return "<li>" + (t.principal ? '<i class="ad-punto" title="Principal"></i>' : '<i class="ad-punto vacio"></i>') +
-                  "<span><b>" + esc(t.banco || "") + "</b> " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + "</span>" +
+                  "<span><b>" + esc(t.banco || "") + "</b> ····" + esc(t.ultimos4 || "") + " <i>" + esc(t.marca || "") + "</i></span>" +
                   chip(t.estado) +
                   ((t.foto_frontal || t.foto_posterior) ? "" : '<span class="ad-chip err">sin foto</span>') + "</li>";
               }).join("") +

@@ -152,10 +152,10 @@
 .ad-tabla{width:100%;border-collapse:collapse;font-size:.84rem;min-width:720px;}
 .ad-tabla th{
   text-align:left;font-size:.7rem;font-weight:800;text-transform:uppercase;
-  letter-spacing:.06em;color:#6b7a72;padding:15px 14px;
+  letter-spacing:.06em;color:#6b7a72;padding:15px 11px;
   border-bottom:1px solid #eef1ef;white-space:nowrap;
 }
-.ad-tabla td{padding:14px;border-bottom:1px solid #f3f6f4;vertical-align:middle;}
+.ad-tabla td{padding:14px 11px;border-bottom:1px solid #f3f6f4;vertical-align:middle;}
 .ad-tabla tbody tr:last-child td{border-bottom:0;}
 .ad-tabla tbody tr:hover{background:#fafcfb;}
 .ad-sub{font-size:.74rem;color:#8a978f;}
@@ -232,10 +232,10 @@
 .ad-tabla td.num{text-align:center;font-weight:700;font-size:.95rem;}
 .ad-tabla th:nth-child(6),.ad-tabla th:nth-child(7){text-align:center;}
 
-.ad-col-cliente{min-width:190px;}
+.ad-col-cliente{min-width:165px;max-width:220px;}
 .ad-col-cliente b{display:block;line-height:1.35;}
 .ad-col-cliente .ad-sub{display:block;margin-top:2px;word-break:break-all;}
-.ad-col-tarjetas{min-width:240px;}
+.ad-col-tarjetas{min-width:300px;}
 
 /* lista compacta de tarjetas dentro de la fila */
 .ad-mini-lista{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;}
@@ -247,6 +247,7 @@
 .ad-mini-lista li > span{
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+.ad-mini-lista li > span i{font-style:normal;color:#8a978f;font-size:.76rem;}
 .ad-mini-lista li .ad-chip{font-size:.65rem;padding:3px 8px;justify-self:end;}
 .ad-mini-lista li.mas{
   display:block;font-size:.74rem;color:#8a978f;font-style:italic;padding-left:16px;
