@@ -26,6 +26,8 @@
   var datos = { pendientes: [], clientes: [], ops: [] };
   var vista = "pendientes";
   var fichaDe = null;   // cliente cuya ficha se esta viendo
+  var busqueda = "";     // texto escrito en el buscador
+  var filtro = "todos";  // todos | pendientes | activos | sin_identidad
   var cacheFotos = {};
 
   function $(id) { return document.getElementById(id); }
@@ -242,6 +244,16 @@
     var v = m[estado] || [estado || "—", ""];
     return '<span class="ad-chip ' + v[1] + '">' + esc(v[0]) + "</span>";
   }
+  /* Etiqueta corta, para que quepa en la lista de la tabla */
+  function chipCorto(estado) {
+    var m = {
+      en_revision: ["Revisión", "warn"], verificada: ["Verificada", "ok"], verificado: ["Verificada", "ok"],
+      rechazado: ["Rechazada", "err"]
+    };
+    var v = m[estado] || [estado || "—", ""];
+    return '<span class="ad-chip ' + v[1] + '">' + esc(v[0]) + "</span>";
+  }
+
   function nombre(c) {
     if (!c || !c.perfil) return "Cliente sin perfil";
     return ((c.perfil.nombres || "") + " " + (c.perfil.apellidos || "")).trim() || "Sin nombre";
@@ -322,10 +334,40 @@
         cont.innerHTML = '<div class="ad-vacio"><h3>Aún no hay clientes</h3><p>Aparecerán aquí en cuanto alguien se registre.</p></div>';
         return;
       }
-      cont.innerHTML = '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
+      /* Buscador y filtros: encontrar a alguien sin recorrer la lista */
+      var q = busqueda.trim().toLowerCase();
+      var lista = datos.clientes.filter(function (c) {
+        var idd = c.docs[0];
+        if (filtro === "pendientes") {
+          var hay = (idd && idd.estado === "en_revision") ||
+                    c.tarjetas.some(function (t) { return t.estado === "en_revision"; });
+          if (!hay) return false;
+        }
+        if (filtro === "activos" && !c.ops.length) return false;
+        if (filtro === "sin_identidad" && idd) return false;
+        if (!q) return true;
+        return (nombre(c) + " " + (c.perfil.documento || "") + " " + (c.perfil.celular || "") + " " +
+                (c.perfil.email || "")).toLowerCase().indexOf(q) >= 0;
+      });
+
+      var filtros = [["todos", "Todos"], ["pendientes", "Por revisar"], ["activos", "Con operaciones"], ["sin_identidad", "Sin identificar"]];
+
+      cont.innerHTML =
+        '<div class="ad-barra">' +
+          '<div class="ad-buscador">' +
+            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+            '<input id="adBuscar" type="search" placeholder="Buscar por nombre, DNI, celular o correo" value="' + esc(busqueda) + '">' +
+          "</div>" +
+          '<div class="ad-filtros">' + filtros.map(function (f) {
+            return '<button class="ad-filtro' + (filtro === f[0] ? " on" : "") + '" data-f="' + f[0] + '">' + f[1] + "</button>";
+          }).join("") + "</div>" +
+        "</div>" +
+        '<p class="ad-conteo">' + lista.length + (lista.length === 1 ? " cliente" : " clientes") +
+          (q || filtro !== "todos" ? " de " + datos.clientes.length : "") + "</p>" +
+        (lista.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla"><thead><tr>' +
         "<th>Cliente</th><th>Documento</th><th>Celular</th><th>DNI y selfie</th><th>Tarjetas</th><th>Cuentas</th><th>Ops.</th><th></th>" +
         "</tr></thead><tbody>" +
-        datos.clientes.map(function (c, i) {
+        lista.map(function (c, i) {
           var id = c.docs[0];
           /* Con varias tarjetas la fila se hacia larguisima: mostramos las
              dos primeras y el resto se ve completo en la ficha. */
@@ -333,9 +375,11 @@
           var resto = c.tarjetas.length - muestra.length;
           var celdaTarjetas = c.tarjetas.length
             ? '<ul class="ad-mini-lista">' + muestra.map(function (t) {
-                return "<li>" + (t.principal ? '<i class="ad-punto" title="Principal"></i>' : '<i class="ad-punto vacio"></i>') +
-                  "<span><b>" + esc(t.banco || "") + "</b> ····" + esc(t.ultimos4 || "") + " <i>" + esc(t.marca || "") + "</i></span>" +
-                  chip(t.estado) +
+                return "<li" + (t.principal ? ' class="es-principal"' : "") + ">" +
+                  '<span class="tx"><b>' + esc(t.banco || "") + "</b> ····" + esc(t.ultimos4 || "") +
+                    " <i>" + esc(t.marca || "") + "</i>" +
+                    (t.principal ? '<em title="Tarjeta principal">principal</em>' : "") + "</span>" +
+                  chipCorto(t.estado) +
                   ((t.foto_frontal || t.foto_posterior) ? "" : '<span class="ad-chip err">sin foto</span>') + "</li>";
               }).join("") +
               (resto > 0 ? '<li class="mas">y ' + resto + (resto === 1 ? " tarjeta más" : " tarjetas más") + "</li>" : "") +
@@ -354,12 +398,27 @@
               '<button class="btn btn-primary btn-sm" data-ficha="' + i + '">Ver ficha</button>' +
               '<button class="btn btn-outline-dark btn-sm" data-wac="' + i + '">WhatsApp</button>' +
             "</div></td></tr>";
-        }).join("") + "</tbody></table></div>";
+        }).join("") + "</tbody></table></div>"
+        : '<div class="ad-vacio"><h3>Sin resultados</h3><p>Prueba con otro nombre o quita los filtros.</p></div>');
+
+      var campo = $("adBuscar");
+      if (campo) {
+        campo.addEventListener("input", function () {
+          busqueda = campo.value;
+          var pos = campo.selectionStart;
+          render();
+          var nc = $("adBuscar");
+          if (nc) { nc.focus(); try { nc.setSelectionRange(pos, pos); } catch (e) {} }
+        });
+      }
+      cont.querySelectorAll(".ad-filtro").forEach(function (b) {
+        b.addEventListener("click", function () { filtro = b.dataset.f; render(); });
+      });
       cont.querySelectorAll("[data-wac]").forEach(function (b) {
-        b.addEventListener("click", function () { waCliente(datos.clientes[+b.dataset.wac].perfil); });
+        b.addEventListener("click", function () { waCliente(lista[+b.dataset.wac].perfil); });
       });
       cont.querySelectorAll("[data-ficha]").forEach(function (b) {
-        b.addEventListener("click", function () { fichaDe = +b.dataset.ficha; vista = "ficha"; render(); });
+        b.addEventListener("click", function () { fichaDe = datos.clientes.indexOf(lista[+b.dataset.ficha]); vista = "ficha"; render(); });
       });
       return;
     }

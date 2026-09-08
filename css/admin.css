@@ -238,30 +238,38 @@
 .ad-col-tarjetas{min-width:300px;}
 
 /* lista compacta de tarjetas dentro de la fila */
-.ad-mini-lista{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;}
-/* punto | texto | estado, siempre en la misma linea */
+.ad-mini-lista{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
+/* una tarjeta por linea: texto a la izquierda, estado a la derecha */
 .ad-mini-lista li{
-  display:grid;grid-template-columns:auto minmax(0,1fr) auto;
-  align-items:center;gap:8px;font-size:.82rem;line-height:1.3;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:.82rem;line-height:1.35;padding:5px 9px;border-radius:9px;
+  background:#f7faf8;border:1px solid #eef1ef;
 }
-.ad-mini-lista li > span{
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+/* la principal se distingue en NEGRO, el verde queda solo para el estado */
+.ad-mini-lista li.es-principal{background:#f2f4f3;border-color:#dfe5e2;}
+.ad-mini-lista li.es-principal .tx b{color:var(--black,#111);}
+.ad-mini-lista li .tx{
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.ad-mini-lista li > span i{font-style:normal;color:#8a978f;font-size:.76rem;}
-.ad-mini-lista li .ad-chip{font-size:.65rem;padding:3px 8px;justify-self:end;}
+.ad-mini-lista li .tx b{font-weight:800;}
+.ad-mini-lista li .tx i{font-style:normal;color:#8a978f;font-size:.76rem;}
+.ad-mini-lista li .tx em{
+  font-style:normal;font-size:.6rem;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;background:var(--black,#111);color:#fff;
+  padding:2px 7px;border-radius:999px;margin-left:7px;vertical-align:middle;
+}
+.ad-mini-lista li .ad-chip{font-size:.65rem;padding:3px 9px;flex:none;}
 .ad-mini-lista li.mas{
-  display:block;font-size:.74rem;color:#8a978f;font-style:italic;padding-left:16px;
+  background:transparent;border:0;padding:2px 9px;
+  font-size:.74rem;color:#8a978f;font-style:italic;justify-content:flex-start;
 }
+
 /* el contador de tarjetas, discreto encima de la lista */
 .ad-col-tarjetas > b{
   display:inline-block;font-size:.7rem;font-weight:800;color:#6b7a72;
   background:#eef1ef;border-radius:999px;padding:2px 9px;
 }
-.ad-punto{
-  width:8px;height:8px;border-radius:50%;flex:none;
-  background:var(--green,#22c55e);box-shadow:0 0 0 3px rgba(34,197,94,.16);
-}
-.ad-punto.vacio{background:#d3dbd7;box-shadow:none;}
+
 
 /* numeración de tarjetas dentro de la ficha */
 .ad-num-tarjeta{
@@ -272,4 +280,41 @@
 
 @media (max-width:720px){
   .ad-col-cliente,.ad-col-tarjetas{min-width:0;}
+}
+
+/* ---------------- Barra de busqueda y filtros ---------------- */
+.ad-barra{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(17,17,17,.06);
+}
+.ad-buscador{
+  flex:1 1 260px;display:flex;align-items:center;gap:9px;
+  background:#f7faf8;border:1px solid #eef1ef;border-radius:10px;padding:0 12px;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.ad-buscador:focus-within{
+  border-color:var(--green,#22c55e);box-shadow:0 0 0 3px rgba(34,197,94,.14);
+}
+.ad-buscador svg{color:#8a978f;flex:none;}
+.ad-buscador input{
+  flex:1;border:0;background:transparent;outline:none;
+  font-family:inherit;font-size:.87rem;color:var(--black,#111);padding:11px 0;
+}
+.ad-buscador input::placeholder{color:#98a59e;}
+
+.ad-filtros{display:flex;gap:6px;flex-wrap:wrap;}
+.ad-filtro{
+  border:1px solid #e3e8e5;background:#fff;cursor:pointer;
+  font-family:inherit;font-size:.78rem;font-weight:700;color:#5d6b63;
+  padding:9px 14px;border-radius:9px;white-space:nowrap;
+  transition:background .16s ease, color .16s ease, border-color .16s ease;
+}
+.ad-filtro:hover{background:#f2f7f4;color:var(--black,#111);}
+.ad-filtro.on{background:var(--black,#111);color:#fff;border-color:var(--black,#111);}
+
+@media (max-width:720px){
+  .ad-barra{padding:10px;}
+  .ad-filtros{width:100%;}
+  .ad-filtro{flex:1;text-align:center;padding:9px 8px;}
 }
