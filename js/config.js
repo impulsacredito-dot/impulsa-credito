@@ -379,6 +379,7 @@ var SITE_CONFIG = {
     subtitleLink: "escríbenos",
     subtitleAfter: "directamente.",
     items: [
+      { q: "¿Qué es Impulsa Crédito?", a: "Somos una empresa peruana de asesoría y gestión crediticia. Nuestro servicio principal es la efectivización de tarjetas de crédito: convertimos tu línea disponible en dinero en tu cuenta, en minutos y 100% digital. Además te asesoramos gratis si buscas un préstamo personal, hipotecario, vehicular o para tu negocio." },
       { q: "¿Qué significa efectivizar mi tarjeta?", a: "Es convertir la línea disponible de tu tarjeta de crédito en dinero depositado en tu cuenta bancaria. Pagas una comisión mucho menor que la de una disposición de efectivo o un retiro en cajero." },
       { q: "¿Cuánto cobran de comisión?", a: "El 1% del monto. Si efectivizas S/ 1,000, la comisión es S/ 10 y recibes S/ 990 en tu cuenta. Te confirmamos el monto exacto antes de hacer la operación. Sin costos ocultos." },
       { q: "¿Cuánto puedo efectivizar?", a: "Desde S/ 100 hasta S/ 30,000 por operación, siempre dentro de la línea disponible de tu tarjeta. Puedes hacer varias operaciones y usar más de una tarjeta si lo necesitas." },
