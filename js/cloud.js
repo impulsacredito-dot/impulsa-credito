@@ -74,7 +74,10 @@
     if (/signups? (not allowed|disabled)/i.test(msg)) return "El registro está temporalmente cerrado. Escríbenos por WhatsApp.";
     if (/User already registered|duplicate key/i.test(msg)) return "Ya existe una cuenta con ese correo. Inicia sesión o recupera tu contraseña.";
     if (/correo_de_documento|function .* does not exist/i.test(msg)) return "El sistema de acceso está en mantenimiento. Escríbenos por WhatsApp.";
-    if (/New password should be different/i.test(msg)) return "La contraseña nueva debe ser distinta a la anterior.";
+    if (/New password should be different/i.test(msg)) return "Elige una contraseña distinta a la que tenías antes.";
+    if (/pwned|leaked|compromised/i.test(msg)) return "Esa contraseña aparece en filtraciones conocidas. Elige otra más segura.";
+    if (/Password should be at least (\d+)/i.test(msg)) return "La contraseña debe tener al menos " + (msg.match(/at least (\d+)/)[1]) + " caracteres.";
+    if (/weak|too short/i.test(msg)) return "La contraseña es demasiado sencilla. Combina letras y números.";
     if (/expired|invalid.*token/i.test(msg)) return "El enlace ya caducó. Pide uno nuevo desde «Olvidé mi contraseña».";
     if (/Password should be at least/i.test(msg)) return "La contraseña debe tener al menos 8 caracteres.";
     if (/rate limit|too many/i.test(msg)) return "Demasiados intentos. Espera un momento e inténtalo de nuevo.";

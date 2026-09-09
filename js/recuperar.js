@@ -65,13 +65,22 @@
 
       btn.disabled = true; btn.textContent = "Guardando...";
 
-      /* El codigo se canjea AQUI, no al abrir la pagina */
-      var permiso = datos.permiso;
-      if (!permiso) {
-        try { permiso = await IC.cloud.canjearCodigo(datos.codigo); }
-        catch (ex) { ver("recInvalido"); return; }
+      /* El codigo se canjea AQUI, no al abrir la pagina.
+         Se GUARDA en datos.permiso: el codigo del correo solo sirve una
+         vez, asi que si la contrasena no gusta y hay que reintentar,
+         reutilizamos el permiso en lugar de volver a canjear (eso daba
+         un falso "enlace caducado" en el segundo intento). */
+      if (!datos.permiso) {
+        try { datos.permiso = await IC.cloud.canjearCodigo(datos.codigo); }
+        catch (ex) {
+          err.textContent = "El enlace ya caducó. Pide uno nuevo desde «Olvidé mi contraseña».";
+          err.classList.remove("hidden");
+          btn.disabled = false; btn.textContent = "Guardar contraseña";
+          setTimeout(function () { ver("recInvalido"); }, 2500);
+          return;
+        }
       }
-      var res = await IC.cloud.fijarPassword(permiso, p1.value);
+      var res = await IC.cloud.fijarPassword(datos.permiso, p1.value);
       if (res.ok) {
         /* Le recordamos con que datos entrar: el motivo mas comun de no
            poder acceder despues es no recordar el documento exacto. */
