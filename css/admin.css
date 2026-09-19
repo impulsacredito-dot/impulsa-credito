@@ -337,3 +337,14 @@
 .ad-tabla.ops td.dinero{white-space:nowrap;text-align:right;}
 .ad-tabla.ops th.dinero{text-align:right;}
 .ad-tabla.ops td.fecha{white-space:nowrap;font-size:.78rem;color:#6b7a72;}
+
+/* boton de descarga a Excel, en la barra de filtros */
+.ad-excel{
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  padding:9px 14px;font-size:.78rem;font-weight:700;
+}
+.ad-excel svg{flex:none;}
+.ad-excel:hover{color:#15803d;border-color:#15803d;}
+@media (max-width:720px){
+  .ad-excel{width:100%;justify-content:center;margin-top:2px;}
+}

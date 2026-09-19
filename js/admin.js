@@ -228,6 +228,82 @@
     });
   }
 
+  /* ---------------- Descargar a Excel / Google Sheets ----------------
+     Se genera un CSV pensado para Excel en espanol:
+       - separador ";" (Excel en espanol no parte por comas)
+       - BOM al inicio para que los acentos y la ñ salgan bien
+     Google Sheets lo abre igual: Archivo > Importar > Subir. */
+  function descargarCSV(nombre, filas) {
+    if (!filas.length) { IC.toast("No hay nada que descargar.", "err"); return; }
+    var cols = Object.keys(filas[0]);
+    var sep = ";";
+    function celda(v) {
+      if (v === null || v === undefined) return "";
+      var t = String(v);
+      if (t.indexOf(sep) >= 0 || t.indexOf('"') >= 0 || /[\r\n]/.test(t)) {
+        t = '"' + t.replace(/"/g, '""') + '"';
+      }
+      return t;
+    }
+    var csv = cols.join(sep) + "\r\n" +
+      filas.map(function (f) { return cols.map(function (c) { return celda(f[c]); }).join(sep); }).join("\r\n");
+
+    var hoy = new Date();
+    var fecha = hoy.getFullYear() + "-" + ("0" + (hoy.getMonth() + 1)).slice(-2) + "-" + ("0" + hoy.getDate()).slice(-2);
+    var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "impulsa-" + nombre + "-" + fecha + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    IC.toast("Descargado. \u00c1brelo con Excel o Google Sheets.", "ok");
+  }
+
+  /* Los clientes, tal como se ven en pantalla (respeta buscador y filtros) */
+  function exportarClientes(lista) {
+    descargarCSV("clientes", lista.map(function (c) {
+      var idd = c.docs[0];
+      return {
+        "DNI": c.perfil.documento || "",
+        "Cliente": nombre(c),
+        "Celular": c.perfil.celular || "",
+        "Correo": c.perfil.email || "",
+        "DNI y selfie": idd ? idd.estado : "sin subir",
+        "N tarjetas": c.tarjetas.length,
+        "Tarjetas": c.tarjetas.map(function (t) {
+          return (t.banco || "") + " " + (t.marca || "") + " ****" + (t.ultimos4 || "") + (t.principal ? " (principal)" : "");
+        }).join(" | "),
+        "N cuentas": c.cuentas.length,
+        "Cuentas": c.cuentas.map(function (a) { return (a.banco || "") + " " + (a.numero || ""); }).join(" | "),
+        "N operaciones": c.ops.length,
+        "Efectivizado": c.ops.reduce(function (x, o) { return o.estado === "completada" ? x + Number(o.monto || 0) : x; }, 0),
+        "Tu comision": c.ops.reduce(function (x, o) { return o.estado === "completada" ? x + Number(o.comision || 0) : x; }, 0),
+        "Se registro": c.perfil.creado_en ? IC.fmtDateTime(new Date(c.perfil.creado_en)) : "",
+        "Carpeta de fotos": c.perfil.id || ""
+      };
+    }));
+  }
+
+  /* Las operaciones, tal como se ven en pantalla */
+  function exportarOperaciones(lista) {
+    descargarCSV("operaciones", lista.map(function (o) {
+      return {
+        "Codigo": o.codigo || "",
+        "Fecha": o.creado_en ? IC.fmtDateTime(new Date(o.creado_en)) : "",
+        "Cliente": o.nombre || "",
+        "DNI": o.documento || "",
+        "Celular": o.celular || "",
+        "Tarjeta": (o.banco_tarjeta || "") + " ****" + (o.ultimos4 || ""),
+        "Banco destino": o.banco_cuenta || "",
+        "Cuenta destino": o.numero_cuenta || "",
+        "Monto": Number(o.monto || 0),
+        "Comision": Number(o.comision || 0),
+        "Recibe": Number(o.neto || 0),
+        "Estado": o.estado || ""
+      };
+    }));
+  }
+
   function waCliente(p) {
     var tel = String((p && p.celular) || "").replace(/\D/g, "");
     if (!tel) { IC.toast("Este cliente no dejó su celular.", "err"); return; }
@@ -363,6 +439,9 @@
           '<div class="ad-filtros">' + filtros.map(function (f) {
             return '<button class="ad-filtro' + (filtro === f[0] ? " on" : "") + '" data-f="' + f[0] + '">' + f[1] + "</button>";
           }).join("") + "</div>" +
+          '<button class="btn btn-outline-dark btn-sm ad-excel" id="adExpClientes" title="Descargar para Excel o Google Sheets">' +
+            '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 12l5 5 5-5M5 21h14"/></svg> Excel' +
+          "</button>" +
         "</div>" +
         '<p class="ad-conteo">' + lista.length + (lista.length === 1 ? " cliente" : " clientes") +
           (q || filtro !== "todos" ? " de " + datos.clientes.length : "") + "</p>" +
@@ -418,6 +497,7 @@
       cont.querySelectorAll(".ad-filtro").forEach(function (b) {
         b.addEventListener("click", function () { filtro = b.dataset.f; render(); });
       });
+      if ($("adExpClientes")) $("adExpClientes").addEventListener("click", function () { exportarClientes(lista); });
       cont.querySelectorAll("[data-wac]").forEach(function (b) {
         b.addEventListener("click", function () { waCliente(lista[+b.dataset.wac].perfil); });
       });
@@ -553,6 +633,9 @@
         '<div class="ad-filtros">' + filtrosOps.map(function (f) {
           return '<button class="ad-filtro' + (filtroOps === f[0] ? " on" : "") + '" data-fo="' + f[0] + '">' + f[1] + "</button>";
         }).join("") + "</div>" +
+        '<button class="btn btn-outline-dark btn-sm ad-excel" id="adExpOps" title="Descargar para Excel o Google Sheets">' +
+          '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 12l5 5 5-5M5 21h14"/></svg> Excel' +
+        "</button>" +
       "</div>" +
       (ops.length ? '<div class="ad-tabla-wrap"><table class="ad-tabla ops"><thead><tr>' +
       "<th>Código</th><th>Cliente</th><th>Tarjeta</th><th>Destino</th><th class=\"dinero\">Monto</th><th class=\"dinero\">Comisión</th><th class=\"dinero\">Recibe</th><th>Estado</th><th>Fecha</th><th>Acción</th>" +
@@ -588,6 +671,7 @@
     cont.querySelectorAll("[data-fo]").forEach(function (b) {
       b.addEventListener("click", function () { filtroOps = b.dataset.fo; render(); });
     });
+    if ($("adExpOps")) $("adExpOps").addEventListener("click", function () { exportarOperaciones(ops); });
     cont.querySelectorAll("[data-ok]").forEach(function (b) {
       b.addEventListener("click", function () { confirmarCompletada(ops[+b.dataset.ok]); });
     });
