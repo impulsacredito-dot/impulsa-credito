@@ -277,7 +277,7 @@ var SITE_CONFIG = {
       labelAmount: "Monto a efectivizar",
       labelFee: "Comisión",
       labelNet: "Recibes en tu cuenta",
-      quick: [1000, 2000, 5000, 10000],
+      quick: [1000, 5000, 10000, 20000, 30000],
       cta: { label: "Solicitar este monto →", href: "registro.html" },
       note: "Cálculo referencial. Te confirmamos la comisión exacta antes de realizar la operación."
     }
