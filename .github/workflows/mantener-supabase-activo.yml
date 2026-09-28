@@ -1,0 +1,102 @@
+# =====================================================================
+# IMPULSA CRÉDITO — Despertador de Supabase
+# =====================================================================
+# QUÉ HACE
+#   Cada día consulta tu base de datos una vez. Con eso Supabase la ve
+#   activa y nunca la pausa por inactividad (el plan gratuito duerme los
+#   proyectos que pasan 7 días sin uso, y entonces ni tú ni tus clientes
+#   pueden entrar).
+#
+# QUÉ NO HACE
+#   No lee ni modifica datos de tus clientes. Solo pregunta "¿estás
+#   despierta?" usando la misma llave pública que ya viaja en la web,
+#   y las reglas de seguridad devuelven una lista vacía.
+#
+# SI ALGÚN DÍA FALLA
+#   GitHub te manda un correo automático. Ese correo es tu alarma: algo
+#   le pasó a la base y conviene mirarlo antes de que lo note un cliente.
+#
+# PROBARLO A MANO
+#   GitHub → pestaña Actions → "Mantener Supabase activo" → botón
+#   "Run workflow". Sirve también para despertarla al instante.
+# =====================================================================
+
+name: Mantener Supabase activo
+
+on:
+  schedule:
+    # Todos los días a las 14:00 UTC = 9:00 a. m. en Perú.
+    - cron: "0 14 * * *"
+  # Botón para lanzarlo cuando quieras desde la pestaña Actions
+  workflow_dispatch:
+
+# Si por lo que sea se solapan dos ejecuciones, basta con la última
+concurrency:
+  group: latido-supabase
+  cancel-in-progress: true
+
+jobs:
+  latido:
+    name: Consultar la base de datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Descargar el proyecto
+        uses: actions/checkout@v4
+
+      - name: Leer la dirección y la llave desde js/config.js
+        id: datos
+        run: |
+          # Se leen del propio config.js para que esto siga funcionando
+          # aunque algún día cambies de proyecto en Supabase.
+          URL=$(grep -oP 'supabaseUrl:\s*"\K[^"]+' js/config.js | head -1)
+          KEY=$(grep -oP 'supabaseAnonKey:\s*"\K[^"]+' js/config.js | head -1)
+
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::No encontré supabaseUrl o supabaseAnonKey en js/config.js"
+            exit 1
+          fi
+
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "::add-mask::$KEY"
+          echo "key=$KEY" >> "$GITHUB_OUTPUT"
+          echo "Proyecto: $URL"
+
+      - name: Despertar la base de datos
+        run: |
+          URL="${{ steps.datos.outputs.url }}"
+          KEY="${{ steps.datos.outputs.key }}"
+
+          # Hasta 3 intentos: si la base estaba dormida, la primera
+          # petición la despierta y tarda un poco más de lo normal.
+          for INTENTO in 1 2 3; do
+            echo "Intento $INTENTO..."
+            CODIGO=$(curl -s -o /tmp/respuesta.txt -w "%{http_code}" --max-time 45 \
+              "$URL/rest/v1/perfiles?select=id&limit=1" \
+              -H "apikey: $KEY" \
+              -H "Authorization: Bearer $KEY")
+
+            if [ "$CODIGO" = "200" ]; then
+              echo "✓ La base respondió correctamente (HTTP 200)."
+              echo "Respuesta: $(head -c 120 /tmp/respuesta.txt)"
+              exit 0
+            fi
+
+            echo "Respondió $CODIGO. Reintento en 30 segundos..."
+            sleep 30
+          done
+
+          echo "::error::La base de datos no respondió tras 3 intentos (último código: $CODIGO)."
+          echo "::error::Entra a supabase.com y comprueba si el proyecto está pausado."
+          exit 1
+
+      - name: Comprobar que la web sigue en pie
+        # Aunque la base falle, conviene saber si la web responde
+        if: always()
+        run: |
+          CODIGO=$(curl -sL -o /dev/null -w "%{http_code}" --max-time 30 "https://impulsacredito.com")
+          echo "impulsacredito.com respondió: $CODIGO"
+          if [ "$CODIGO" != "200" ]; then
+            echo "::warning::La web no respondió con 200. Revisa Vercel."
+          fi
