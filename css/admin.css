@@ -235,12 +235,12 @@
 /* ---------------- Tabla de clientes: orden y respiro ---------------- */
 .ad-tabla td.nowrap{white-space:nowrap;}
 .ad-tabla td.num{text-align:center;font-weight:700;font-size:.95rem;}
-.ad-tabla th:nth-child(6),.ad-tabla th:nth-child(7){text-align:center;}
+.ad-tabla th.centro{text-align:center;}
 
 .ad-col-cliente{min-width:165px;max-width:220px;}
 .ad-col-cliente b{display:block;line-height:1.35;}
 .ad-col-cliente .ad-sub{display:block;margin-top:2px;word-break:break-all;}
-.ad-col-tarjetas{min-width:300px;}
+.ad-col-tarjetas{min-width:260px;}
 
 /* lista compacta de tarjetas dentro de la fila */
 .ad-mini-lista{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
@@ -334,6 +334,8 @@
 }
 
 /* Operaciones: importes y fechas nunca se parten en dos lineas */
+/* 10 columnas: un poco menos de aire para que "Acción" se vea sin desplazar en laptops */
+.ad-tabla.ops th,.ad-tabla.ops td{padding-left:8px;padding-right:8px;}
 .ad-tabla.ops td.dinero{white-space:nowrap;text-align:right;}
 .ad-tabla.ops th.dinero{text-align:right;}
 .ad-tabla.ops td.fecha{white-space:nowrap;font-size:.78rem;color:#6b7a72;}
@@ -347,4 +349,168 @@
 .ad-excel:hover{color:#15803d;border-color:#15803d;}
 @media (max-width:720px){
   .ad-excel{width:100%;justify-content:center;margin-top:2px;}
+}
+
+/* =====================================================================
+   Equipo: roles, resumen, historial, notas (panel v2)
+   ===================================================================== */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+/* quién está conectado */
+.ad-top-acciones{align-items:center;}
+.ad-usuario{font-size:.76rem;font-weight:600;color:#6b7a72;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* aviso del modo consulta */
+.ad-aviso-rol{
+  display:flex;gap:12px;align-items:flex-start;margin:0 0 16px;padding:14px 16px;border-radius:14px;
+  background:#fffbeb;border:1px solid #fde68a;color:#78350f;
+}
+.ad-aviso-rol svg{flex:none;margin-top:2px;color:#b45309;}
+.ad-aviso-rol p{margin:0;font-size:.84rem;line-height:1.5;}
+.ad-modo-consulta .ad-brand .bl-tag{color:#b45309;}
+
+/* títulos de sección dentro del resumen */
+.ad-h2{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6b7a72;margin:6px 0 10px;}
+
+/* tarjetas de resumen que llevan a su lista */
+.ad-kpi[data-ir]{cursor:pointer;transition:transform .16s ease, box-shadow .16s ease;}
+.ad-kpi[data-ir]:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,17,17,.10);}
+.ad-kpi[data-ir]:focus-visible{outline:3px solid var(--green,#22c55e);outline-offset:2px;}
+.ad-kpi.alerta{box-shadow:inset 4px 0 0 #f59e0b, 0 2px 14px rgba(17,17,17,.07);}
+
+.ad-resumen-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.ad-bloque h3{font-size:1rem;font-weight:800;margin:0 0 12px;}
+
+/* alertas */
+.ad-alertas{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.ad-alertas li{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 12px;border-radius:12px;background:#f7faf8;border:1px solid #eef1ef;
+  font-size:.84rem;line-height:1.45;
+}
+.ad-alertas li.warn{background:#fffbeb;border-color:#fde68a;}
+.ad-alertas li.err{background:#fef2f2;border-color:#fecaca;}
+.ad-alertas li .btn{flex:none;}
+.ad-alertas.compactas{margin-top:16px;}
+
+/* actividad / historial */
+.ad-actividad{list-style:none;margin:0;padding:0;}
+.ad-actividad li{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:9px 0;border-bottom:1px solid #f1f4f2;font-size:.84rem;line-height:1.45;
+}
+.ad-actividad li:last-child{border-bottom:0;}
+.ad-actividad time{flex:none;font-size:.74rem;color:#8a978f;white-space:nowrap;}
+
+/* enlace con aspecto de texto (nombre de cliente, actividad) */
+.ad-link{
+  background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;
+  text-decoration:underline;text-decoration-color:rgba(34,197,94,.55);text-underline-offset:3px;
+}
+.ad-link:hover{color:#15803d;}
+.ad-link:focus-visible{outline:2px solid var(--green,#22c55e);outline-offset:2px;border-radius:4px;}
+.ad-bajo{display:block;margin-top:2px;}
+
+/* documentos recibidos (vista de consulta, sin fotos) */
+.ad-recibidos{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;}
+.ad-recibidos li{font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:999px;}
+.ad-recibidos li.si{background:rgba(34,197,94,.14);color:#15803d;}
+.ad-recibidos li.no{background:#eef1ef;color:#8a978f;}
+
+/* paginación */
+.ad-pag{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0 0;font-size:.8rem;color:#6b7a72;font-weight:600;}
+
+/* periodo de operaciones y orden de clientes */
+.ad-periodos{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.ad-periodos .ad-sub{margin-left:6px;}
+.ad-orden{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#5d6b63;}
+.ad-orden select{
+  font-family:inherit;font-size:.82rem;font-weight:600;color:var(--black,#111);
+  border:1px solid #e3e8e5;border-radius:9px;padding:9px 10px;background:#fff;cursor:pointer;
+}
+.ad-barra .ad-filtros{flex-basis:100%;}
+
+/* ficha */
+.ad-volver{margin-bottom:16px;}
+.ad-tabla-wrap.plano{box-shadow:none;border:1px solid #eef1ef;}
+.ad-nota-form{display:flex;gap:10px;align-items:flex-start;}
+.ad-nota-form textarea{
+  flex:1;min-height:58px;resize:vertical;font-family:inherit;font-size:.86rem;
+  border:1.5px solid #e3e8e5;border-radius:12px;padding:10px 12px;background:#f7faf8;
+}
+.ad-nota-form textarea:focus{outline:none;border-color:var(--green,#22c55e);background:#fff;}
+.ad-notas{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.ad-notas li{background:#f7faf8;border:1px solid #eef1ef;border-radius:12px;padding:12px 14px;}
+.ad-notas p{margin:0 0 4px;font-size:.86rem;line-height:1.5;white-space:pre-wrap;}
+
+/* pie del panel */
+.ad-pie{margin-top:30px;text-align:center;font-size:.72rem;color:#98a59e;}
+
+/* foco visible en pestañas y filtros (teclado) */
+.ad-tab:focus-visible,.ad-filtro:focus-visible{outline:3px solid var(--green,#22c55e);outline-offset:2px;}
+
+@media (max-width:900px){
+  .ad-resumen-grid{grid-template-columns:1fr;}
+}
+
+/* ---------------- Tablas como tarjetas en el celular ----------------
+   Una tabla de 10 columnas no se lee en 360 px: cada fila pasa a ser una
+   tarjeta con su etiqueta a la izquierda y el dato a la derecha. */
+/* el texto oculto para lectores de pantalla no debe ensanchar la página */
+.ad-tabla-wrap{position:relative;}
+
+@media (max-width:720px){
+  .ad-usuario{display:none;}
+  .ad-top-acciones .btn{padding-left:12px;padding-right:12px;}
+  .ad-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;}
+  .ad-tab{flex:none;}
+}
+/* pantallas de menos de 1200 px: las tablas completas no caben sin
+   esconder columnas, así que cada fila pasa a ser una tarjeta */
+@media (max-width:1199px){
+  .ad-tabla.cards{min-width:0;font-size:.84rem;}
+  .ad-tabla.cards thead{display:none;}
+  .ad-tabla.cards tbody tr{display:block;padding:12px 14px;border-bottom:1px solid #eef1ef;}
+  .ad-tabla.cards tbody tr:hover{background:transparent;}
+  /* etiqueta a la izquierda; a la derecha, el dato (si tiene varias
+     líneas, una debajo de otra) */
+  .ad-tabla.cards td{
+    display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;row-gap:2px;
+    justify-items:end;align-items:start;
+    padding:5px 0;border:0;text-align:right;min-width:0;max-width:none;overflow-wrap:anywhere;
+  }
+  .ad-tabla.cards td > *{grid-column:2;}
+  .ad-tabla.cards td::before{
+    content:attr(data-label);grid-column:1;grid-row:1 / span 4;justify-self:start;text-align:left;padding-top:2px;
+    font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#6b7a72;
+  }
+  .ad-tabla.cards td[data-label=""]{grid-template-columns:minmax(0,1fr);}
+  .ad-tabla.cards td[data-label=""]::before{display:none;}
+  .ad-tabla.cards td[data-label=""] > *{grid-column:1;}
+  .ad-tabla.cards td.num{font-size:.9rem;}
+  .ad-tabla.cards td.ad-celda-acc{padding-top:10px;}
+  .ad-tabla.cards .ad-acc-op{flex-wrap:wrap;justify-content:flex-end;}
+  .ad-tabla.cards .ad-mini-lista{margin:0;}
+  .ad-tabla.cards .ad-col-cliente,.ad-tabla.cards .ad-col-tarjetas{min-width:0;max-width:none;}
+  .ad-tabla.cards .ad-col-cliente .ad-sub{word-break:break-all;}
+  .ad-tabla.cards .ad-link{text-align:right;}
+}
+/* tablets y laptops chicas: dos tarjetas por fila */
+@media (min-width:721px) and (max-width:1199px){
+  .ad-tabla.cards{display:block;}
+  .ad-tabla.cards tbody{display:grid;grid-template-columns:1fr 1fr;}
+  .ad-tabla.cards tbody tr{border-right:1px solid #eef1ef;}
+  .ad-tabla.cards tbody tr:nth-child(2n){border-right:0;}
+}
+@media (max-width:720px){
+  .ad-orden{flex:1 1 100%;}
+  .ad-orden select{flex:1;}
+  /* resumen más compacto: dos tarjetas por fila */
+  .ad-kpis{grid-template-columns:1fr 1fr;gap:10px;}
+  .ad-kpi{padding:14px;}
+  .ad-kpi b{font-size:1.08rem;}
+  .ad-kpi span{font-size:.62rem;}
+  .ad-nota-form{flex-direction:column;align-items:stretch;}
+  .ad-alertas li{flex-direction:column;align-items:flex-start;}
+  .ad-actividad li{flex-direction:column;gap:2px;}
 }

@@ -149,7 +149,9 @@
 
     document.getElementById("termsLink").addEventListener("click", function (e) {
       e.preventDefault();
-      IC.modal({ title: "Términos y condiciones", html: "<p>Impulsa Crédito es una empresa de asesoría y gestión crediticia. La efectivización se realiza mediante medios de pago autorizados y se cobra una comisión informada previamente. Tus datos e imágenes se usan únicamente para verificar tu identidad y la titularidad de tu tarjeta, conforme a la Ley de Protección de Datos Personales (Ley N.° 29733).</p><p class='mt-8'>Puedes solicitar la eliminación de tu información en cualquier momento desde Ajustes.</p>" });
+      var CL = IC.cfg.claims || {};
+      var opera = CL.company ? " (operado por " + IC.esc(CL.company) + (CL.ruc ? ", RUC " + IC.esc(CL.ruc) : "") + ")" : "";
+      IC.modal({ title: "Términos y condiciones", html: "<p>Impulsa Crédito" + opera + " es una empresa de asesoría y gestión crediticia. La efectivización se realiza mediante medios de pago autorizados y se cobra una comisión informada previamente. Tus datos e imágenes se usan únicamente para verificar tu identidad y la titularidad de tu tarjeta, conforme a la Ley de Protección de Datos Personales (Ley N.° 29733).</p><p class='mt-8'>Puedes solicitar la eliminación de tu información en cualquier momento desde Ajustes.</p>" });
     });
 
     reg.addEventListener("submit", async function (e) {

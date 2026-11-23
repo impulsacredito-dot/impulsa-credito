@@ -10,6 +10,10 @@
   document.getElementById("footerBrandName").textContent = (CFG.brand || {}).name || "";
   document.getElementById("footerCompanyLine").textContent = [C.company, C.ruc ? "RUC " + C.ruc : "", C.address].filter(Boolean).join(" · ");
   document.querySelectorAll(".js-brand-mark").forEach(function (i) { if (CFG.brand) i.src = CFG.brand.icon || CFG.brand.logo; });
+  /* razón social, RUC y domicilio dentro de términos y privacidad (desde config.js) */
+  document.querySelectorAll(".js-empresa").forEach(function (n) { if (C.company) n.textContent = C.company; });
+  document.querySelectorAll(".js-ruc").forEach(function (n) { if (C.ruc) n.textContent = "RUC " + C.ruc; });
+  document.querySelectorAll(".js-direccion").forEach(function (n) { if (C.address) n.textContent = C.address; });
   if (C.title) document.getElementById("claimsTitle").textContent = C.title;
   document.getElementById("claimsSubtitle").textContent = C.subtitle || "";
   document.getElementById("claimsCompany").textContent = [C.company, C.ruc ? "RUC " + C.ruc : "", C.address].filter(Boolean).join(" · ");

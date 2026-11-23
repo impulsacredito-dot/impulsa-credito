@@ -417,14 +417,14 @@ var SITE_CONFIG = {
     ],
     claimsLabel: "Libro de Reclamaciones",
     claimsHref: "reclamaciones.html",
-    legal: "Impulsa Crédito es una empresa de asesoría y gestión crediticia. La efectivización se realiza mediante medios de pago autorizados. No otorgamos préstamos directamente."
+    legal: "Impulsa Crédito es operado por PRIMEVISION CONSULTANCY S.A.C., empresa de asesoría y gestión crediticia. La efectivización se realiza mediante medios de pago autorizados. No otorgamos préstamos directamente."
   },
 
   /* ---------------------------------------------------------------
      16. LIBRO DE RECLAMACIONES (página reclamaciones.html)
   --------------------------------------------------------------- */
   claims: {
-    company: "IMPULSA CRÉDITO S.A.C.",   // <-- confirma que es la razón social exacta de tu ficha RUC en SUNAT
+    company: "PRIMEVISION CONSULTANCY S.A.C.",   // razón social (Impulsa Crédito es el nombre con el que opera)
     ruc: "20611536195",
     address: "CAL. FRANCISCO DEL CASTILLO NRO. 506, LIMA - LIMA - MIRAFLORES",   // domicilio fiscal, tal como figura en SUNAT
     title: "Libro de Reclamaciones",

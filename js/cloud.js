@@ -153,7 +153,8 @@
                amount: Number(o.monto), commission: Number(o.comision), net: Number(o.neto),
                commissionPct: Number((CFG.platform || {}).commissionPercent || 1),
                status: o.estado, createdAt: new Date(o.creado_en).getTime(),
-               completedAt: o.estado === "completada" ? new Date(o.creado_en).getTime() : null,
+               // fecha real del depósito (la marca el panel al completarla); las antiguas no la tienen
+               completedAt: o.estado === "completada" ? new Date(o.completada_en || o.creado_en).getTime() : null,
                history: [] };
     });
     u.notifications = (avisos || []).map(function (a) {

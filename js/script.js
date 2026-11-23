@@ -539,6 +539,7 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       name: (CFG.brand && CFG.brand.name) || "Impulsa Crédito",
+      legalName: cl.company,
       url: "https://impulsacredito.com/",
       logo: "https://impulsacredito.com/assets/logo-icon-dark.png",
       description: CFG.meta && CFG.meta.description,
