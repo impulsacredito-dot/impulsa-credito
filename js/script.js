@@ -172,8 +172,10 @@
       track.innerHTML = "";
       var logos = p.logos || (p.list || []).map(function (n) { return { name: n }; });
       // se duplica la lista para que el carrusel sea infinito y sin saltos
-      logos.concat(logos).forEach(function (item) {
+      logos.concat(logos).forEach(function (item, i) {
         var card = el("div", "logo-card");
+        // la segunda vuelta es solo visual: los lectores de pantalla leen cada logo una vez
+        if (i >= logos.length) card.setAttribute("aria-hidden", "true");
         card.innerHTML = item.file
           ? '<img src="' + item.file + '" alt="' + item.name + '">'
           : '<span class="logo-text">' + item.name + "</span>";
@@ -437,11 +439,11 @@
     var acc = document.getElementById("accordion");
     if (acc) {
       acc.innerHTML = "";
-      (f.items || []).forEach(function (item) {
+      (f.items || []).forEach(function (item, i) {
         var wrap = el("div", "acc-item");
         wrap.innerHTML =
-          '<button class="acc-trigger">' + item.q + '<span class="acc-icon">+</span></button>' +
-          '<div class="acc-panel"><p>' + item.a + '</p></div>';
+          '<button type="button" class="acc-trigger" aria-expanded="false" aria-controls="faq-panel-' + i + '" id="faq-q-' + i + '">' + item.q + '<span class="acc-icon" aria-hidden="true">+</span></button>' +
+          '<div class="acc-panel" id="faq-panel-' + i + '" role="region" aria-labelledby="faq-q-' + i + '"><p>' + item.a + '</p></div>';
         acc.appendChild(wrap);
       });
     }
@@ -466,6 +468,7 @@
     }
     setText("contactNumber", contact.whatsappDisplay);
     setText("contactHoursLabel", contact.hoursLabel);
+    setText("contactAddress", contact.address ? "📍 " + contact.address : "");
   }
 
   function renderFooter() {
@@ -514,13 +517,58 @@
       var mailA = el("a"); mailA.href = "mailto:" + contact.email; mailA.textContent = contact.email;
       contactWrap.appendChild(mailA);
 
-      var citySpan = el("span"); citySpan.textContent = contact.city;
+      var citySpan = el("span"); citySpan.textContent = contact.address || contact.city;
       contactWrap.appendChild(citySpan);
     }
+
+    /* razón social, RUC y domicilio fiscal (sección "claims" de config.js) */
+    var cl = CFG.claims || {};
+    setText("footerCompany", [cl.company, cl.ruc ? "RUC " + cl.ruc : "", cl.address].filter(Boolean).join(" · "));
+  }
+
+  /* ---------------------------------------------------------------
+     Datos estructurados para Google (JSON-LD), armados con los datos
+     de config.js: así nunca quedan desactualizados.
+  --------------------------------------------------------------- */
+  function renderStructuredData() {
+    var c = CFG.contact || {}, cl = CFG.claims || {};
+    var tel = c.whatsapp ? "+" + c.whatsapp : null;
+    // "Calle ... 506, Miraflores, Lima" -> calle, distrito, región
+    var dir = String(c.address || "").split(",").map(function (x) { return x.trim(); });
+    var data = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: (CFG.brand && CFG.brand.name) || "Impulsa Crédito",
+      url: "https://impulsacredito.com/",
+      logo: "https://impulsacredito.com/assets/logo-icon-dark.png",
+      description: CFG.meta && CFG.meta.description,
+      email: c.email,
+      telephone: tel,
+      taxID: cl.ruc,
+      address: c.address ? {
+        "@type": "PostalAddress",
+        streetAddress: dir[0],
+        addressLocality: dir[1],
+        addressRegion: dir[2],
+        addressCountry: "PE"
+      } : undefined,
+      contactPoint: tel ? {
+        "@type": "ContactPoint",
+        telephone: tel,
+        contactType: "customer service",
+        areaServed: "PE",
+        availableLanguage: "es"
+      } : undefined
+    };
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify(data);
+    document.head.appendChild(s);
   }
 
   function renderAll() {
     applyTheme();
+    renderStructuredData();
     applyMeta();
     renderHeader();
     renderHero();
@@ -691,11 +739,13 @@
       $all(".acc-item", accordion).forEach(function (other) {
         other.classList.remove("open");
         other.querySelector(".acc-panel").style.maxHeight = null;
+        other.querySelector(".acc-trigger").setAttribute("aria-expanded", "false");
       });
 
       if (!isOpen) {
         item.classList.add("open");
         panel.style.maxHeight = panel.scrollHeight + "px";
+        trigger.setAttribute("aria-expanded", "true");
       }
     });
   }
@@ -707,19 +757,47 @@
   var formNote = document.getElementById("formNote");
 
   if (applyForm) {
+    var enviando = false;
+
+    function avisar(texto, ok) {
+      if (!formNote) return;
+      formNote.textContent = texto;
+      formNote.style.color = ok ? "#16a34a" : "#dc2626";
+    }
+    function marcar(input, malo) {
+      if (malo) input.setAttribute("aria-invalid", "true");
+      else input.removeAttribute("aria-invalid");
+      return !malo;
+    }
+    /* celular peruano: 9 dígitos que empiezan con 9 (acepta +51 y espacios) */
+    function celularLimpio(v) {
+      var d = String(v || "").replace(/\D/g, "");
+      if (d.length === 11 && d.indexOf("51") === 0) d = d.slice(2);
+      return /^9\d{8}$/.test(d) ? d : "";
+    }
+
+    applyForm.addEventListener("input", function (e) {
+      if (e.target.getAttribute("aria-invalid") === "true") e.target.removeAttribute("aria-invalid");
+    });
+
     applyForm.addEventListener("submit", function (e) {
       e.preventDefault();
+      if (enviando) return;   // evita abrir WhatsApp dos veces por doble clic
 
       var name = applyForm.fname.value.trim();
-      var phone = applyForm.fphone.value.trim();
+      var phone = celularLimpio(applyForm.fphone.value);
       var type = applyForm.ftype.value;
-      var amount = applyForm.famount.value.trim();
+      var amountRaw = applyForm.famount.value.trim();
+      var amount = Number(amountRaw);
 
-      if (!name || !phone || !type) {
-        if (formNote) {
-          formNote.textContent = "Por favor completa los campos obligatorios.";
-          formNote.style.color = "#dc2626";
-        }
+      var errores = [];
+      if (!marcar(applyForm.fname, name.length < 3)) errores.push([applyForm.fname, "Escribe tu nombre completo."]);
+      if (!marcar(applyForm.fphone, !phone)) errores.push([applyForm.fphone, "Escribe un celular de 9 dígitos que empiece con 9."]);
+      if (!marcar(applyForm.ftype, !type)) errores.push([applyForm.ftype, "Elige qué necesitas."]);
+      if (!marcar(applyForm.famount, amountRaw !== "" && !(amount > 0))) errores.push([applyForm.famount, "El monto debe ser mayor a 0."]);
+      if (errores.length) {
+        avisar(errores[0][1], false);
+        errores[0][0].focus();
         return;
       }
 
@@ -727,17 +805,16 @@
       var lines = [
         "Hola " + ((CFG.brand && CFG.brand.name) || "") + ", " + intro,
         "Nombre: " + name,
-        "Celular: " + phone,
+        "Celular: " + phone.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3"),
         "Necesito: " + type
       ];
-      if (amount) lines.push("Monto aproximado: S/ " + amount);
+      if (amountRaw) lines.push("Monto aproximado: S/ " + Math.round(amount).toLocaleString("es-PE"));
 
       var url = waLink((CFG.contact && CFG.contact.whatsapp) || "", lines.join("\n"));
 
-      if (formNote) {
-        formNote.style.color = "#16a34a";
-        formNote.textContent = "¡Listo! Te llevamos a WhatsApp para enviar tu solicitud...";
-      }
+      enviando = true;
+      setTimeout(function () { enviando = false; }, 3000);
+      avisar("¡Listo! Te llevamos a WhatsApp para enviar tu solicitud...", true);
 
       window.open(url, "_blank", "noopener");
       applyForm.reset();

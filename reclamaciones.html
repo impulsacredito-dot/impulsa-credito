@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Libro de Reclamaciones — Impulsa Crédito</title>
+<meta name="description" content="Libro de Reclamaciones virtual de Impulsa Crédito, RUC 20611536195. Registra tu reclamo o queja conforme a la Ley N.° 29571. También: términos y condiciones y política de privacidad.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <meta name="theme-color" content="#111111">
 <meta name="author" content="Impulsa Crédito">
@@ -64,7 +65,7 @@
         </div>
         <div class="grid-2">
           <div class="field"><label>Tipo de documento *</label><select name="docType"><option>DNI</option><option>Carné de extranjería</option><option>Pasaporte</option><option>RUC</option></select></div>
-          <div class="field"><label>Número de documento *</label><input name="doc" inputmode="numeric" maxlength="12" placeholder="Ej. 76543210"><span class="error">Ingresa tu número de documento</span></div>
+          <div class="field"><label>Número de documento *</label><input name="doc" inputmode="numeric" maxlength="12" placeholder="Ej. 76543210"><span class="error">Revisa tu número (DNI: 8 dígitos · RUC: 11 dígitos)</span></div>
         </div>
         <div class="field"><label>Domicilio *</label><input name="domicilio" placeholder="Av. / Calle, número, distrito, provincia"><span class="error">Ingresa tu domicilio</span></div>
         <div class="grid-2">
@@ -92,9 +93,9 @@
       <section class="card mt-16">
         <div class="card-h"><div><h3><span class="sec-n">3</span> Detalle de la reclamación y pedido</h3><p>Cuéntanos qué ocurrió y qué solución esperas.</p></div></div>
         <div class="field"><label>Tipo *</label>
-          <div class="choice-grid">
-            <div class="choice active" data-tipo="Reclamo"><div class="radio"></div><h4>Reclamo</h4><p id="defRec"></p></div>
-            <div class="choice" data-tipo="Queja"><div class="radio"></div><h4>Queja</h4><p id="defQueja"></p></div>
+          <div class="choice-grid" role="radiogroup" aria-label="Tipo de reclamación">
+            <div class="choice active" data-tipo="Reclamo" role="radio" aria-checked="true" tabindex="0"><div class="radio"></div><h4>Reclamo</h4><p id="defRec"></p></div>
+            <div class="choice" data-tipo="Queja" role="radio" aria-checked="false" tabindex="-1"><div class="radio"></div><h4>Queja</h4><p id="defQueja"></p></div>
           </div>
         </div>
         <div class="field"><label>Detalle *</label><textarea name="detalle" rows="4" placeholder="Describe con el mayor detalle posible lo ocurrido, incluyendo fechas."></textarea><span class="error">Describe tu reclamo o queja</span></div>

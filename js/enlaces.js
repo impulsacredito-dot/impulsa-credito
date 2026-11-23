@@ -52,6 +52,8 @@
     .map(function (t) { return "<li>" + CHECK + t + "</li>"; }).join("");
   $("lnPct").textContent = pct;
   $("lnAnio").textContent = new Date().getFullYear();
+  var RUC = (CFG.claims || {}).ruc;
+  if (RUC) $("lnRuc").textContent = "RUC " + RUC;
   var h = K.hoursShort || [];
   $("lnNota").textContent = "Te respondemos en minutos" + (h.length ? " · " + h.join(", ") : "");
 

@@ -243,6 +243,32 @@
     return "https://wa.me/" + (c.whatsapp || "") + "?text=" + encodeURIComponent(message || c.defaultMessage || "");
   }
 
+  /* ---------- accesibilidad: une cada <label> con su campo ----------
+     En los formularios (.field) la etiqueta va antes del campo sin "for".
+     Esto la enlaza sola: al tocar el texto se activa el campo y los
+     lectores de pantalla anuncian qué se pide. También para los
+     formularios que la plataforma dibuja después de cargar. */
+  var nLabel = 0;
+  function linkLabels(root) {
+    (root || document).querySelectorAll(".field").forEach(function (box) {
+      var label = box.querySelector("label:not([for])");
+      if (!label || label.querySelector("input,select,textarea")) return;
+      var input = box.querySelector("input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea");
+      if (!input) return;
+      if (!input.id) input.id = "campo-" + (input.name || "x") + "-" + (++nLabel);
+      label.htmlFor = input.id;
+    });
+  }
+  linkLabels(document);
+  if ("MutationObserver" in window) {
+    var pendienteLabels = false;
+    new MutationObserver(function () {
+      if (pendienteLabels) return;
+      pendienteLabels = true;
+      setTimeout(function () { pendienteLabels = false; linkLabels(document); }, 60);
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
   window.IC = {
     cfg: CFG, p: P, load: load, save: save, auth: auth,
     uid: uid, esc: esc, money: money, fmtDate: fmtDate, fmtDateTime: fmtDateTime, initials: initials, greeting: greeting, opCode: opCode,

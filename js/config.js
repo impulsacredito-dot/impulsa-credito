@@ -23,7 +23,8 @@ var SITE_CONFIG = {
   --------------------------------------------------------------- */
   meta: {
     title: "Impulsa Crédito — Efectiviza tu tarjeta de crédito al instante",
-    description: "Convierte la línea disponible de tu tarjeta de crédito en efectivo, depositado directo a tu cuenta el mismo día. 100% digital, seguro y con la mejor comisión. Además, asesoría crediticia gratuita."
+    // máximo ~160 caracteres: Google corta lo que pase de ahí
+    description: "Efectiviza la línea de tu tarjeta de crédito con 1% de comisión y recibe el dinero en tu cuenta en minutos. Además, asesoría gratis para conseguir tu préstamo."
   },
 
   /* ---------------------------------------------------------------
@@ -91,10 +92,12 @@ var SITE_CONFIG = {
      Formato: código de país + número, sin espacios, sin "+".
   --------------------------------------------------------------- */
   contact: {
-    whatsapp: "51928266183",          // numero real (con 51 delante, sin espacios)
-    whatsappDisplay: "928 266 183",   // cómo se muestra en pantalla
+    whatsapp: "51983808849",          // numero real (con 51 delante, sin espacios)
+    whatsappDisplay: "983 808 849",   // cómo se muestra en pantalla
     email: "contacto@impulsacredito.com",
     city: "Lima, Perú",
+    // dirección para mostrar en la web (la versión oficial de SUNAT está en "claims", más abajo)
+    address: "Calle Francisco del Castillo 506, Miraflores, Lima",
     hoursLabel: "Lunes a Sábado, 10:00 a.m. – 7:00 p.m.",
     hoursShort: ["Lunes a Sábado", "10:00 a.m. – 7:00 p.m."],
     defaultMessage: "Hola Impulsa Crédito, quiero efectivizar mi tarjeta de crédito"
@@ -421,9 +424,9 @@ var SITE_CONFIG = {
      16. LIBRO DE RECLAMACIONES (página reclamaciones.html)
   --------------------------------------------------------------- */
   claims: {
-    company: "IMPULSA CRÉDITO S.A.C.",
-    ruc: "20000000000",           // <-- COLOCA TU RUC REAL
-    address: "Av. Ejemplo 123, Lima, Perú",
+    company: "IMPULSA CRÉDITO S.A.C.",   // <-- confirma que es la razón social exacta de tu ficha RUC en SUNAT
+    ruc: "20611536195",
+    address: "CAL. FRANCISCO DEL CASTILLO NRO. 506, LIMA - LIMA - MIRAFLORES",   // domicilio fiscal, tal como figura en SUNAT
     title: "Libro de Reclamaciones",
     subtitle: "Conforme al Código de Protección y Defensa del Consumidor (Ley N.° 29571), ponemos a tu disposición nuestro Libro de Reclamaciones virtual.",
     deadlineNote: "El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles, pudiendo ampliarlo hasta por quince (15) días adicionales previa comunicación al consumidor.",

@@ -1,2 +1,18 @@
-# Material interno: vive en el repositorio pero no se publica en impulsacredito.com
+# Archivos que viven en el repositorio pero NO se publican en impulsacredito.com
+
+# Material interno de redes sociales
 redes-sociales/
+
+# Estructura y reglas de la base de datos (Supabase): solo para ti
+*.sql
+
+# Configuración de herramientas (GitHub, VS Code, Claude)
+.github/
+.vscode/
+.claude/
+
+# Plantilla del correo de recuperación (se pega en Supabase, no es una página)
+correo-recuperacion.html
+
+# Documentación interna
+README.md

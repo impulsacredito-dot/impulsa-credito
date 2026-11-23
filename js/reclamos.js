@@ -22,12 +22,23 @@
   var form = document.getElementById("claimsForm");
   var tipo = "Reclamo";
 
-  /* selector Reclamo / Queja */
-  form.querySelectorAll(".choice").forEach(function (c) {
-    c.addEventListener("click", function () {
-      form.querySelectorAll(".choice").forEach(function (x) { x.classList.remove("active"); });
-      c.classList.add("active");
-      tipo = c.dataset.tipo;
+  /* selector Reclamo / Queja (también con teclado: Tab, flechas, Enter o Espacio) */
+  var choices = Array.prototype.slice.call(form.querySelectorAll(".choice"));
+  function elegir(c, enfocar) {
+    choices.forEach(function (x) {
+      var on = x === c;
+      x.classList.toggle("active", on);
+      x.setAttribute("aria-checked", on ? "true" : "false");
+      x.tabIndex = on ? 0 : -1;
+    });
+    tipo = c.dataset.tipo;
+    if (enfocar) c.focus();
+  }
+  choices.forEach(function (c, i) {
+    c.addEventListener("click", function () { elegir(c); });
+    c.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); elegir(c); }
+      if (/^Arrow/.test(e.key)) { e.preventDefault(); elegir(choices[(i + 1) % choices.length], true); }
     });
   });
 
@@ -53,6 +64,12 @@
     required.forEach(function (n) { if (!mark(f(n), !f(n).value.trim())) ok = false; });
     if (f("email").value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f("email").value)) { mark(f("email"), true); ok = false; }
     if (f("phone").value && !/^\d{6,12}$/.test(f("phone").value.replace(/\s/g, ""))) { mark(f("phone"), true); ok = false; }
+    /* el número de documento debe tener el formato de su tipo */
+    var docV = f("doc").value.trim(), docT = f("docType").value;
+    var docOk = docT === "DNI" ? /^\d{8}$/.test(docV)
+      : docT === "RUC" ? /^(10|15|16|17|20)\d{9}$/.test(docV)
+      : /^[A-Za-z0-9]{6,12}$/.test(docV);
+    if (docV && !docOk) { mark(f("doc"), true); ok = false; }
     if (!mark(f("acepta"), !f("acepta").checked)) ok = false;
     if (document.getElementById("menor").checked) {
       if (!mark(f("tutor"), !f("tutor").value.trim())) ok = false;

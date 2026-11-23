@@ -72,7 +72,7 @@
     nombres: function (v) { return v.trim().length >= 2; },
     apellidos: function (v) { return v.trim().length >= 2; },
     doc: function (v, form) { var t = field(form, "docType") ? field(form, "docType").value : "DNI"; return t === "DNI" ? /^\d{8}$/.test(v.trim()) : /^[A-Za-z0-9]{9,12}$/.test(v.trim()); },
-    phone: function (v) { return /^\d{9}$/.test(v.replace(/\s/g, "")); },
+    phone: function (v) { return /^9\d{8}$/.test(v.replace(/\s/g, "")); },   // celular peruano: 9 dígitos, empieza con 9
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
     password: function (v) { return v.length >= 8 && /\d/.test(v); },
     password2: function (v, form) { return v === field(form, "password").value && v.length > 0; }

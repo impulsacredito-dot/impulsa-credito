@@ -489,7 +489,14 @@ button{font-family:inherit;}
 @media (max-width:820px){
   .claims-hero{flex-direction:column;align-items:flex-start;}
   .claims-header .brand-logo{height:38px;}
+  .claims-header .brand-lockup{font-size:38px;}
 }
+/* celulares chicos: sin el lema, el logo y "Volver al inicio" caben en una línea */
+@media (max-width:420px){
+  .claims-header .brand-lockup .bl-tag{display:none;}
+}
+/* Reclamo / Queja se puede elegir con teclado: que se vea dónde está el foco */
+.claims-body .choice:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
 
 /* skeleton */
 .skel{background:linear-gradient(90deg,#eef2ef 25%,#f7f9f8 50%,#eef2ef 75%);background-size:200% 100%;animation:skel 1.2s infinite;border-radius:8px;}

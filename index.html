@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Impulsa Crédito — Asesoría y Gestión Crediticia</title>
-<meta id="pageDescription" name="description" content="Impulsa Crédito: efectiviza tu tarjeta de crédito al instante.">
+<title id="pageTitle">Impulsa Crédito — Efectiviza tu tarjeta de crédito al instante</title>
+<meta id="pageDescription" name="description" content="Efectiviza la línea de tu tarjeta de crédito con 1% de comisión y recibe el dinero en tu cuenta en minutos. Además, asesoría gratis para conseguir tu préstamo.">
 <link id="faviconLink" rel="icon" type="image/png" href="assets/favicon.png">
 <meta name="theme-color" content="#111111">
 <meta name="author" content="Impulsa Crédito">
@@ -44,7 +44,7 @@
     <nav class="main-nav" id="mainNav"></nav>
 
     <div class="header-actions">
-      <a href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm js-wa-link" id="headerWhatsapp" data-wa-msg="default">
+      <a href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm js-wa-link" id="headerWhatsapp" data-wa-msg="default" aria-label="Contáctanos por WhatsApp" title="Contáctanos por WhatsApp">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.6 0-3.1-.44-4.38-1.2l-.31-.19-3 .78.8-2.93-.2-.3A7.94 7.94 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.4-5.6c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>
         <span id="headerWhatsappLabel">Contáctanos</span>
       </a>
@@ -78,8 +78,9 @@
     <div class="container hero-grid">
       <div class="hero-copy" data-reveal>
         <span class="badge" id="heroBadge"></span>
-        <h1 id="heroTitle"></h1>
-        <p class="hero-sub" id="heroSubtitle"></p>
+        <!-- texto de respaldo para buscadores; js/config.js lo reemplaza al cargar -->
+        <h1 id="heroTitle">Convierte tu tarjeta en<br><span class="hl">efectivo</span><br>al instante.</h1>
+        <p class="hero-sub" id="heroSubtitle">Efectivizamos la línea de tu tarjeta de crédito y te depositamos el dinero directo a tu cuenta bancaria, en minutos. Solo 1% de comisión, 100% digital y sin papeles.</p>
 
         <div class="hero-cta">
           <a href="#solicitar" class="btn btn-primary btn-lg" id="heroCtaPrimary"></a>
@@ -223,11 +224,11 @@
       <form class="apply-form" id="applyForm" data-reveal>
         <div class="form-row">
           <label for="fname" id="labelName">Nombre completo</label>
-          <input type="text" id="fname" name="fname" placeholder="Ej. María Torres" required>
+          <input type="text" id="fname" name="fname" placeholder="Ej. María Torres" autocomplete="name" required>
         </div>
         <div class="form-row">
           <label for="fphone" id="labelPhone">Celular / WhatsApp</label>
-          <input type="tel" id="fphone" name="fphone" placeholder="999 999 999" required>
+          <input type="tel" id="fphone" name="fphone" placeholder="999 999 999" autocomplete="tel" inputmode="tel" maxlength="16" required>
         </div>
         <div class="form-row">
           <label for="ftype" id="labelType">¿Qué necesitas?</label>
@@ -237,13 +238,13 @@
         </div>
         <div class="form-row">
           <label for="famount" id="labelAmount">Monto aproximado (S/)</label>
-          <input type="number" id="famount" name="famount" placeholder="Ej. 3000" min="0">
+          <input type="number" id="famount" name="famount" placeholder="Ej. 3000" min="1" inputmode="numeric">
         </div>
         <button type="submit" class="btn btn-primary btn-lg btn-block">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
           <span id="applySubmitLabel">Enviar por WhatsApp</span>
         </button>
-        <p class="form-note" id="formNote"></p>
+        <p class="form-note" id="formNote" role="status" aria-live="polite"></p>
       </form>
     </div>
   </section>
@@ -273,6 +274,7 @@
         <p class="contact-label">WHATSAPP</p>
         <p class="contact-number" id="contactNumber"></p>
         <p class="contact-hours" id="contactHoursLabel"></p>
+        <p class="contact-hours" id="contactAddress"></p>
         <a href="#" target="_blank" rel="noopener" class="btn btn-primary btn-block js-wa-link" data-wa-msg="default" id="contactCtaButton"></a>
       </div>
     </div>
@@ -290,15 +292,15 @@
       <p id="footerTagline"></p>
     </div>
     <div class="footer-col">
-      <h4 id="footerNavTitle"></h4>
+      <h3 id="footerNavTitle"></h3>
       <div id="footerNav"></div>
     </div>
     <div class="footer-col">
-      <h4 id="footerContactTitle"></h4>
+      <h3 id="footerContactTitle"></h3>
       <div id="footerContact"></div>
     </div>
     <div class="footer-col">
-      <h4 id="footerLegalTitle"></h4>
+      <h3 id="footerLegalTitle"></h3>
       <div id="footerLegalLinks"></div>
       <a href="reclamaciones.html" class="claims-badge" id="claimsBadge">
         <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8.5 4.5 6 4.5c-1 0-2 .1-2.8.3v13c.8-.2 1.8-.3 2.8-.3 2.5 0 4.5.5 6 2 1.5-1.5 3.5-2 6-2 1 0 2 .1 2.8.3v-13c-.8-.2-1.8-.3-2.8-.3-2.5 0-4.5.5-6 2zM12 6.5v13"/></svg>
@@ -307,7 +309,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© <span id="year"></span> <span id="footerBrandName"></span>. Todos los derechos reservados.</p>
+    <p>© <span id="year"></span> <span id="footerBrandName"></span>. Todos los derechos reservados.<br><span id="footerCompany"></span></p>
     <p class="footer-legal" id="footerLegal"></p>
   </div>
 </footer>
