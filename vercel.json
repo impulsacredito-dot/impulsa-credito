@@ -6,7 +6,9 @@
       "has": [{ "type": "host", "value": "impulsa-credito.vercel.app" }],
       "destination": "https://impulsacredito.com/$1",
       "permanent": true
-    }
+    },
+    { "source": "/ig", "destination": "/enlaces?src=ig", "permanent": false },
+    { "source": "/tt", "destination": "/enlaces?src=tt", "permanent": false }
   ],
   "headers": [
     {

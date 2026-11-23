@@ -1,0 +1,1046 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de redes Impulsa Crédito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&display=swap" rel="stylesheet">
+<style>
+/* Layout: manual de marca — panel oscuro de marca arriba, índice fijo, el esquema de las dos líneas como eje, maquetas de teléfono y bloques listos para copiar */
+:root{
+  --bg:#f3f7f4; --surface:#ffffff; --surface-2:#e9f1ec; --ink:#10151a; --muted:#56655d; --line:rgba(16,21,26,.11);
+  --accent:#15803d; --brand:#22c55e; --brand-ink:#08130c; --brand-soft:rgba(34,197,94,.15);
+  --warn:#9a4a07; --warn-soft:rgba(217,119,6,.13);
+  --night:#0d100f; --night-2:#161b19; --night-ink:#f2f6f3; --night-muted:#a3b3aa; --night-line:rgba(255,255,255,.12); --night-accent:#4ade80;
+  --font:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r-s:10px; --r-m:16px; --r-l:24px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0e0d; --surface:#131816; --surface-2:#1b211e; --ink:#eef3f0; --muted:#a0b2a8; --line:rgba(255,255,255,.10);
+    --accent:#4ade80; --brand-soft:rgba(34,197,94,.17); --warn:#fbbf24; --warn-soft:rgba(251,191,36,.12);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0e0d; --surface:#131816; --surface-2:#1b211e; --ink:#eef3f0; --muted:#a0b2a8; --line:rgba(255,255,255,.10);
+  --accent:#4ade80; --brand-soft:rgba(34,197,94,.17); --warn:#fbbf24; --warn-soft:rgba(251,191,36,.12);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;line-height:1.12;letter-spacing:-.03em;text-wrap:balance}
+p{margin:0}
+a{color:var(--accent)}
+img{max-width:100%;display:block}
+code{font-family:var(--font);font-weight:700;font-size:.9em}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px}
+@media (max-width:480px){.wrap{padding-inline:16px}}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+
+/* ---------- portada ---------- */
+.hero{background:
+  radial-gradient(60% 70% at 100% 0%, rgba(34,197,94,.28) 0%, rgba(34,197,94,0) 70%),
+  radial-gradient(50% 60% at 0% 100%, rgba(34,197,94,.12) 0%, rgba(34,197,94,0) 70%), var(--night);
+  color:var(--night-ink);padding-block:56px 48px}
+.marca{display:flex;align-items:center;gap:12px;font-weight:800;font-size:.95rem;letter-spacing:-.01em;flex-wrap:wrap}
+.marca img{width:40px;height:40px;border-radius:50%}
+.marca b{color:var(--brand)}
+.marca span{font-weight:600;color:var(--night-muted)}
+.hero h1{margin-top:28px;font-size:clamp(2.3rem,6vw,4.4rem);font-weight:900;letter-spacing:-.045em;max-width:15ch}
+.hl{background:var(--brand);color:var(--brand-ink);padding:0 .14em .04em;border-radius:.16em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hero .bajada{margin-top:20px;max-width:62ch;font-size:1.08rem;font-weight:500;color:var(--night-muted)}
+.cifras{display:flex;flex-wrap:wrap;gap:12px;margin:32px 0 0;padding:0;list-style:none}
+.cifras li{padding:14px 18px;border:1px solid var(--night-line);border-radius:var(--r-m);background:rgba(255,255,255,.04);min-width:150px;flex:1 1 150px;max-width:240px}
+.cifras b{display:block;font-size:1.7rem;font-weight:900;color:var(--night-accent);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.cifras span{font-size:.82rem;font-weight:600;color:var(--night-muted)}
+
+/* ---------- índice ---------- */
+.indice{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.indice .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+.indice .wrap::-webkit-scrollbar{display:none}
+.indice a{flex:none;font-size:.82rem;font-weight:700;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;border:1px solid transparent}
+.indice a:hover{color:var(--ink);border-color:var(--line)}
+
+/* ---------- secciones ---------- */
+main section{padding-block:64px 8px;scroll-margin-top:64px}
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.eyebrow:before{content:"";width:22px;height:2px;border-radius:2px;background:var(--brand)}
+.sec-titulo{margin-top:10px;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:900}
+.sec-intro{margin-top:12px;max-width:68ch;color:var(--muted);font-size:1.02rem}
+h3.sub{margin-top:40px;font-size:1.25rem;font-weight:800}
+.nota-sub{margin-top:6px;color:var(--muted);font-size:.95rem;max-width:68ch}
+
+.rejilla{display:grid;gap:16px;margin-top:22px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.tarjeta{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);padding:22px;min-width:0}
+.tarjeta h4{font-size:1.05rem;font-weight:800}
+.tarjeta p{margin-top:8px;color:var(--muted);font-size:.93rem}
+.tarjeta ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:.93rem}
+.tarjeta li+li{margin-top:4px}
+.etq{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:var(--brand-soft);padding:4px 9px;border-radius:999px}
+.etq.ef{background:var(--brand);color:var(--brand-ink)}
+
+/* ---------- el esquema de la marca (como el dibujo: una raíz, dos ramas) ---------- */
+.arbol{margin-top:28px;background:var(--night);color:var(--night-ink);border-radius:var(--r-l);padding:28px}
+.arbol-raiz{display:flex;align-items:center;gap:12px;font-size:1.5rem;font-weight:900;letter-spacing:-.03em}
+.arbol-raiz img{width:44px;height:44px;border-radius:50%}
+.arbol-raiz b{color:var(--brand)}
+.ramas{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);margin-top:22px;border-top:5px solid var(--brand)}
+.ramas > div{padding-top:24px;min-width:0}
+.ramas > div + div{border-left:5px solid var(--night-accent);padding-left:26px;margin-left:26px}
+@media (max-width:680px){
+  .ramas{grid-template-columns:minmax(0,1fr)}
+  .ramas > div + div{border-left:0;margin-left:0;padding-left:0;margin-top:22px;border-top:5px solid var(--night-accent)}
+}
+.ramas .papel{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--night-muted)}
+.ramas h3{margin-top:6px;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;letter-spacing:-.04em}
+.ramas .r-ef h3{color:var(--night-accent)}
+.ramas .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ramas .pills span{font-size:.84rem;font-weight:700;padding:6px 12px;border-radius:999px;background:#fff;color:#10151a}
+.ramas .r-ef .pills span{background:rgba(255,255,255,.08);color:var(--night-ink);border:1px solid var(--night-line)}
+.ramas ul{margin:14px 0 0;padding-left:18px;color:var(--night-muted);font-size:.92rem}
+.ramas ul li+li{margin-top:3px}
+.codigo{display:flex;gap:10px;align-items:center;margin-top:16px;font-size:.84rem;font-weight:700;color:var(--night-ink)}
+.codigo i{flex:none;width:34px;height:22px;border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.35)}
+
+/* embudo */
+.embudo{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));counter-reset:paso}
+.embudo li{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:18px 16px 16px;counter-increment:paso;min-width:0}
+.embudo li:before{content:counter(paso);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:var(--brand-ink);font-weight:900;font-size:.9rem}
+.embudo b{display:block;margin-top:12px;font-size:1.05rem;font-weight:800}
+.embudo span{display:block;margin-top:4px;font-size:.86rem;color:var(--muted)}
+.embudo em{display:block;margin-top:10px;font-style:normal;font-size:.76rem;font-weight:700;color:var(--accent)}
+
+/* paleta */
+.paleta{display:grid;gap:12px;margin-top:22px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.color{border-radius:var(--r-m);overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.color i{display:block;height:84px}
+.color div{padding:10px 12px}
+.color b{display:block;font-size:.9rem;font-weight:800}
+.color code{font-size:.8rem;font-weight:600;color:var(--muted)}
+.color small{display:block;font-size:.76rem;color:var(--muted);margin-top:2px}
+
+.especimen{margin-top:16px;background:var(--night);color:var(--night-ink);border-radius:var(--r-l);padding:28px;display:grid;gap:18px}
+.especimen .e1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;letter-spacing:-.045em;line-height:1}
+.especimen .e2{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:var(--night-accent)}
+.especimen .e2:before{content:"";width:28px;height:3px;border-radius:3px;background:var(--brand)}
+.especimen .e3{font-size:1.05rem;font-weight:500;color:var(--night-muted);max-width:52ch}
+.especimen small{font-size:.75rem;font-weight:600;color:var(--night-muted);opacity:.8}
+
+.sino{display:grid;gap:16px;margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.sino ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.sino li{display:flex;gap:10px;font-size:.93rem;color:var(--muted)}
+.sino li:before{flex:none;font-weight:900;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;margin-top:2px}
+.si li:before{content:"✓";background:var(--brand-soft);color:var(--accent)}
+.no li:before{content:"✕";background:var(--warn-soft);color:var(--warn)}
+
+/* tablas */
+.tabla{margin-top:20px;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:620px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td b{font-weight:800}
+td.vacio{min-width:70px}
+
+/* maquetas de teléfono */
+.perfil{display:grid;gap:28px;margin-top:26px;grid-template-columns:minmax(0,360px) minmax(0,1fr);align-items:start}
+@media (max-width:860px){.perfil{grid-template-columns:minmax(0,1fr)}}
+.telefono{width:100%;max-width:360px;margin-inline:auto;background:#050606;border-radius:46px;padding:12px;box-shadow:0 40px 70px -40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06) inset}
+.pantalla{background:var(--night);color:var(--night-ink);border-radius:36px;overflow:hidden;padding:18px 14px 14px;font-size:13px;line-height:1.4}
+.ph-top{display:flex;justify-content:center;font-weight:800;font-size:14px;padding-bottom:12px}
+.ig-cab{display:flex;align-items:center;gap:16px}
+.ig-cab img{width:78px;height:78px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--night),0 0 0 4px var(--brand)}
+.ig-num{display:flex;flex:1;justify-content:space-around;text-align:center}
+.ig-num b{display:block;font-size:15px;font-weight:800}
+.ig-num span{font-size:11px;color:var(--night-muted)}
+.ig-nombre{margin-top:10px;font-weight:800}
+.ig-cat{color:var(--night-muted);font-size:12px}
+.ig-bio{white-space:pre-line}
+.ig-link{color:#8fd3ff;font-weight:600}
+.ig-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+.ig-btns span{text-align:center;font-weight:700;font-size:12px;padding:7px 0;border-radius:8px;background:rgba(255,255,255,.1)}
+.ig-btns span:first-child{background:#3b82f6;color:#fff}
+.ig-dest{display:flex;gap:10px;margin-top:14px;overflow:hidden}
+.ig-dest figure{margin:0;flex:none;width:56px;text-align:center}
+.ig-dest .c{width:56px;height:56px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+.ig-dest .c img{width:100%;height:100%;object-fit:cover;object-position:center}
+.ig-dest figcaption{font-size:10px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ig-grid,.tt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:14px -14px -14px}
+.ig-grid img,.tt-grid img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.tt-cab{text-align:center}
+.tt-cab img{width:84px;height:84px;border-radius:50%;margin:0 auto}
+.tt-cab .u{margin-top:8px;font-weight:800;font-size:14px}
+.tt-num{display:flex;justify-content:center;gap:22px;margin-top:10px}
+.tt-num b{display:block;font-size:15px;font-weight:800}
+.tt-num span{font-size:11px;color:var(--night-muted)}
+.tt-btns{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.tt-btns span{font-weight:700;font-size:12px;padding:8px 22px;border-radius:6px;background:rgba(255,255,255,.1)}
+.tt-btns span:first-child{background:#fe2c55;color:#fff}
+.tt-bio{margin-top:10px;text-align:center;white-space:pre-line}
+
+/* campos para copiar */
+.campos{display:grid;gap:12px;min-width:0}
+.campo{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:14px 16px;min-width:0}
+.campo-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.campo-cab b{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cuenta{font-size:.74rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.texto{margin-top:8px;white-space:pre-wrap;word-break:break-word;font-family:var(--font);font-size:.95rem;font-weight:600;line-height:1.55}
+.campo p.ayuda{margin-top:8px;font-size:.84rem;color:var(--muted)}
+.copiar{flex:none;font:700 .78rem var(--font);color:var(--accent);background:var(--brand-soft);border:0;border-radius:999px;padding:6px 12px;cursor:pointer}
+.copiar:hover{filter:brightness(1.05)}
+.copiar.ok{background:var(--brand);color:var(--brand-ink)}
+.grupo-wa{margin-top:26px;font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
+/* publicaciones */
+.posts{display:grid;gap:18px;margin-top:22px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.post img{width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--night)}
+.post-cuerpo{padding:16px 18px 18px;display:grid;gap:10px;min-width:0}
+.post-cab{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.post-cab h4{font-size:1rem;font-weight:800;margin-right:auto}
+.orden{font-size:.72rem;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.post .texto{font-size:.86rem;font-weight:500;max-height:220px;overflow:auto;padding:12px;border-radius:var(--r-s);background:var(--surface-2)}
+.post-acc{display:flex;gap:8px;flex-wrap:wrap}
+
+.tira{display:flex;gap:12px;overflow-x:auto;margin-top:18px;padding-bottom:8px}
+.tira img{flex:none;width:220px;aspect-ratio:4/5;border-radius:var(--r-s);object-fit:cover}
+.tira.vertical img{width:180px;aspect-ratio:9/16}
+
+.pasos-pub{margin:18px 0 0;padding:16px 18px 16px 38px;background:var(--brand-soft);border-radius:var(--r-m);font-size:.93rem}
+.pasos-pub li+li{margin-top:4px}
+
+/* guiones */
+.guiones{display:grid;gap:14px;margin-top:22px}
+.guion{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);overflow:hidden}
+.guion summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px}
+.guion summary::-webkit-details-marker{display:none}
+.guion summary img{width:54px;aspect-ratio:9/16;object-fit:cover;border-radius:8px;flex:none}
+.guion summary .num{flex:none;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--brand-soft);color:var(--accent);font-weight:900}
+.guion summary div{min-width:0;flex:1}
+.guion summary b{display:block;font-size:1rem;font-weight:800}
+.guion summary small{display:block;color:var(--muted);font-size:.82rem}
+.guion summary:after{content:"+";font-size:1.4rem;font-weight:600;color:var(--muted)}
+.guion[open] summary:after{content:"–"}
+.guion-cuerpo{padding:0 18px 18px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.bloque{background:var(--surface-2);border-radius:var(--r-m);padding:14px;min-width:0}
+.bloque h5{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.bloque p,.bloque ol{margin:6px 0 0;font-size:.9rem}
+.bloque ol{padding-left:18px}
+.bloque.ancho{grid-column:1/-1}
+
+/* barras de proporción */
+.barra{display:flex;height:46px;border-radius:12px;overflow:hidden;margin-top:20px;font-size:.8rem;font-weight:800}
+.barra span{display:flex;align-items:center;padding-inline:12px;white-space:nowrap;overflow:hidden;min-width:0}
+.leyenda{display:grid;gap:12px;margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.leyenda div{display:flex;gap:10px;font-size:.88rem;color:var(--muted)}
+.leyenda i{flex:none;width:14px;height:14px;border-radius:4px;margin-top:4px}
+.leyenda b{color:var(--ink)}
+
+/* avisos */
+.aviso{display:flex;gap:14px;margin-top:20px;padding:16px 18px;border-radius:var(--r-m);background:var(--warn-soft);font-size:.93rem}
+.aviso:before{content:"!";flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--warn);color:var(--surface);font-weight:900}
+.aviso b{color:var(--ink)}
+
+details.obj{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:2px 16px}
+details.obj+details.obj{margin-top:10px}
+details.obj summary{cursor:pointer;padding:12px 0;font-weight:800}
+details.obj .texto{margin:0 0 14px;font-weight:500}
+
+/* checklist */
+.check{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:8px}
+.check label{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:13px 16px;cursor:pointer;font-size:.95rem}
+.check input{width:20px;height:20px;accent-color:var(--brand);flex:none;margin-top:2px}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+.progreso{margin-top:16px;display:flex;align-items:center;gap:12px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.progreso div{flex:1;height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.progreso i{display:block;height:100%;width:0;background:var(--brand);transition:width .3s}
+
+.fuentes{margin-top:14px;font-size:.88rem;color:var(--muted)}
+.fuentes li+li{margin-top:4px}
+footer.pie{margin-top:72px;padding-block:28px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="marca"><img src="exportadas/avatar.jpg" alt="">Impulsa <b>Crédito</b><span>· Manual de captación en redes</span></div>
+    <h1>De seguidor a cliente, en un <span class="hl">mensaje</span>.</h1>
+    <p class="bajada">Impulsa Crédito tiene dos líneas: la <b style="color:var(--night-ink)">asesoría para conseguir préstamos</b>, para negocios y personas, que es la principal, y la <b style="color:var(--night-ink)">efectivización de tarjetas</b>. Este manual reúne todo lo necesario para lanzar Instagram y TikTok con las dos y convertir esa atención en clientes.</p>
+    <ul class="cifras">
+      <li><b>46</b><span>piezas listas para subir</span></li>
+      <li><b>12</b><span>guiones de video</span></li>
+      <li><b>20</b><span>textos para WhatsApp</span></li>
+      <li><b>2 de 3</b><span>publicaciones son de asesoría</span></li>
+    </ul>
+  </div>
+</header>
+
+<nav class="indice" aria-label="Secciones">
+  <div class="wrap">
+    <a href="#marca">Marca</a><a href="#estrategia">Estrategia</a><a href="#clientes">Clientes</a><a href="#identidad">Identidad</a>
+    <a href="#instagram">Instagram</a><a href="#tiktok">TikTok</a><a href="#seo">SEO</a>
+    <a href="#whatsapp">WhatsApp</a><a href="#anuncios">Anuncios</a><a href="#calendario">Calendario</a>
+    <a href="#medicion">Medición</a><a href="#reglas">Reglas</a><a href="#checklist">Checklist</a><a href="#archivos">Archivos</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===================== MARCA ===================== -->
+<section id="marca">
+  <p class="eyebrow">Una marca, dos líneas</p>
+  <h2 class="sec-titulo">Primero la asesoría. Al lado, el efectivo.</h2>
+  <p class="sec-intro">Este es tu esquema: Impulsa arriba y de ahí salen dos líneas. Las redes lo repiten tal cual. Las dos columnas de la izquierda del perfil son de asesoría y la columna derecha es de efectivizar, siempre en verde. Así se entiende de un vistazo qué haces y qué es lo principal.</p>
+  <div class="arbol">
+    <div class="arbol-raiz"><img src="exportadas/avatar.jpg" alt="">Impulsa <b>Crédito</b></div>
+    <div class="ramas">
+      <div class="r-as">
+        <p class="papel">Línea principal</p>
+        <h3>Asesoría</h3>
+        <div class="pills"><span>Pyme y consumo</span><span>Logra tu crédito</span></div>
+        <ul>
+          <li>Préstamos para negocios: capital de trabajo, mercadería, equipos.</li>
+          <li>Préstamos para personas: personal, vehicular, hipotecario, compra de deuda.</li>
+          <li>Diagnóstico gratis, comparación de entidades y acompañamiento hasta el desembolso.</li>
+        </ul>
+        <p class="codigo"><i style="background:linear-gradient(90deg,#111 50%,#f6f9f7 50%)"></i>Negro y claro · columnas 1 y 2 · 2 de cada 3 publicaciones</p>
+      </div>
+      <div class="r-ef">
+        <p class="papel">Línea complementaria</p>
+        <h3>Efectiviza</h3>
+        <div class="pills"><span>Tu tarjeta en efectivo</span><span>En minutos · 1%</span></div>
+        <ul>
+          <li>Convierte la línea de la tarjeta de crédito en dinero en la cuenta.</li>
+          <li>Visa, Mastercard, Amex y Diners de cualquier banco.</li>
+          <li>Simulador y registro en la web.</li>
+        </ul>
+        <p class="codigo"><i style="background:#22c55e"></i>Verde · columna 3 · 1 de cada 3 publicaciones</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ESTRATEGIA ===================== -->
+<section id="estrategia">
+  <p class="eyebrow">La estrategia</p>
+  <h2 class="sec-titulo">TikTok atrae, Instagram da confianza y WhatsApp cierra.</h2>
+  <p class="sec-intro">Nadie pide un préstamo por un video: lo hace cuando entiende su caso, confía en quien lo asesora y alguien le responde rápido. Cada paso del embudo lleva al siguiente, y el mismo embudo sirve para las dos líneas.</p>
+  <ol class="embudo">
+    <li><b>Descubre</b><span>Videos que responden dudas reales: «¿por qué me niegan un préstamo?», «¿cuánto recibo?».</span><em>Mide: visualizaciones</em></li>
+    <li><b>Confía</b><span>Perfil completo, destacados, contenido contra estafas y caras reales del equipo.</span><em>Mide: visitas al perfil</em></li>
+    <li><b>Elige</b><span>impulsacredito.com/ig y /tt: «Logra tu crédito» o «Efectiviza tu tarjeta».</span><em>Mide: clics en el enlace</em></li>
+    <li><b>Conversa</b><span>WhatsApp con el mensaje escrito: tipo de préstamo, monto y red de origen.</span><em>Mide: chats por línea</em></li>
+    <li><b>Cierra</b><span>Asesoría: diagnóstico, expediente y desembolso. Efectiviza: registro, pago y depósito.</span><em>Mide: desembolsos y operaciones</em></li>
+    <li><b>Recomienda</b><span>El cliente contento vuelve o trae a un familiar o a otro negocio.</span><em>Mide: referidos</em></li>
+  </ol>
+</section>
+
+<!-- ===================== CLIENTES ===================== -->
+<section id="clientes">
+  <p class="eyebrow">A quién le hablamos</p>
+  <h2 class="sec-titulo">Tres clientes, tres mensajes.</h2>
+  <p class="sec-intro">Escribe cada pieza pensando en una de estas personas. Si una pieza intenta hablarle a todos, no convence a nadie.</p>
+  <div class="rejilla">
+    <article class="tarjeta">
+      <span class="etq">Asesoría · Pyme</span>
+      <h4 style="margin-top:12px">«Mi negocio necesita capital»</h4>
+      <p>28 a 55 años. Tiene una bodega, un taller, una tienda o un negocio de servicios. Quiere crecer o comprar mercadería, pero no sabe a qué entidad ir, qué le van a pedir o ya le rechazaron una vez.</p>
+      <ul><li><b>Mensaje:</b> te ayudamos a conseguir el préstamo para tu negocio, gratis.</li><li><b>Dónde:</b> TikTok y Reels, de lunes a viernes por la mañana.</li></ul>
+    </article>
+    <article class="tarjeta">
+      <span class="etq">Asesoría · Personas</span>
+      <h4 style="margin-top:12px">«Quiero mi préstamo sin pagar de más»</h4>
+      <p>25 a 50 años, con sueldo o recibos por honorarios. Busca un préstamo personal, un auto, su primera casa o juntar deudas caras en una. Le da miedo caer en una estafa o firmar una tasa alta.</p>
+      <ul><li><b>Mensaje:</b> comparamos entidades por ti y te acompañamos hasta el desembolso.</li><li><b>Dónde:</b> carruseles de Instagram, TikTok educativo, Google.</li></ul>
+    </article>
+    <article class="tarjeta">
+      <span class="etq ef">Efectiviza</span>
+      <h4 style="margin-top:12px">«Necesito efectivo hoy»</h4>
+      <p>25 a 50 años. Tiene línea disponible en su tarjeta y un gasto que no espera: salud, una reparación, mercadería. Sabe que la disposición de efectivo del banco es cara.</p>
+      <ul><li><b>Mensaje:</b> tu tarjeta en efectivo, en minutos y con 1%.</li><li><b>Dónde:</b> historias con el simulador, TikTok tipo POV.</li></ul>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== IDENTIDAD ===================== -->
+<section id="identidad">
+  <p class="eyebrow">Identidad en redes</p>
+  <h2 class="sec-titulo">La misma marca de la web, hecha para el pulgar.</h2>
+  <p class="sec-intro">Los colores, la letra y el recuadro verde son los de impulsacredito.com. En redes se usan con más contraste y menos texto, porque cada pieza tiene un segundo para detener el dedo. El color de fondo dice de qué línea es cada pieza.</p>
+
+  <div class="paleta">
+    <div class="color"><i style="background:#22c55e"></i><div><b>Verde Impulsa</b><code>#22C55E</code><small>Fondo de Efectiviza, recuadro, botones</small></div></div>
+    <div class="color"><i style="background:#111111"></i><div><b>Negro</b><code>#111111</code><small>Fondo de Asesoría</small></div></div>
+    <div class="color"><i style="background:#f6f9f7"></i><div><b>Niebla</b><code>#F6F9F7</code><small>Fondo claro de Asesoría</small></div></div>
+    <div class="color"><i style="background:#16a34a"></i><div><b>Verde profundo</b><code>#16A34A</code><small>Textos verdes sobre fondo claro</small></div></div>
+    <div class="color"><i style="background:#4ade80"></i><div><b>Verde luz</b><code>#4ADE80</code><small>Etiquetas y cifras sobre negro</small></div></div>
+    <div class="color"><i style="background:#10151a"></i><div><b>Tinta</b><code>#10151A</code><small>Texto sobre fondos claros</small></div></div>
+  </div>
+
+  <div class="especimen">
+    <span class="e2">Etiqueta · dice la línea: «Asesoría Pyme», «Efectiviza tu tarjeta»</span>
+    <span class="e1">Te ayudamos a <span class="hl">lograr</span> tu crédito.</span>
+    <span class="e3">Texto de apoyo en Montserrat 500. Frases cortas, una idea por línea, montos escritos como «S/ 20,000».</span>
+    <small>Títulos en Montserrat 900 con letras juntas (−4%). Un solo recuadro verde por pieza, sobre la palabra que más importa.</small>
+  </div>
+
+  <div class="sino">
+    <div class="tarjeta si"><h4>Sí</h4><ul>
+      <li>Asesoría en negro o claro, Efectiviza en verde. Nunca al revés.</li>
+      <li>Publicar de a tres: primero la de Efectiviza y después dos de Asesoría, para que la columna verde no se mueva.</li>
+      <li>Una sola palabra en el recuadro verde por pieza.</li>
+      <li>La firma de marca abajo en todas las piezas: isotipo, nombre y @usuario.</li>
+      <li>Personas reales del equipo y de clientes (con permiso) en lugar de fotos de banco de imágenes.</li>
+    </ul></div>
+    <div class="tarjeta no"><h4>No</h4><ul>
+      <li>Colores fuera de la paleta ni degradados de otros tonos.</li>
+      <li>Fotos de DNI, tarjetas, contratos o comprobantes sin censurar.</li>
+      <li>«Préstamo aprobado», «garantizado» o «sin centrales de riesgo».</li>
+      <li>Cifras que no puedas demostrar («+500 clientes», «97% satisfechos»).</li>
+      <li>Más de tres líneas de texto grande en una misma pieza.</li>
+    </ul></div>
+  </div>
+
+  <h3 class="sub">Medidas</h3>
+  <div class="tabla"><table>
+    <thead><tr><th>Formato</th><th>Tamaño</th><th>Zona segura</th></tr></thead>
+    <tbody>
+      <tr><td><b>Publicación del feed</b></td><td>1080 × 1350 px (4:5)</td><td>Lo importante dentro de los 1012 px centrales: el perfil de Instagram recorta los lados (3:4).</td></tr>
+      <tr><td><b>Historias, Reels y TikTok</b></td><td>1080 × 1920 px (9:16)</td><td>Deja libres unos 250 px arriba y 340–420 px abajo, donde van los botones de la app.</td></tr>
+      <tr><td><b>Portada de video</b></td><td>1080 × 1920 px</td><td>El perfil muestra el centro en 3:4: todo el texto entre los 300 y los 1500 px de alto.</td></tr>
+      <tr><td><b>Foto de perfil</b></td><td>1080 × 1080 px</td><td>Se ve en círculo y muy pequeña: solo el isotipo, grande y centrado.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== INSTAGRAM ===================== -->
+<section id="instagram">
+  <p class="eyebrow">Instagram</p>
+  <h2 class="sec-titulo">El perfil que da confianza.</h2>
+  <p class="sec-intro">Instagram es donde el cliente comprueba que eres serio antes de escribir. El perfil sale con 9 publicaciones: seis de asesoría en las columnas izquierdas y tres de efectivizar en la columna verde.</p>
+
+  <div class="perfil">
+    <div class="telefono" aria-label="Vista previa del perfil de Instagram">
+      <div class="pantalla">
+        <div class="ph-top">impulsacredito</div>
+        <div class="ig-cab">
+          <img src="exportadas/avatar.jpg" alt="">
+          <div class="ig-num"><div><b>9</b><span>publicaciones</span></div><div><b>0</b><span>seguidores</span></div><div><b>0</b><span>seguidos</span></div></div>
+        </div>
+        <p class="ig-nombre" id="mockNameIg"></p>
+        <p class="ig-cat">Servicio financiero</p>
+        <p class="ig-bio" id="mockBioIg"></p>
+        <p class="ig-link">impulsacredito.com/ig</p>
+        <div class="ig-btns"><span>Seguir</span><span>Mensaje</span><span>WhatsApp</span></div>
+        <div class="ig-dest" id="mockDest"></div>
+        <div class="ig-grid" id="mockGrid"></div>
+      </div>
+    </div>
+
+    <div class="campos">
+      <div class="campo"><div class="campo-cab"><b>Usuario</b><button class="copiar" data-copy="igUser">Copiar</button></div>
+        <div class="texto" id="igUser">impulsacredito</div>
+        <p class="ayuda">Si está ocupado, en este orden: impulsacredito.pe, impulsa.credito, impulsacreditope. Usa el mismo en TikTok.</p></div>
+      <div class="campo"><div class="campo-cab"><b>Nombre (el buscador lo lee)</b><span class="cuenta" data-cuenta="igName" data-max="64"></span><button class="copiar" data-copy="igName">Copiar</button></div>
+        <div class="texto" id="igName">Impulsa Crédito | Asesoría y préstamos</div>
+        <p class="ayuda">El campo «Nombre» aparece en las búsquedas de Instagram. Con «préstamos» te encuentran quienes buscan un préstamo sin conocer la marca; la bio aclara que eres asesor.</p></div>
+      <div class="campo"><div class="campo-cab"><b>Presentación (bio)</b><span class="cuenta" data-cuenta="igBio" data-max="150"></span><button class="copiar" data-copy="igBio">Copiar</button></div>
+        <div class="texto" id="igBio">🤝 Te ayudamos a lograr tu préstamo
+🏪 Pymes y personas · Asesoría gratis
+💳 Efectiviza tu tarjeta en minutos (1%)
+📍 Lima · Escríbenos 👇</div></div>
+      <div class="campo"><div class="campo-cab"><b>Enlace</b><button class="copiar" data-copy="igLink">Copiar</button></div>
+        <div class="texto" id="igLink">https://impulsacredito.com/ig</div>
+        <p class="ayuda">Abre la página de enlaces con dos pestañas: «Logra tu crédito» (primero) y «Efectiviza tu tarjeta». El WhatsApp que llega desde aquí dice «Los vi en Instagram».</p></div>
+      <div class="campo"><div class="campo-cab"><b>Configuración</b></div>
+        <p class="ayuda" style="margin-top:4px">Cuenta profesional de tipo <b>Empresa</b>, categoría <b>Servicio financiero</b>. Conecta la página de Facebook y WhatsApp Business: sin eso no se pueden hacer anuncios que abran WhatsApp. Agrega el botón de contacto de WhatsApp con el 928 266 183.</p></div>
+    </div>
+  </div>
+
+  <h3 class="sub">Las 9 publicaciones de lanzamiento</h3>
+  <p class="nota-sub">Cada pieza tiene su texto listo, con las palabras que la gente busca en la primera línea, y su texto alternativo para el buscador y para personas con lectores de pantalla.</p>
+  <ol class="pasos-pub">
+    <li>Publica primero la <b>09</b>, luego la 08, 07, 06, 05 y 04. Así quedan en el orden de la maqueta, con la columna verde a la derecha.</li>
+    <li>Después publica la <b>03</b>, la 02 (carrusel de 6 láminas) y la 01.</li>
+    <li>Fija la 03, después la 02 y al final la 01: la última que fijas queda primera. Si quedan desordenadas, desfíjalas y repite.</li>
+    <li>En cada publicación: «Configuración avanzada» → «Texto alternativo» → pega el texto alternativo.</li>
+  </ol>
+  <div class="posts" id="posts"></div>
+
+  <h3 class="sub">Carrusel «Logra tu crédito» (publicación 02)</h3>
+  <p class="nota-sub">Seis láminas claras que explican cómo trabajas. Es la pieza que más se guarda y se comparte, y la que mejor explica por qué tu asesoría vale la pena.</p>
+  <div class="tira" id="tiraCarrusel"></div>
+
+  <h3 class="sub">Banco de publicaciones para las semanas 2 a 4</h3>
+  <p class="nota-sub">Después del lanzamiento, cada fila nueva lleva dos Reels de asesoría (los mismos videos de TikTok) y una de estas piezas de efectivizar en la columna verde. La de requisitos de préstamo sirve para la columna de asesoría.</p>
+  <div class="posts" id="banco"></div>
+
+  <h3 class="sub">Historias</h3>
+  <p class="nota-sub">Publica 3 a 5 historias al día. Agrega encima los stickers de Instagram: en la 1, una «Encuesta» con «Un préstamo» y «Efectivo hoy» debajo de la flecha; en la 2 y la 4, el sticker «Enlace» (impulsacredito.com/ig) debajo de la flecha. Cada voto o respuesta es alguien a quien puedes escribirle.</p>
+  <div class="tira vertical" id="tiraHistorias"></div>
+
+  <h3 class="sub">Destacados</h3>
+  <div class="tabla"><table>
+    <thead><tr><th>Destacado</th><th>Qué guardar dentro</th></tr></thead>
+    <tbody>
+      <tr><td><b>Logra tu crédito</b></td><td>Las láminas del carrusel de asesoría y un video del asesor explicando cómo trabajan.</td></tr>
+      <tr><td><b>Pyme</b></td><td>Requisitos para negocios, preguntas frecuentes de emprendedores y casos reales con permiso.</td></tr>
+      <tr><td><b>Personas</b></td><td>Préstamo personal, vehicular, hipotecario y compra de deuda: qué piden y cómo comparar la TCEA.</td></tr>
+      <tr><td><b>Efectiviza</b></td><td>El simulador, los 4 pasos y las tarjetas aceptadas.</td></tr>
+      <tr><td><b>Seguridad</b></td><td>«Nadie puede garantizarte un préstamo», «Nunca te pediremos tu clave ni tu CVV» y tu único número.</td></tr>
+      <tr><td><b>Preguntas</b></td><td>Respuestas a las dudas que llegan por el sticker «Pregunta».</td></tr>
+      <tr><td><b>Clientes</b></td><td>Solo testimonios reales y con permiso escrito. Hasta tenerlos, deja este destacado sin publicar.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== TIKTOK ===================== -->
+<section id="tiktok">
+  <p class="eyebrow">TikTok</p>
+  <h2 class="sec-titulo">El canal que te hace descubrir.</h2>
+  <p class="sec-intro">En TikTok la gente llega por lo que el video resuelve, no por la marca. Cada video responde una duda concreta sobre préstamos o efectivo en los primeros 3 segundos y dice la palabra clave en voz alta: TikTok la transcribe y la usa en su buscador. El perfil repite el esquema de Instagram: dos columnas de asesoría y una verde de efectivizar.</p>
+
+  <div class="perfil">
+    <div class="telefono" aria-label="Vista previa del perfil de TikTok">
+      <div class="pantalla">
+        <div class="ph-top" id="mockNameTt"></div>
+        <div class="tt-cab">
+          <img src="exportadas/avatar.jpg" alt="">
+          <p class="u">@impulsacredito</p>
+          <div class="tt-num"><div><b>0</b><span>Siguiendo</span></div><div><b>0</b><span>Seguidores</span></div><div><b>0</b><span>Me gusta</span></div></div>
+          <div class="tt-btns"><span>Seguir</span><span>Mensaje</span></div>
+          <p class="tt-bio" id="mockBioTt"></p>
+          <p class="ig-link" style="text-align:center">impulsacredito.com/tt</p>
+        </div>
+        <div class="tt-grid" id="mockGridTt"></div>
+      </div>
+    </div>
+
+    <div class="campos">
+      <div class="campo"><div class="campo-cab"><b>Nombre</b><span class="cuenta" data-cuenta="ttName" data-max="30"></span><button class="copiar" data-copy="ttName">Copiar</button></div>
+        <div class="texto" id="ttName">Impulsa Crédito | Préstamos</div>
+        <p class="ayuda">«Préstamos» es lo que la gente escribe en el buscador de TikTok. La bio deja claro que ayudas a conseguirlos.</p></div>
+      <div class="campo"><div class="campo-cab"><b>Biografía</b><span class="cuenta" data-cuenta="ttBio" data-max="80"></span><button class="copiar" data-copy="ttBio">Copiar</button></div>
+        <div class="texto" id="ttBio">Te ayudamos a lograr tu préstamo 🤝
+Pymes y personas · Efectiviza tu tarjeta 💳</div></div>
+      <div class="campo"><div class="campo-cab"><b>Enlace</b><button class="copiar" data-copy="ttLink">Copiar</button></div>
+        <div class="texto" id="ttLink">https://impulsacredito.com/tt</div>
+        <p class="ayuda">Pásate a <b>Cuenta de empresa</b> (Configuración → Cuenta) para poder poner el enlace. Si TikTok todavía no te muestra la opción, fija el video #01 y responde los comentarios invitando a escribir por WhatsApp.</p></div>
+      <div class="campo"><div class="campo-cab"><b>Cómo se publica</b></div>
+        <ol class="texto" style="padding-left:20px;font-weight:500;margin-bottom:0">
+          <li><b>De a tres.</b> Primero el de Efectiviza, después dos de Asesoría. Así la columna verde siempre queda a la derecha.</li>
+          <li><b>Gancho de 0 a 3 s.</b> La pregunta del cliente, dicha y escrita en pantalla.</li>
+          <li><b>Respuesta concreta.</b> Un dato, un paso o un número.</li>
+          <li><b>Una sola acción.</b> «Escríbenos para tu diagnóstico gratis» o «Simula en el enlace del perfil».</li>
+        </ol>
+        <p class="ayuda">Duran de 20 a 45 segundos, son verticales y llevan subtítulos siempre. Se graban con luz natural y con una persona real del equipo. Sube la portada como primer fotograma en CapCut o elígela al publicar. Publica cada video también como Reel en Instagram, sin la marca de agua de TikTok.</p></div>
+    </div>
+  </div>
+
+  <h3 class="sub">12 guiones para el primer mes</h3>
+  <p class="nota-sub">Los nueve primeros tienen portada lista y están en el orden de la cuadrícula. Graba los 12 en dos sesiones. Toca cada guion para abrirlo.</p>
+  <div class="guiones" id="guiones"></div>
+</section>
+
+<!-- ===================== SEO ===================== -->
+<section id="seo">
+  <p class="eyebrow">SEO en redes</p>
+  <h2 class="sec-titulo">Que te encuentren cuando buscan un préstamo.</h2>
+  <p class="sec-intro">Cada vez más gente usa TikTok e Instagram como buscador. Las apps leen el nombre del perfil, la bio, el texto de la publicación, lo que aparece escrito en el video, lo que dices en voz alta y el texto alternativo. Repite las mismas palabras en todos esos lugares.</p>
+
+  <div class="rejilla">
+    <div class="tarjeta"><span class="etq">Asesoría · principales</span><ul>
+      <li>préstamo para negocio</li><li>préstamo pyme</li><li>préstamo personal</li><li>cómo sacar un préstamo</li><li>asesoría crediticia</li></ul></div>
+    <div class="tarjeta"><span class="etq">Asesoría · secundarias</span><ul>
+      <li>crédito vehicular</li><li>crédito hipotecario</li><li>compra de deuda</li><li>capital de trabajo</li><li>TCEA · central de riesgos</li></ul></div>
+    <div class="tarjeta"><span class="etq ef">Efectiviza</span><ul>
+      <li>efectivizar tarjeta de crédito</li><li>efectivo con tarjeta de crédito</li><li>disposición de efectivo</li><li>tarjeta de crédito a efectivo</li></ul></div>
+    <div class="tarjeta"><span class="etq">Preguntas reales</span><ul>
+      <li>¿cómo sacar un préstamo para mi negocio?</li><li>¿por qué me niegan un préstamo?</li><li>¿cuánto me pueden prestar?</li><li>¿cómo sacar efectivo de mi tarjeta?</li></ul></div>
+  </div>
+
+  <div class="tabla"><table>
+    <thead><tr><th>Dónde va la palabra clave</th><th>Instagram</th><th>TikTok</th></tr></thead>
+    <tbody>
+      <tr><td><b>Nombre del perfil</b></td><td>«Impulsa Crédito | Asesoría y préstamos»</td><td>«Impulsa Crédito | Préstamos»</td></tr>
+      <tr><td><b>Bio</b></td><td>«lograr tu préstamo», «efectiviza tu tarjeta»</td><td>«lograr tu préstamo», «efectiviza tu tarjeta»</td></tr>
+      <tr><td><b>Primera línea del texto</b></td><td>La pregunta o la palabra clave, antes del «más»</td><td>La palabra clave al inicio de la descripción</td></tr>
+      <tr><td><b>Texto en pantalla</b></td><td>En los Reels, en los primeros 3 s</td><td>En los primeros 3 s, grande y legible</td></tr>
+      <tr><td><b>Lo que dices</b></td><td>Los subtítulos automáticos lo leen</td><td>Se transcribe y entra al buscador</td></tr>
+      <tr><td><b>Texto alternativo</b></td><td>En cada publicación (incluido abajo)</td><td>—</td></tr>
+      <tr><td><b>Hashtags</b></td><td>3 a 5, específicos</td><td>3 a 5, específicos</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Grupos de hashtags</h3>
+  <p class="nota-sub">Usa un grupo por publicación según el tema. Pocos y precisos funcionan mejor que treinta genéricos.</p>
+  <div class="rejilla" id="hashtags"></div>
+
+  <h3 class="sub">Cómo hablar de préstamos</h3>
+  <div class="sino">
+    <div class="tarjeta si"><h4>Di</h4><ul>
+      <li>«Te ayudamos a conseguir tu préstamo».</li>
+      <li>«Asesoría gratis» (si de verdad no cobras nada).</li>
+      <li>«Comparamos bancos, cajas y financieras».</li>
+      <li>«La aprobación la decide la entidad».</li>
+      <li>«Revisamos tu caso con honestidad».</li>
+    </ul></div>
+    <div class="tarjeta no"><h4>No digas</h4><ul>
+      <li>«Te prestamos»: Impulsa no presta dinero.</li>
+      <li>«Préstamo aprobado» o «garantizado».</li>
+      <li>«Sin centrales de riesgo» o «aunque estés en Infocorp».</li>
+      <li>«Limpiamos tu historial».</li>
+      <li>«Dinero fácil» o «sin requisitos».</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ===================== WHATSAPP ===================== -->
+<section id="whatsapp">
+  <p class="eyebrow">Captación por WhatsApp</p>
+  <h2 class="sec-titulo">Donde el seguidor se vuelve cliente.</h2>
+  <p class="sec-intro">Todo el contenido termina en un chat. Lo que más mueve las ventas es la velocidad: responde en menos de 5 minutos dentro del horario. Después de una hora, la mayoría ya le escribió a otro.</p>
+
+  <div class="rejilla">
+    <div class="tarjeta"><h4>Perfil de WhatsApp Business</h4><ul>
+      <li>Foto: el mismo isotipo de las redes.</li>
+      <li>Descripción: «Asesoría para conseguir tu préstamo, para tu negocio o para ti. Efectivizamos tu tarjeta en minutos.»</li>
+      <li>Horario: lunes a sábado, 10:00 a. m. a 7:00 p. m.</li>
+      <li>Catálogo: «Asesoría Pyme», «Asesoría para personas» y «Efectivización de tarjeta: 1%».</li></ul></div>
+    <div class="tarjeta"><h4>Etiquetas para ordenar los chats</h4><ul>
+      <li><b>Línea:</b> Asesoría Pyme · Asesoría Personas · Efectiviza</li>
+      <li><b>Origen:</b> Instagram · TikTok · Anuncio</li>
+      <li><b>Etapa:</b> Nuevo · Diagnóstico · Documentos · En evaluación · Desembolsado · Operó · Seguimiento</li></ul>
+      <p>El mensaje que llega desde la página de enlaces ya dice la red, el tipo de préstamo y el monto. Etiqueta con eso al instante.</p></div>
+    <div class="tarjeta"><h4>Respuestas rápidas</h4><p>En WhatsApp Business → Herramientas → Respuestas rápidas, guarda los textos de abajo con su atajo (el que aparece en verde junto a cada título). Escribes «/» y el atajo, y el texto sale solo.</p></div>
+  </div>
+
+  <h3 class="sub">El guion de la conversación</h3>
+  <p class="nota-sub">Cambia lo que está entre corchetes. Nunca pidas fotos del DNI, de la tarjeta ni contraseñas por chat.</p>
+  <div class="campos" style="margin-top:6px" id="guionWa"></div>
+
+  <h3 class="sub">Cuando el cliente duda</h3>
+  <div style="margin-top:16px" id="objeciones"></div>
+
+  <h3 class="sub">Más formas de captar</h3>
+  <div class="rejilla">
+    <div class="tarjeta"><h4>«Comenta CRÉDITO»</h4><p>Termina algunos videos con «Comenta CRÉDITO y te escribimos para tu diagnóstico». En Instagram el mensaje directo se puede automatizar con ManyChat, un servicio que trabaja con Meta. En TikTok responde a mano en la primera hora: los comentarios respondidos rápido hacen que el video llegue a más personas.</p></div>
+    <div class="tarjeta"><h4>Alianzas con negocios</h4><p>Contadores, proveedores mayoristas y asociaciones de comerciantes conocen a decenas de pymes que necesitan crédito. Un acuerdo de referidos con ellos vale más que cien publicaciones.</p></div>
+    <div class="tarjeta"><h4>Recomendados y clientes que vuelven</h4><p>Al cerrar cada préstamo u operación, pide que compartan impulsacredito.com/ig. Escribe 30 días después: un negocio que creció suele necesitar otro préstamo, y quien efectivizó una vez suele volver.</p></div>
+  </div>
+</section>
+
+<!-- ===================== ANUNCIOS ===================== -->
+<section id="anuncios">
+  <p class="eyebrow">Publicidad pagada</p>
+  <h2 class="sec-titulo">Pagar solo después de saber qué funciona.</h2>
+  <p class="sec-intro">Las primeras dos semanas son orgánicas: sirven para tener un perfil con contenido y descubrir qué video conecta. Desde la tercera semana, pon dinero detrás de lo que ya funcionó, empezando por la asesoría.</p>
+
+  <div class="rejilla">
+    <div class="tarjeta"><span class="etq">Meta: Instagram y Facebook</span><h4 style="margin-top:12px">Anuncios que abren WhatsApp</h4><ul>
+      <li><b>Objetivo:</b> Interacción → Mensajes → WhatsApp.</li>
+      <li><b>Presupuesto de prueba:</b> S/ 20 a 30 al día durante 7 días, sin tocar nada.</li>
+      <li><b>Público:</b> Perú, Lima Metropolitana, 25 a 55 años. Empieza amplio y deja que Meta optimice.</li>
+      <li><b>Piezas:</b> la de Pyme (04), la de personas (05) y el Reel con más vistas.</li>
+      <li><b>Mensaje inicial:</b> «Hola, quiero asesoría para un préstamo».</li></ul></div>
+    <div class="tarjeta"><span class="etq">TikTok</span><h4 style="margin-top:12px">Primero orgánico</h4><p>TikTok exige que los anunciantes de servicios financieros cumplan la ley y las licencias del país donde se muestran los anuncios. Prohíbe los servicios de reparación de crédito, los adelantos de sueldo y los préstamos de alto costo. Antes de pagar anuncios ahí, confirma con un representante de TikTok qué permite en Perú para asesoría de préstamos y para efectivización. Mientras tanto, crece con contenido orgánico.</p></div>
+    <div class="tarjeta"><span class="etq">Reglas de los anuncios</span><h4 style="margin-top:12px">Para que no te los rechacen</h4><ul>
+      <li>No des por hecho la situación del que lo ve: «¿Estás en Infocorp?» o «¿Te negaron un préstamo?» infringen las reglas de Meta. Mejor: «¿Buscas un préstamo para tu negocio?».</li>
+      <li>Nada de «aprobación garantizada» ni «sin centrales».</li>
+      <li>Si Meta pide declarar la categoría especial de servicios financieros, decláralo: limita la segmentación, pero evita bloqueos.</li></ul></div>
+  </div>
+</section>
+
+<!-- ===================== CALENDARIO ===================== -->
+<section id="calendario">
+  <p class="eyebrow">Calendario</p>
+  <h2 class="sec-titulo">Los primeros 30 días.</h2>
+  <p class="sec-intro">El ritmo estable es de 6 videos por semana, de lunes a sábado, en dos bloques de tres (un video de Efectiviza y dos de Asesoría). Los mismos videos van como Reels. Además, entre 3 y 5 historias al día y un en vivo de preguntas al mes.</p>
+
+  <div class="barra" role="img" aria-label="Mezcla por línea: asesoría 67%, efectiviza 33%">
+    <span style="width:67%;background:#111111;color:#f6f9f7">Asesoría · 2 de cada 3</span>
+    <span style="width:33%;background:#22c55e;color:#08130c">Efectiviza · 1 de 3</span>
+  </div>
+  <div class="barra" role="img" aria-label="Mezcla por objetivo: educa 40%, confianza 25%, convierte 20%, comunidad 15%">
+    <span style="width:40%;background:#22c55e;color:#08130c">Educa 40%</span>
+    <span style="width:25%;background:#16a34a;color:#fff">Confianza 25%</span>
+    <span style="width:20%;background:#111111;color:#4ade80">Convierte 20%</span>
+    <span style="width:15%;background:#4ade80;color:#08130c">Comunidad 15%</span>
+  </div>
+  <div class="leyenda">
+    <div><i style="background:#22c55e"></i><span><b>Educa:</b> cómo funciona un préstamo, TCEA, requisitos, por qué te los niegan.</span></div>
+    <div><i style="background:#16a34a"></i><span><b>Confianza:</b> contra estafas, equipo, detrás de cámaras, casos reales.</span></div>
+    <div><i style="background:#111111"></i><span><b>Convierte:</b> diagnóstico gratis, simulaciones, invitaciones a escribir.</span></div>
+    <div><i style="background:#4ade80"></i><span><b>Comunidad:</b> emprendedores, POV, tendencias del momento.</span></div>
+  </div>
+
+  <div class="tabla"><table>
+    <thead><tr><th>Semana</th><th>TikTok</th><th>Instagram</th><th>Captación</th><th>Meta de la semana</th></tr></thead>
+    <tbody>
+      <tr><td><b>0 · Preparación</b><br>2–3 días</td><td>Crear la cuenta de empresa, foto, nombre, bio y enlace. Grabar los guiones 1 a 6.</td><td>Crear la cuenta, publicar las 9 piezas en orden, fijar 3, crear los destacados.</td><td>Configurar WhatsApp Business. Publicar la página de enlaces.</td><td>Perfiles completos antes del primer video.</td></tr>
+      <tr><td><b>1 · Lanzamiento</b></td><td>Guiones 1 a 6 (dos bloques de tres).</td><td>Reels de los guiones 1, 2, 4 y 5. Historias diarias con la encuesta.</td><td>Responder todo en menos de 5 minutos.</td><td>Primeros diagnósticos desde redes.</td></tr>
+      <tr><td><b>2 · Confianza</b></td><td>Guiones 7 a 12. Responder comentarios con video.</td><td>Reels nuevos + piezas del banco en la columna verde.</td><td>Activar «Comenta CRÉDITO». Etiquetar cada chat por línea y red.</td><td>Primer expediente presentado desde redes.</td></tr>
+      <tr><td><b>3 · Escala</b></td><td>3 versiones del video de asesoría con más vistas.</td><td>Carrusel nuevo con preguntas reales de clientes.</td><td>Anuncio en Meta a WhatsApp (S/ 20–30 al día) con las piezas 04 y 05.</td><td>Saber cuánto cuesta cada chat de asesoría.</td></tr>
+      <tr><td><b>4 · Ajuste</b></td><td>6 videos con los formatos que mejor funcionaron.</td><td>Primeros testimonios reales, con permiso.</td><td>Apagar el anuncio más caro y subir el presupuesto del mejor.</td><td>Revisar el tablero y planear el mes 2.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== MEDICIÓN ===================== -->
+<section id="medicion">
+  <p class="eyebrow">Medición</p>
+  <h2 class="sec-titulo">Un tablero, cada lunes.</h2>
+  <p class="sec-intro">Copia esta tabla en tu Excel o Google Sheets y llénala cada lunes. Las operaciones de efectivizar salen del panel de administración, que ya las descarga a Excel. Las asesorías no pasan por la web: lleva una hoja simple con nombre, tipo de préstamo, monto, entidad y etapa.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Indicador</th><th>Dónde se mira</th><th>Sem 1</th><th>Sem 2</th><th>Sem 3</th><th>Sem 4</th></tr></thead>
+    <tbody>
+      <tr><td><b>Visualizaciones</b></td><td>Estadísticas de TikTok e Instagram</td><td class="vacio"></td><td class="vacio"></td><td class="vacio"></td><td class="vacio"></td></tr>
+      <tr><td><b>Clics en el enlace</b></td><td>Estadísticas de cada app</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Chats de asesoría / de efectivizar</b></td><td>Etiquetas de WhatsApp Business</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Diagnósticos hechos</b></td><td>Hoja de seguimiento de asesorías</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Expedientes presentados</b></td><td>Hoja de seguimiento de asesorías</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Desembolsos y monto</b></td><td>Hoja de seguimiento de asesorías</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Operaciones de efectivizar</b></td><td>Panel de administración → Operaciones</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td><b>Costo por chat (anuncios)</b></td><td>Administrador de anuncios de Meta</td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+  <div class="rejilla">
+    <div class="tarjeta"><h4>Metas que dependen de ti</h4><ul><li>Responder en menos de 5 minutos el 90% de los chats en horario.</li><li>Publicar 6 videos por semana sin fallar.</li><li>Contestar todos los comentarios en la primera hora.</li></ul></div>
+    <div class="tarjeta"><h4>Metas que se calibran</h4><p>Las dos primeras semanas fijan tu punto de partida: de cada 10 chats de asesoría, cuántos llegan a diagnóstico y cuántos a desembolso. Desde ahí, busca mejorar cada cifra un 10% al mes. Ese número es tuyo y no de un promedio de internet.</p></div>
+    <div class="tarjeta"><h4>La pregunta de cada lunes</h4><p>¿Qué video trajo más chats de asesoría y por qué? Haz tres versiones de ese video esta semana y deja de hacer el formato que menos trajo.</p></div>
+  </div>
+</section>
+
+<!-- ===================== REGLAS ===================== -->
+<section id="reglas">
+  <p class="eyebrow">Reglas y reputación</p>
+  <h2 class="sec-titulo">Crecer sin poner en riesgo el negocio.</h2>
+  <p class="sec-intro">En servicios financieros la confianza es el producto, y en Perú abundan los falsos gestores de préstamos. Tu mejor publicidad es ser claramente distinto a ellos.</p>
+  <div class="aviso"><div><b>Define y publica cómo cobras la asesoría.</b> La web y estas piezas dicen «asesoría gratis». Si cobras algo por la gestión (por ejemplo, una comisión al desembolso), dilo antes, por escrito y con el monto, y cóbralo solo después del desembolso. Pedir dinero por adelantado para «aprobar» un préstamo es justo lo que hacen los estafadores.</div></div>
+  <div class="aviso"><div><b>Antes de anunciar, completa el Libro de Reclamaciones.</b> La web muestra hoy «RUC 20000000000 · Av. Ejemplo 123», que son datos de ejemplo. Con tráfico desde redes, cualquiera lo verá. Pon la razón social, el RUC y la dirección reales en <code>js/config.js</code> (sección <code>claims</code>).</div></div>
+  <div class="aviso"><div><b>Confirma con tu procesador de pagos.</b> Las marcas de tarjeta y las pasarelas (POS y links de pago) tienen reglas sobre operaciones que entregan efectivo. Antes de dar más visibilidad a efectivizar, confirma por escrito que tu contrato permite este uso: una cuenta de cobro bloqueada detiene todo.</div></div>
+  <div class="rejilla">
+    <div class="tarjeta"><h4>Nunca garantices</h4><p>La aprobación la decide la entidad. Promete lo que sí controlas: un diagnóstico honesto, la comparación de opciones y un expediente bien armado.</p></div>
+    <div class="tarjeta"><h4>Entidades con nombre</h4><p>Menciona bancos, cajas o financieras por su nombre solo si de verdad trabajas con ellos. Si no, habla de «entidades financieras» en general.</p></div>
+    <div class="tarjeta"><h4>Publicidad veraz</h4><p>La web muestra «+500 operaciones» y «97% de clientes satisfechos». Úsalos en redes solo si tienes los registros que los respaldan. Si no, quítalos también de la web.</p></div>
+    <div class="tarjeta"><h4>Datos personales</h4><p>La Ley 29733 protege el DNI, los ingresos, el historial y los datos bancarios. Pídelos por un canal seguro, guárdalos con cuidado y nunca los muestres en contenido.</p></div>
+    <div class="tarjeta"><h4>Testimonios</h4><p>Solo de clientes reales, con permiso por escrito (un mensaje de WhatsApp sirve). Tapa nombres completos, montos, entidades y caras si lo piden.</p></div>
+    <div class="tarjeta"><h4>Mensaje responsable</h4><p>Un préstamo o una tarjeta se pagan. Recomienda solo lo que la persona puede pagar: un cliente que paga bien vuelve y recomienda.</p></div>
+  </div>
+</section>
+
+<!-- ===================== CHECKLIST ===================== -->
+<section id="checklist">
+  <p class="eyebrow">Lista de lanzamiento</p>
+  <h2 class="sec-titulo">Antes del primer video.</h2>
+  <p class="sec-intro">Marca cada paso al terminarlo. Se guarda en este navegador.</p>
+  <div class="progreso"><div><i id="barraCheck"></i></div><span id="cuentaCheck">0 de 0</span></div>
+  <ul class="check" id="check"></ul>
+</section>
+
+<!-- ===================== ARCHIVOS ===================== -->
+<section id="archivos">
+  <p class="eyebrow">Archivos</p>
+  <h2 class="sec-titulo">Dónde está cada cosa.</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Archivo</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><b>redes-sociales/exportadas/</b></td><td>Las 46 imágenes listas para subir (JPG). Pásalas al celular por WhatsApp Web o Google Drive.</td></tr>
+      <tr><td><b>redes-sociales/piezas.html</b></td><td>La plantilla de todas las piezas. Ábrela con <code>?p=todo</code> para verlas juntas. El @usuario se cambia en la variable USUARIO.</td></tr>
+      <tr><td><b>redes-sociales/exportar.ps1</b></td><td>Vuelve a generar las imágenes. Clic derecho → «Ejecutar con PowerShell». Úsalo si cambias el WhatsApp o la comisión en config.js.</td></tr>
+      <tr><td><b>enlaces.html</b></td><td>La página de la bio, con las pestañas «Logra tu crédito» y «Efectiviza tu tarjeta». En internet: impulsacredito.com/ig y impulsacredito.com/tt.</td></tr>
+    </tbody>
+  </table></div>
+  <h3 class="sub">Fuentes consultadas</h3>
+  <ul class="fuentes">
+    <li><a href="https://ads.tiktok.com/help/article/tiktok-ads-policy-financial-services" target="_blank" rel="noopener">TikTok: política de anuncios de servicios financieros</a></li>
+    <li><a href="https://developers.facebook.com/docs/marketing-api/special-ad-category" target="_blank" rel="noopener">Meta: categorías especiales de anuncios</a></li>
+    <li><a href="https://socialbu.com/blog/instagram-post-aspect-ratio" target="_blank" rel="noopener">Medidas de Instagram y recorte 3:4 del perfil</a></li>
+    <li><a href="https://skedsocial.com/blog/best-instagram-image-and-video-size-recommendations" target="_blank" rel="noopener">Guía de tamaños de Instagram</a></li>
+  </ul>
+  <p class="nota-sub" style="margin-top:12px">Las políticas de las plataformas cambian. Revísalas antes de cada campaña pagada.</p>
+</section>
+
+</main>
+<footer class="pie"><div class="wrap">Impulsa Crédito · Manual de captación en redes · Octubre 2026</div></footer>
+
+<script>
+(function () {
+  "use strict";
+  var WA = "928 266 183";
+
+  /* ---------- las 9 de lanzamiento ---------- */
+  var POSTS = [
+    { id: "ig-01", t: "Quiénes somos", o: "9.ª en publicarse · fijar al final", cap:
+"Impulsa Crédito: te ayudamos a lograr tu crédito 🤝\n\nSomos especialistas en asesoría y gestión crediticia en Lima:\n\n🏪 Asesoría Pyme: préstamos para tu negocio, capital de trabajo, mercadería o equipos\n👤 Asesoría para personas: préstamo personal, vehicular, hipotecario o compra de deuda\n💳 Efectiviza tu tarjeta de crédito: efectivo en minutos con 1% de comisión\n\nComparamos entre bancos, cajas y financieras para que no pagues de más. La asesoría es gratis.\n\n👉 Cuéntanos qué necesitas en el enlace de la bio o por WhatsApp al " + WA + ".\n\n#asesoriafinanciera #prestamos #prestamopyme #efectivizartarjeta #lima",
+      alt: "Pieza de Impulsa Crédito: Te ayudamos a lograr tu crédito. Dos líneas: Asesoría, para pymes y consumo, y Efectiviza, tu tarjeta en efectivo en minutos con 1%." },
+    { id: "ig-02", t: "Carrusel «Logra tu crédito»", o: "8.ª en publicarse · fijar segunda", cap:
+"Cómo lograr tu préstamo en 4 pasos (guárdalo 📌)\n\n1️⃣ Diagnóstico gratis: nos cuentas cuánto necesitas y para qué\n2️⃣ Comparamos bancos, cajas y financieras\n3️⃣ Armamos tu solicitud con los documentos correctos\n4️⃣ Te acompañamos hasta el desembolso\n\nPara tu negocio o para ti. Escríbenos «CRÉDITO» por mensaje directo y empezamos.\n\n#prestamos #asesoriacrediticia #prestamopyme #prestamopersonal #peru",
+      alt: "Carrusel de 6 láminas: logra tu crédito en 4 pasos. Diagnóstico gratis, comparamos entidades, armamos tu solicitud y te acompañamos hasta el desembolso." },
+    { id: "ig-03", t: "Efectiviza: simulador", o: "7.ª en publicarse · fijar primero", cap:
+"¿Cuánto recibes si efectivizas S/ 5,000 de tu tarjeta de crédito? 🧮\n\nCargo a tu tarjeta: S/ 5,000\nComisión (1%): S/ 50\nRecibes en tu cuenta: S/ 4,950\n\nAsí de claro, sin costos ocultos. Te confirmamos el monto exacto antes de operar.\n\nSimula cualquier monto entre S/ 100 y S/ 30,000 en el enlace de la bio 👆\n\n#efectivizartarjeta #tarjetadecredito #simulador #efectivo #lima",
+      alt: "Simulador de Impulsa Crédito: cargo a tu tarjeta S/ 5,000.00, comisión 1% S/ 50.00, recibes en tu cuenta S/ 4,950.00." },
+    { id: "ig-04", t: "Asesoría Pyme", o: "6.ª en publicarse", cap:
+"¿Tu negocio necesita capital para crecer? 🏪\n\nTe ayudamos a conseguir el préstamo para tu negocio: capital de trabajo, mercadería, equipos o local.\n\n✅ Diagnóstico gratis de tu caso\n✅ Comparamos entre bancos, cajas y financieras\n✅ Preparamos tu expediente para presentarlo bien desde la primera vez\n\nCuéntanos cuánto necesitas: enlace en la bio o WhatsApp " + WA + ".\n\n#prestamopyme #prestamoparanegocio #capitaldetrabajo #emprendedoresperu #mypes",
+      alt: "Dueño de un negocio atendiendo a una clienta. Texto: ¿Tu negocio necesita capital? Te ayudamos a conseguir el préstamo para tu negocio. Diagnóstico gratis, comparamos entidades." },
+    { id: "ig-05", t: "Asesoría para personas", o: "5.ª en publicarse", cap:
+"¿Buscas un préstamo personal, vehicular o hipotecario? 👤\n\nComparamos opciones entre entidades para que no pagues de más, y te acompañamos en todo el proceso.\n\n💡 Fíjate siempre en la TCEA: incluye la tasa, los seguros y las comisiones. Es la cifra que de verdad te dice cuánto cuesta un préstamo.\n\nLa asesoría es gratis. Escríbenos y revisamos tu caso.\n\n#prestamopersonal #creditovehicular #creditohipotecario #compradedeuda #lima",
+      alt: "Dos personas revisando documentos en una mesa. Texto: Tu préstamo, sin pagar de más. Personal, vehicular, hipotecario, compra de deuda." },
+    { id: "ig-06", t: "Efectiviza: requisitos", o: "4.ª en publicarse", cap:
+"¿Qué necesitas para efectivizar tu tarjeta de crédito? Solo 3 cosas 👇\n\n🪪 DNI vigente (o carné de extranjería)\n💳 Tarjeta de crédito con línea disponible\n🏦 Cuenta bancaria a tu nombre\n\nPuedes efectivizar desde S/ 100 hasta S/ 30,000 por operación.\n\nRegístrate gratis desde el enlace de la bio.\n\n#efectivizartarjeta #requisitos #tarjetadecredito #lima #peru",
+      alt: "Para efectivizar solo necesitas 3 cosas: DNI vigente, tarjeta de crédito con línea disponible y cuenta a tu nombre. Desde S/ 100 hasta S/ 30,000 por operación." },
+    { id: "ig-07", t: "Por qué te niegan un préstamo", o: "3.ª en publicarse", cap:
+"3 razones por las que te niegan un préstamo 📋\n\n1. Deudas atrasadas o reportes negativos en la central de riesgos\n2. Tus cuotas actuales ya ocupan gran parte de tus ingresos\n3. No puedes sustentar tus ingresos con boletas, recibos o ventas registradas\n\nAntes de volver a pedirlo, revisamos tu caso contigo y te decimos con honestidad qué opciones tienes. Guarda este post 📌\n\n#prestamos #centralderiesgo #educacionfinanciera #creditos #peru",
+      alt: "3 razones por las que te niegan un préstamo: deudas atrasadas, mucho endeudamiento e ingresos sin sustento. Antes de volver a pedirlo, revisamos tu caso contigo." },
+    { id: "ig-08", t: "Que no te estafen", o: "2.ª en publicarse", cap:
+"🚨 Nadie puede garantizarte un préstamo.\n\nLa aprobación siempre la decide la entidad financiera. Desconfía de quien:\n❌ Te cobre por adelantado para «aprobar» tu préstamo\n❌ Te pida tu clave del banco o el CVV de tu tarjeta\n❌ Te escriba desde números que no son oficiales\n\nEn Impulsa Crédito solo te escribimos desde el " + WA + ". Compártelo con alguien que esté buscando un préstamo 💚\n\n#estafas #prestamos #seguridadfinanciera #peru #impulsacredito",
+      alt: "Nadie puede garantizarte un préstamo. Desconfía de cobros por adelantado y de quien te pida tu clave o tu CVV. Nuestro único WhatsApp: " + WA + "." },
+    { id: "ig-09", t: "Efectiviza: tarjetas aceptadas", o: "1.ª en publicarse", cap:
+"Aceptamos tarjetas de crédito de todos los bancos del Perú 🇵🇪\n\nVisa · Mastercard · American Express · Diners Club\n\nDe bancos, cajas o financieras. Te depositamos en la cuenta que prefieras, en minutos.\n\n¿Tu tarjeta es de una entidad poco común? Escríbenos y lo revisamos.\n\n#efectivizartarjeta #tarjetadecredito #bancosperu #lima #peru",
+      alt: "Tarjetas de todos los bancos del Perú: Visa, Mastercard, Amex y Diners. Te depositamos en el banco que prefieras, en minutos." }
+  ];
+
+  /* ---------- banco de publicaciones ---------- */
+  var BANCO = [
+    { id: "bc-requisitos", t: "Asesoría · Qué te piden para un préstamo", o: "Columna de asesoría", cap:
+"¿Qué te piden para un préstamo? Depende de si es para tu negocio o para ti 👇\n\n🏪 Pyme: DNI y, si tienes, RUC · sustento de ventas · tiempo del negocio · historial sin atrasos\n👤 Personas: DNI · boletas o recibos · capacidad de pago · historial sin atrasos\n\nCada entidad pide algo distinto. En el diagnóstico gratis te decimos exactamente qué aplica a tu caso.\n\n#prestamopyme #prestamopersonal #requisitos #creditos #peru",
+      alt: "Qué te piden para un préstamo. Pyme: DNI y RUC si tienes, sustento de ventas, tiempo del negocio, historial sin atrasos. Personas: DNI, boletas o recibos, capacidad de pago, historial sin atrasos." },
+    { id: "bc-ef-1", t: "Efectiviza · Carrusel 4 pasos (6 láminas)", o: "Columna verde", cap:
+"Cómo efectivizar tu tarjeta de crédito en 4 pasos (guárdalo 📌)\n\n1️⃣ Nos dices cuánto necesitas y en qué banco recibirlo\n2️⃣ Validamos tu DNI y la línea de tu tarjeta\n3️⃣ Pagas con tu propia tarjeta por link de pago oficial o POS\n4️⃣ Recibes el dinero en tu cuenta en minutos\n\nSin ir al banco y sin papeles. Simula tu monto en el enlace de la bio.\n\n#efectivizartarjeta #tarjetadecredito #comofunciona #efectivo #peru",
+      alt: "Carrusel de 6 láminas: tu tarjeta en efectivo en 4 pasos. Cuéntanos el monto, validamos tus datos, pagas con tu tarjeta y recibes tu efectivo." },
+    { id: "bc-seguridad", t: "Efectiviza · Nunca te vamos a pedir", o: "Columna verde (en fondo negro, úsala en historias si prefieres)", cap:
+"🔒 3 cosas que Impulsa Crédito NUNCA te va a pedir:\n\n❌ Tu clave de banca por internet o de cajero\n❌ El código CVV de tu tarjeta\n❌ Que nos entregues tu tarjeta física\n\nEl cobro se hace con un link de pago oficial o POS, y siempre recibes comprobante. Si alguien te pide estos datos a nuestro nombre, no somos nosotros: escríbenos solo al " + WA + ".\n\n#seguridadfinanciera #estafas #tarjetadecredito #peru #impulsacredito",
+      alt: "Nunca te vamos a pedir tu clave del banco, el código CVV ni tu tarjeta física. Cobro por link de pago oficial o POS, siempre con comprobante." },
+    { id: "bc-mito", t: "Efectiviza · Mito vs. realidad", o: "Columna verde (fondo negro)", cap:
+"¿Efectivizar tu tarjeta es lo mismo que una disposición de efectivo? No. 🙅\n\nLa disposición de efectivo se hace en el banco o en el cajero, y suele tener comisión aparte y una tasa más alta desde el primer día.\n\nCon Impulsa Crédito el cobro se procesa como una compra con tu tarjeta y nuestra comisión es de solo 1%.\n\nLas tasas y condiciones de tu tarjeta las define tu banco: revisa siempre tu estado de cuenta.\n\n#disposiciondeefectivo #efectivizartarjeta #educacionfinanciera #tarjetadecredito #peru",
+      alt: "Comparación: la disposición de efectivo suele cobrar comisión aparte y tasa más alta desde el día 1. Con Impulsa se procesa como una compra, con comisión de 1%." },
+    { id: "bc-foto", t: "Efectiviza · Foto con mensaje", o: "Columna verde (foto)", cap:
+"Esa línea de crédito que no usas puede resolver lo que necesitas hoy. 💡\n\nCon Impulsa Crédito la conviertes en efectivo en tu cuenta, con 1% de comisión y sin trámites.\n\nÚsala con responsabilidad: paga tu tarjeta en su fecha y evita intereses. 🙌\n\n#lineadecredito #tarjetadecredito #efectivo #efectivizartarjeta #lima",
+      alt: "Mujer sonriente con una tarjeta de crédito en la mano. Texto: Esa línea que no usas puede ser efectivo hoy." },
+    { id: "bc-whatsapp", t: "Las dos líneas · Escríbenos", o: "Columna de asesoría", cap:
+"Tu próximo paso está a un mensaje 💬\n\n🤝 ¿Un préstamo para tu negocio o para ti? Te asesoramos gratis.\n💳 ¿Efectivo hoy? Efectiviza tu tarjeta en minutos.\n\nEscríbenos por WhatsApp al " + WA + ".\n🕙 Lunes a sábado, de 10:00 a. m. a 7:00 p. m.\n\n#prestamos #asesoriafinanciera #efectivizartarjeta #whatsapp #lima",
+      alt: "Tu próximo paso está a un mensaje. WhatsApp " + WA + ", lunes a sábado de 10:00 a. m. a 7:00 p. m." }
+  ];
+
+  function tarjetaPost(p) {
+    return '<article class="post"><img src="exportadas/' + p.id + '.jpg" alt="' + esc(p.alt) + '" loading="lazy" width="1080" height="1350">' +
+      '<div class="post-cuerpo"><div class="post-cab"><h4>' + esc(p.t) + '</h4><span class="orden">' + esc(p.o) + "</span></div>" +
+      '<div class="texto" id="cap-' + p.id + '">' + esc(p.cap) + "</div>" +
+      '<div class="texto" id="alt-' + p.id + '" hidden>' + esc(p.alt) + "</div>" +
+      '<div class="post-acc"><button class="copiar" data-copy="cap-' + p.id + '">Copiar texto</button><button class="copiar" data-copy="alt-' + p.id + '">Copiar texto alternativo</button></div></div></article>';
+  }
+  document.getElementById("posts").innerHTML = POSTS.map(tarjetaPost).join("");
+  document.getElementById("banco").innerHTML = BANCO.map(tarjetaPost).join("");
+
+  /* maquetas */
+  function imgs(ids) { return ids.map(function (id) { return '<img src="exportadas/' + id + '.jpg" alt="" loading="lazy">'; }).join(""); }
+  document.getElementById("mockGrid").innerHTML = imgs(POSTS.map(function (p) { return p.id; }));
+  document.getElementById("mockGridTt").innerHTML = imgs(["tt-01", "tt-02", "tt-03", "tt-04", "tt-05", "tt-06", "tt-07", "tt-08", "tt-09"]);
+  document.getElementById("mockDest").innerHTML = [["hl-credito", "Logra tu crédito"], ["hl-pyme", "Pyme"], ["hl-personas", "Personas"], ["hl-efectiviza", "Efectiviza"], ["hl-seguro", "Seguridad"], ["hl-preguntas", "Preguntas"], ["hl-clientes", "Clientes"]]
+    .map(function (d) { return '<figure><div class="c"><img src="exportadas/' + d[0] + '.jpg" alt="" loading="lazy"></div><figcaption>' + d[1] + "</figcaption></figure>"; }).join("");
+  [["mockNameIg", "igName"], ["mockBioIg", "igBio"], ["mockNameTt", "ttName"], ["mockBioTt", "ttBio"]].forEach(function (m) {
+    document.getElementById(m[0]).textContent = document.getElementById(m[1]).textContent;
+  });
+  document.getElementById("tiraCarrusel").innerHTML = ["ig-02", "ig-02-2", "ig-02-3", "ig-02-4", "ig-02-5", "ig-02-6"]
+    .map(function (id, i) { return '<img src="exportadas/' + id + '.jpg" alt="Lámina ' + (i + 1) + ' del carrusel Logra tu crédito" loading="lazy">'; }).join("");
+  document.getElementById("tiraHistorias").innerHTML = [["story-01", "Historia 1: ¿qué necesitas hoy? con encuesta"], ["story-02", "Historia 2: diagnóstico gratis de tu crédito"], ["story-03", "Historia 3: nadie puede garantizarte un préstamo"], ["story-04", "Historia 4: mira cuánto recibes al efectivizar"]]
+    .map(function (s) { return '<img src="exportadas/' + s[0] + '.jpg" alt="' + s[1] + '" loading="lazy">'; }).join("");
+
+  /* ---------- guiones de TikTok ---------- */
+  var GUIONES = [
+    { img: "tt-01", t: "¿Cómo sacar un préstamo para tu negocio?", f: "Asesoría Pyme · asesor a cámara dentro de un negocio real",
+      pantalla: "Préstamo para tu negocio: paso a paso", dice: "Si tu negocio necesita capital y no sabes por dónde empezar para sacar un préstamo, esto es para ti.",
+      pasos: ["Define para qué es: mercadería, equipos o capital de trabajo, y cuánto necesitas.", "Ordena el sustento de tus ventas: facturas, boletas o declaraciones.", "Compara bancos, cajas y financieras: la tasa y el plazo cambian mucho.", "Presenta un expediente completo para que no te lo devuelvan."],
+      cierre: "Nosotros te asesoramos gratis. Escríbenos desde el enlace del perfil.",
+      desc: "Cómo sacar un préstamo para tu negocio en Perú 🏪 Asesoría gratis para pymes. #prestamopyme #prestamoparanegocio #emprendedoresperu #asesoriafinanciera #lima" },
+    { img: "tt-02", t: "3 razones por las que te niegan un préstamo", f: "Asesoría · asesor a cámara, contando con los dedos",
+      pantalla: "¿Por qué te niegan un préstamo?", dice: "Estas son las tres razones más comunes por las que te niegan un préstamo.",
+      pasos: ["Tienes deudas atrasadas o reportes negativos en la central de riesgos.", "Tus cuotas actuales ya se llevan gran parte de tus ingresos.", "No puedes sustentar tus ingresos con boletas, recibos o ventas registradas."],
+      cierre: "Antes de volver a pedirlo, te ayudamos a revisar tu caso.",
+      desc: "3 razones por las que te niegan un préstamo (y qué hacer) 📋 #prestamos #centralderiesgo #educacionfinanciera #creditos #peru" },
+    { img: "tt-03", t: "S/ 1,000 en tu tarjeta: ¿cuánto recibes?", f: "Efectiviza · pantalla verde sobre el simulador",
+      pantalla: "S/ 1,000 en tu tarjeta = ¿?", dice: "¿Cuánto te llega si efectivizas mil soles de tu tarjeta de crédito?",
+      pasos: ["Mueve el simulador a S/ 1,000: comisión S/ 10, recibes S/ 990.", "Muévelo a S/ 5,000: recibes S/ 4,950.", "Sin costos ocultos: el monto se confirma antes de operar."],
+      cierre: "Comenta tu monto y te digo cuánto recibes.",
+      desc: "¿Cuánto recibes al efectivizar tu tarjeta de crédito? Haz la prueba 👇 #efectivizartarjeta #simulador #tarjetadecredito #efectivo #peru" },
+    { img: "tt-04", t: "Préstamo personal: ¿banco, caja o financiera?", f: "Asesoría Personas · pizarra o pantalla dividida en tres",
+      pantalla: "¿Banco, caja o financiera?", dice: "¿Dónde te conviene sacar tu préstamo personal: en un banco, una caja o una financiera?",
+      pasos: ["No hay una respuesta única: depende de tus ingresos, tu historial y el monto.", "Compara la TCEA y no solo la tasa de interés: incluye seguros y comisiones.", "Mira el plazo: una cuota baja a muchos años puede salir más cara."],
+      cierre: "Nosotros comparamos por ti. Asesoría gratis en el enlace del perfil.",
+      desc: "Préstamo personal: ¿banco, caja o financiera? Compara la TCEA 💡 #prestamopersonal #tcea #finanzaspersonales #creditos #peru" },
+    { img: "tt-05", t: "Lo que te piden para un préstamo pyme", f: "Asesoría Pyme · asesor mostrando documentos (datos tapados)",
+      pantalla: "Antes de pedir un préstamo pyme, ten esto listo", dice: "Esto es lo que normalmente te piden para un préstamo para tu negocio.",
+      pasos: ["Tu DNI y, si tienes, tu RUC.", "Sustento de ventas: facturas, boletas o declaraciones.", "Tiempo de funcionamiento del negocio.", "Un historial sin deudas atrasadas.", "Cada entidad pide algo distinto: te decimos qué aplica a tu caso."],
+      cierre: "Guárdalo y escríbenos para tu diagnóstico gratis.",
+      desc: "Requisitos para un préstamo pyme en Perú ✅ #prestamopyme #requisitos #mypes #emprendedoresperu #lima" },
+    { img: "tt-06", t: "Disposición de efectivo vs. efectivizar", f: "Efectiviza · pantalla dividida o pizarra",
+      pantalla: "Antes de sacar efectivo del cajero… mira esto", dice: "Antes de hacer una disposición de efectivo con tu tarjeta, conoce la diferencia.",
+      pasos: ["La disposición de efectivo suele cobrar comisión aparte y una tasa más alta desde el primer día.", "Efectivizar es distinto: el cobro va como una compra y pagas 1% de comisión.", "Revisa siempre las condiciones de tu banco."],
+      cierre: "Guárdalo para cuando lo necesites.",
+      desc: "Disposición de efectivo vs. efectivizar tu tarjeta: no es lo mismo ⚠️ #disposiciondeefectivo #educacionfinanciera #tarjetadecredito #efectivizartarjeta #peru" },
+    { img: "tt-07", t: "Cobro por adelantado = estafa", f: "Seguridad · asesor a cámara, tono serio",
+      pantalla: "Si te piden pagar para «aprobar» tu préstamo, detente", dice: "Si alguien te pide un pago por adelantado para aprobar tu préstamo, es una estafa muy común.",
+      pasos: ["Nadie puede garantizar que una entidad te apruebe: la decisión es del banco, la caja o la financiera.", "Los falsos gestores piden un «depósito de garantía» y desaparecen.", "Verifica siempre el RUC, la dirección y que la empresa tenga canales oficiales."],
+      cierre: "Compártelo con alguien que esté buscando un préstamo.",
+      desc: "La estafa del cobro por adelantado en préstamos: cómo detectarla 🚨 #estafas #prestamos #seguridadfinanciera #peru #impulsacredito" },
+    { img: "tt-08", t: "¿Cuánto te pueden prestar?", f: "Asesoría · asesor con calculadora o pizarra",
+      pantalla: "¿Cuánto te pueden prestar?", dice: "¿Cuánto te puede prestar un banco? Depende sobre todo de tres cosas.",
+      pasos: ["Tu capacidad de pago: lo que te queda libre después de tus gastos y tus cuotas.", "Tu historial: cómo has pagado antes.", "El plazo: a más plazo, cuota más baja, pero pagas más intereses."],
+      cierre: "Cuéntanos tus ingresos y te orientamos gratis.",
+      desc: "¿Cuánto te pueden prestar? Lo que miran las entidades 💰 #prestamos #capacidaddepago #creditos #finanzaspersonales #peru" },
+    { img: "tt-09", t: "Tu tarjeta en efectivo en 4 pasos", f: "Efectiviza · asesor a cámara + pantalla del simulador",
+      pantalla: "Tarjeta de crédito → efectivo en minutos", dice: "Si tienes línea en tu tarjeta de crédito y necesitas efectivo hoy, mira cómo se hace sin ir al banco.",
+      pasos: ["Nos dices el monto y en qué banco quieres recibirlo.", "Validamos tu DNI y tu tarjeta.", "Pagas con tu tarjeta por link de pago oficial.", "Te depositamos en minutos, descontando solo el 1%."],
+      cierre: "Simula tu monto en el enlace del perfil.",
+      desc: "Cómo efectivizar tu tarjeta de crédito paso a paso 💳➡️💵 Comisión 1%, depósito en minutos. #efectivizartarjeta #tarjetadecredito #efectivo #lima #peru" },
+    { t: "Respuesta a «¿Me ayudan si estoy reportado?»", f: "Asesoría · respuesta a un comentario con video",
+      pantalla: "Respondiendo: «¿Y si estoy reportado?»", dice: "Me preguntaron si podemos ayudar a alguien que está reportado en la central de riesgos.",
+      pasos: ["Depende de tu caso: el monto, hace cuánto y si ya pagaste.", "Primero revisamos tu reporte contigo.", "Te decimos con honestidad qué opciones hay y qué hacer para mejorar tu historial."],
+      cierre: "Escríbenos y revisamos tu caso, sin promesas falsas.",
+      desc: "¿Puedes sacar un préstamo si estás reportado? Te lo explicamos 📋 #centralderiesgo #prestamos #creditos #asesoriafinanciera #peru" },
+    { t: "Así armamos un expediente", f: "Asesoría · detrás de cámaras con el equipo",
+      pantalla: "Así preparamos tu solicitud de préstamo", dice: "Así armamos un expediente para que la entidad lo evalúe sin devolverlo.",
+      pasos: ["Diagnóstico con el cliente (datos tapados).", "Lista de documentos según la entidad.", "Revisión de que todo cuadre: ingresos, deudas, monto.", "Presentación y seguimiento hasta la respuesta."],
+      cierre: "Si quieres que armemos el tuyo, escríbenos.",
+      desc: "Detrás de cámaras: así preparamos una solicitud de préstamo 📁 #detrasdecamaras #prestamos #asesoriacrediticia #emprendimiento #lima" },
+    { t: "La pregunta del día", f: "Serie semanal con preguntas reales de WhatsApp",
+      pantalla: "Pregunta del día: ¿qué es la TCEA?", dice: "La pregunta de hoy: ¿qué es la TCEA y por qué importa tanto?",
+      pasos: ["Es la Tasa de Costo Efectivo Anual.", "Suma la tasa de interés, los seguros y las comisiones.", "Sirve para comparar préstamos de verdad, no solo por la tasa."],
+      cierre: "Mándanos tu pregunta por WhatsApp para el próximo video.",
+      desc: "¿Qué es la TCEA? La cifra que te dice cuánto cuesta de verdad un préstamo 💡 #tcea #prestamos #educacionfinanciera #creditos #peru" }
+  ];
+  document.getElementById("guiones").innerHTML = GUIONES.map(function (g, i) {
+    var cab = g.img ? '<img src="exportadas/' + g.img + '.jpg" alt="" loading="lazy">' : '<span class="num">' + (i + 1) + "</span>";
+    return '<details class="guion"><summary>' + cab + "<div><b>" + (i + 1) + ". " + esc(g.t) + "</b><small>" + esc(g.f) + "</small></div></summary>" +
+      '<div class="guion-cuerpo">' +
+        '<div class="bloque"><h5>Gancho · 0 a 3 s</h5><p><b>En pantalla:</b> ' + esc(g.pantalla) + "</p><p><b>Dices:</b> " + esc(g.dice) + "</p></div>" +
+        '<div class="bloque"><h5>Desarrollo</h5><ol>' + g.pasos.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ol></div>" +
+        '<div class="bloque"><h5>Cierre</h5><p>' + esc(g.cierre) + "</p></div>" +
+        '<div class="bloque ancho"><h5>Descripción del video</h5><div class="texto" id="desc-' + i + '" style="font-weight:500;font-size:.9rem">' + esc(g.desc) + '</div><p style="margin-top:10px"><button class="copiar" data-copy="desc-' + i + '">Copiar descripción</button></p></div>' +
+      "</div></details>";
+  }).join("");
+
+  /* ---------- hashtags ---------- */
+  var TAGS = [
+    ["Asesoría Pyme", "#prestamopyme #prestamoparanegocio #capitaldetrabajo #emprendedoresperu #mypes"],
+    ["Asesoría Personas", "#prestamopersonal #creditovehicular #creditohipotecario #compradedeuda #peru"],
+    ["Efectiviza", "#efectivizartarjeta #tarjetadecredito #efectivo #lima #peru"],
+    ["Educación", "#educacionfinanciera #tcea #centralderiesgo #finanzaspersonales #peru"],
+    ["Seguridad", "#estafas #seguridadfinanciera #prestamos #peru #impulsacredito"]
+  ];
+  document.getElementById("hashtags").innerHTML = TAGS.map(function (t, i) {
+    return '<div class="campo"><div class="campo-cab"><b>' + t[0] + '</b><button class="copiar" data-copy="tag-' + i + '">Copiar</button></div><div class="texto" id="tag-' + i + '">' + t[1] + "</div></div>";
+  }).join("");
+
+  /* ---------- guion de WhatsApp ---------- */
+  var WA_GUION = [
+    ["Para todos", [
+      ["Bienvenida automática", "/hola", "¡Hola! 👋 Gracias por escribir a Impulsa Crédito. Un asesor te responde en minutos (lunes a sábado, de 10 a. m. a 7 p. m.).\n\n¿En qué te ayudamos?\n1️⃣ Préstamo para mi negocio\n2️⃣ Préstamo personal, vehicular o hipotecario\n3️⃣ Efectivizar mi tarjeta de crédito\n\nResponde con el número."]
+    ]],
+    ["Asesoría: préstamos", [
+      ["Diagnóstico", "/diagnostico", "¡Hola, [nombre]! Soy [asesor] de Impulsa Crédito 😊 Para orientarte bien, cuéntame:\n\n1) ¿Cuánto necesitas y para qué?\n2) ¿En cuántos meses te gustaría pagarlo?\n3) ¿Cuáles son tus ingresos mensuales aproximados (o las ventas de tu negocio)?\n4) ¿Tienes deudas o algún reporte en la central de riesgos?\n\nCon eso te digo qué opciones tienes. La asesoría es gratis."],
+      ["Opciones y documentos", "/documentos", "Gracias, [nombre]. Con lo que me cuentas, estas son tus mejores opciones: [opciones].\n\nPara presentar tu solicitud vamos a necesitar: [documentos según el caso]. Te ayudo a reunirlos y armamos el expediente juntos."],
+      ["Avance de la solicitud", "/avance", "Hola, [nombre]. Novedades de tu solicitud con [entidad]: [estado]. El siguiente paso es [paso]. Te aviso apenas tengamos respuesta."],
+      ["Desembolso", "/desembolso", "¡Felicidades, [nombre]! 🎉 [Entidad] desembolsó tu préstamo. Gracias por confiar en Impulsa Crédito.\n\nSi un familiar o un negocio amigo necesita asesoría, compártele impulsacredito.com/ig 💚"]
+    ]],
+    ["Efectiviza: tarjeta", [
+      ["Primera respuesta", "/monto", "¡Hola, [nombre]! Soy [asesor] de Impulsa Crédito 😊\n\nCon S/ [monto] recibes S/ [neto] en tu cuenta (comisión de 1%). ¿Tu tarjeta es Visa, Mastercard, Amex o Diners? Y para depositarte, ¿en qué banco tienes una cuenta a tu nombre?"],
+      ["Paso a la web", "/registro", "Perfecto. Para continuar, regístrate gratis en impulsacredito.com/registro y sube tu DNI y una selfie (te toma 3 minutos).\n\nAsí tus datos quedan protegidos y no tienes que mandarlos por chat. Avísame cuando termines y lo reviso al instante."],
+      ["Envío del link de pago", "/pago", "Listo, [nombre]. Te envío el link de pago oficial por S/ [monto]. Págalo con tu tarjeta desde tu celular, como una compra.\n\nApenas se confirme, te depositamos S/ [neto] y te enviamos el comprobante."],
+      ["Cierre", "/listo", "¡Listo! 🎉 Ya depositamos S/ [neto] en tu cuenta [banco] terminada en [últimos 4].\n\nGracias por confiar en Impulsa Crédito. Si alguien lo necesita, compártele impulsacredito.com/ig 💚"]
+    ]],
+    ["Seguimiento", [
+      ["A las 24 horas", "/seguimiento", "Hola, [nombre] 👋 ¿Pudiste revisarlo? Si quieres, avanzamos hoy mismo. Cualquier duda, aquí estoy."],
+      ["Último mensaje a las 72 horas", "/ultimo", "Hola, [nombre]. Te escribo por última vez para no incomodarte. Cuando lo necesites, aquí estamos: un préstamo para tu negocio o para ti, o efectivo con tu tarjeta."]
+    ]]
+  ];
+  var n = 0;
+  document.getElementById("guionWa").innerHTML = WA_GUION.map(function (grupo) {
+    return '<p class="grupo-wa">' + grupo[0] + "</p>" + grupo[1].map(function (w) {
+      n++;
+      return '<div class="campo"><div class="campo-cab"><b>' + w[0] + ' <span style="color:var(--accent)">' + w[1] + '</span></b><button class="copiar" data-copy="wa-' + n + '">Copiar</button></div><div class="texto" id="wa-' + n + '" style="font-weight:500">' + esc(w[2]) + "</div></div>";
+    }).join("");
+  }).join("");
+
+  var OBJ = [
+    ["Asesoría · «¿Cuánto me cobran?» · /cobro", "La asesoría es gratis. [Si cobras algo por la gestión, explica aquí el monto exacto y que se paga solo después del desembolso.]"],
+    ["Asesoría · «¿Me garantizan el préstamo?» · /garantia", "No, y desconfía de quien te lo garantice. La decisión es de la entidad. Lo que sí hacemos es presentar tu caso en las entidades donde tienes más posibilidades y con el expediente completo."],
+    ["Asesoría · «Estoy reportado en la central de riesgos» · /reportado", "Depende de tu caso: el monto, hace cuánto y si ya pagaste. Revisamos tu reporte contigo y te decimos con honestidad qué opciones hay y qué hacer para mejorar tu historial."],
+    ["Asesoría · «¿Por qué no voy directo al banco?» · /directo", "Puedes hacerlo. Con nosotros comparas varias entidades a la vez, sabes qué documentos llevar y evitas que te rechacen por un expediente incompleto. Y la asesoría no te cuesta."],
+    ["Efectiviza · «¿Es seguro?» · /seguro", "Sí. El cobro se hace con un link de pago oficial o POS, igual que una compra, y siempre recibes comprobante. Nunca te pedimos tu clave, tu CVV ni tu tarjeta física. Tus documentos se suben a nuestra web, protegidos, y no por chat."],
+    ["Efectiviza · «¿Por qué 1%?» · /comision", "Porque trabajamos 100% digital y sin intermediarios. Es una comisión fija que ves antes de operar: con S/ [monto] recibes S/ [neto]. Sin costos ocultos."],
+    ["Efectiviza · «¿Cuánto demora?» · /tiempo", "Apenas se confirma el cobro, te transferimos. Normalmente llega en minutos y, como máximo, el mismo día hábil."],
+    ["Efectiviza · «¿Por qué tengo que subir mi DNI?» · /dni", "Para confirmar que la tarjeta y la cuenta son tuyas. Te protege a ti: nadie puede efectivizar una tarjeta a tu nombre. La foto queda guardada de forma privada y solo la ve nuestro equipo de verificación."],
+    ["Para todos · «Lo voy a pensar» · /pensar", "¡Claro, tómate tu tiempo! Te dejo un resumen de lo que conversamos: [resumen]. Cuando quieras, me escribes y seguimos desde ahí."]
+  ];
+  document.getElementById("objeciones").innerHTML = OBJ.map(function (o, i) {
+    return '<details class="obj"><summary>' + esc(o[0]) + '</summary><div class="texto" id="obj-' + i + '">' + esc(o[1]) + '</div><p style="margin:0 0 14px"><button class="copiar" data-copy="obj-' + i + '">Copiar</button></p></details>';
+  }).join("");
+
+  /* ---------- lista de lanzamiento ---------- */
+  var CHECK = [
+    "Decidir cómo se cobra la asesoría (gratis o comisión al desembolso) y decirlo igual en la web, las redes y WhatsApp",
+    "Poner RUC, razón social y dirección reales en el Libro de Reclamaciones",
+    "Confirmar con el procesador de pagos que el contrato permite efectivizar",
+    "Actualizar la web para que también muestre la asesoría (hoy solo habla de efectivizar)",
+    "Publicar la página de enlaces (impulsacredito.com/ig y /tt)",
+    "Crear @impulsacredito en Instagram como cuenta de empresa",
+    "Crear @impulsacredito en TikTok como cuenta de empresa",
+    "Subir foto de perfil, nombre, bio y enlace en las dos redes",
+    "Configurar WhatsApp Business: perfil, bienvenida, ausencia, respuestas rápidas y etiquetas",
+    "Publicar las 9 piezas en orden y fijar 3",
+    "Crear los 7 destacados con sus portadas",
+    "Grabar los guiones 1 a 6",
+    "Preparar la hoja de seguimiento de asesorías y el tablero semanal"
+  ];
+  var CLAVE = "ic-manual-checklist-v2";
+  var hechos = {};
+  try { hechos = JSON.parse(localStorage.getItem(CLAVE) || "{}") || {}; } catch (e) { hechos = {}; }
+  var ul = document.getElementById("check");
+  ul.innerHTML = CHECK.map(function (c, i) {
+    return '<li><label for="chk' + i + '"><input type="checkbox" id="chk' + i + '"' + (hechos[i] ? " checked" : "") + "><span>" + esc(c) + "</span></label></li>";
+  }).join("");
+  function progreso() {
+    var k = ul.querySelectorAll("input:checked").length;
+    document.getElementById("barraCheck").style.width = (k / CHECK.length * 100) + "%";
+    document.getElementById("cuentaCheck").textContent = k + " de " + CHECK.length;
+  }
+  ul.addEventListener("change", function (e) {
+    var i = e.target.id.replace("chk", "");
+    hechos[i] = e.target.checked;
+    try { localStorage.setItem(CLAVE, JSON.stringify(hechos)); } catch (err) {}
+    progreso();
+  });
+  progreso();
+
+  /* ---------- contadores de caracteres ---------- */
+  document.querySelectorAll("[data-cuenta]").forEach(function (el) {
+    var k = Array.from(document.getElementById(el.dataset.cuenta).textContent).length;
+    el.textContent = k + "/" + el.dataset.max;
+  });
+
+  /* ---------- copiar ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-copy]");
+    if (!b) return;
+    var el = document.getElementById(b.dataset.copy);
+    var txt = el.textContent;
+    var original = b.textContent;
+    function marcar(msg) { b.textContent = msg; b.classList.add("ok"); setTimeout(function () { b.textContent = original; b.classList.remove("ok"); }, 1600); }
+    function seleccionar() {
+      el.hidden = false;
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      marcar("Seleccionado: cópialo");
+    }
+    try {
+      navigator.clipboard.writeText(txt).then(function () { marcar("Copiado"); }, seleccionar);
+    } catch (err) { seleccionar(); }
+  });
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+})();
+</script>
