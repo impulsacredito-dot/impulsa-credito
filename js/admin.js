@@ -9,12 +9,17 @@
    Roles:
    · ADMINISTRADOR (el dueño): ve todo, aprueba, marca depósitos,
      descarga Excel y administra al equipo.
+   · SOPORTE (trabajadores de confianza): como Consulta, y además ve
+     las fotos del DNI, la selfie y las tarjetas.
    · CONSULTA (trabajadores): ve clientes y operaciones para atender,
-     no puede cambiar nada y recibe lo sensible oculto.
+     sin fotos.
+   Soporte y Consulta no pueden cambiar nada y reciben las cuentas, los
+   celulares y los correos ocultos.
 
-   SEGURIDAD: la protección vive en Supabase (supabase-admin.sql y
-   supabase-equipo-consulta.sql). Aquí solo se esconden los botones que
-   un usuario no podría usar: aunque los forzara, el servidor lo rechaza.
+   SEGURIDAD: la protección vive en Supabase (supabase-admin.sql,
+   supabase-equipo-consulta.sql y supabase-equipo-soporte.sql). Aquí
+   solo se esconden los botones que un usuario no podría usar: aunque
+   los forzara, el servidor lo rechaza.
    ===================================================================== */
 (function () {
   "use strict";
@@ -44,11 +49,16 @@
   var aud = { filtro: "todo", pag: 1, rango: { clave: "todo" } };
 
   var cacheFotos = {}, ocupado = false, graficos = [];
+  var recienCreadas = {};   // cuentas creadas en esta sesión (por si hay que reintentar)
+  var eqReloj = null;       // refresca el estado de conexión mientras se ve "Equipo"
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return window.IC ? IC.esc(s) : String(s == null ? "" : s); }
-  function esConsulta() { return rol === "consulta"; }
+  /* esConsulta: cualquier trabajador de solo lectura (Consulta o Soporte) */
+  function esConsulta() { return rol === "consulta" || rol === "soporte"; }
   function esAdmin() { return rol === "admin"; }
+  function verFotos() { return rol === "admin" || rol === "soporte"; }
+  var NOMBRE_ROL = { admin: "Administrador", soporte: "Soporte", consulta: "Consulta", cliente: "Cliente", sistema: "Sistema" };
   function dinero(n) { return IC.money(n); }
   function plural(n, uno, varios) { return n + " " + (n === 1 ? uno : varios); }
 
@@ -163,6 +173,7 @@
     guardar(await api("/auth/v1/token?grant_type=refresh_token", { method: "POST", sinSesion: true, body: JSON.stringify({ refresh_token: sesion.refresh_token }) }));
   }
   function salir() {
+    despedirse();
     sesion = null; rol = null;
     try { localStorage.removeItem(SES); } catch (e) {}
     location.reload();
@@ -170,7 +181,7 @@
   async function obtenerRol() {
     try {
       var r = await api("/rest/v1/rpc/mi_rol", { method: "POST", body: "{}" });
-      return r === "admin" || r === "consulta" ? r : null;
+      return r === "admin" || r === "consulta" || r === "soporte" ? r : null;
     } catch (e) {
       if (!e.status) throw e;
       if (!faltaFuncion(e)) return null;
@@ -245,15 +256,101 @@
   async function cargarEquipo() {
     try { eq.lista = await api("/rest/v1/rpc/equipo_listar", { method: "POST", body: "{}" }) || []; eq.error = null; }
     catch (e) { eq.lista = []; eq.error = faltaFuncion(e) ? "falta_sql" : e.message; }
+    eq.conEstado = eq.lista.some(function (t) { return "estado" in t; });
   }
 
-  /* ======================= fotos de documentos (solo administrador) ======================= */
-  async function urlFoto(ruta) {
-    if (!ruta || !esAdmin()) return null;
-    if (cacheFotos[ruta]) return cacheFotos[ruta];
+  /* ======================= estado de conexión ======================= */
+  /* Cada minuto el panel le dice al servidor si la persona está ACTIVA
+     o AUSENTE (más de 5 min sin tocar nada, o en otra pestaña), y al
+     cerrar, que se DESCONECTÓ. La respuesta trae el rol actual: si el
+     administrador le cambió el acceso o se lo quitó, el panel se
+     actualiza solo. */
+  var pres = { enviado: null, enviadoEn: 0, latido: null, espera: null, ultimaAccion: Date.now(), apagado: false };
+  var INACTIVO_MS = 5 * 60 * 1000;
+  function estadoLocal() {
+    if (document.visibilityState === "hidden") return "ausente";
+    return Date.now() - pres.ultimaAccion > INACTIVO_MS ? "ausente" : "activo";
+  }
+  async function enviarPresencia(e) {
+    if (!sesion || !rol || pres.apagado) return;
+    pres.enviado = e; pres.enviadoEn = Date.now();
+    var r;
+    try { r = await api("/rest/v1/rpc/registrar_presencia", { method: "POST", body: JSON.stringify({ p_estado: e }) }); }
+    catch (err) { if (faltaFuncion(err)) detenerPresencia(); return; }   // aún no se ejecutó el SQL
+    if (sesion && rol && r !== rol) cambioDeRol(r);
+  }
+  function revisarPresencia(inmediato) {
+    clearTimeout(pres.espera);
+    pres.espera = setTimeout(function () {
+      var e = estadoLocal();
+      if (e !== pres.enviado || Date.now() - pres.enviadoEn > 50000) enviarPresencia(e);
+    }, inmediato ? 0 : 1200);
+  }
+  function alActuar() {
+    pres.ultimaAccion = Date.now();
+    if (pres.enviado === "ausente" && document.visibilityState === "visible") revisarPresencia();
+  }
+  function alCambiarPestana() {
+    if (document.visibilityState === "visible") pres.ultimaAccion = Date.now();
+    revisarPresencia();
+  }
+  function despedirse() {
+    if (!sesion || pres.apagado || !pres.enviado) return;
     try {
-      var r = await api("/storage/v1/object/sign/" + BUCKET + "/" + encodeURI(ruta), { method: "POST", body: JSON.stringify({ expiresIn: 3600 }) });
-      return (cacheFotos[ruta] = base + "/storage/v1" + r.signedURL);
+      fetch(base + "/rest/v1/rpc/registrar_presencia", { method: "POST", keepalive: true, headers: cab({}), body: JSON.stringify({ p_estado: "desconectado" }) }).catch(function () {});
+    } catch (e) {}
+  }
+  function iniciarPresencia() {
+    if (pres.latido) return;
+    pres.apagado = false; pres.enviado = null; pres.ultimaAccion = Date.now();
+    revisarPresencia(true);
+    pres.latido = setInterval(function () { revisarPresencia(true); }, 60000);
+    if (pres.oyentes) return;
+    pres.oyentes = true;
+    ["pointerdown", "keydown", "wheel", "touchstart", "mousemove"].forEach(function (ev) { document.addEventListener(ev, alActuar, { passive: true }); });
+    document.addEventListener("visibilitychange", alCambiarPestana);
+    window.addEventListener("pagehide", despedirse);
+    window.addEventListener("pageshow", function (ev) { if (ev.persisted && !pres.apagado) { pres.ultimaAccion = Date.now(); revisarPresencia(true); } });
+  }
+  function detenerPresencia() {
+    pres.apagado = true;
+    clearInterval(pres.latido); clearTimeout(pres.espera); pres.latido = null;
+  }
+  /* el administrador cambió el acceso de esta persona (o se lo quitó) */
+  function cambioDeRol(nuevo) {
+    if (nuevo !== "admin" && nuevo !== "consulta" && nuevo !== "soporte") return accesoRetirado();
+    rol = nuevo; cacheFotos = {};
+    prepararSegunRol();
+    if (!esAdmin() && (vista === "equipo" || vista === "auditoria")) vista = "inicio";
+    cargarPerfil();
+    cargar().then(render).catch(function () {});
+    IC.toast("Tu acceso cambió a " + NOMBRE_ROL[nuevo] + ".", "ok");
+  }
+  function accesoRetirado() {
+    detenerPresencia();
+    sesion = null; rol = null; cacheFotos = {};
+    datos = { pendientes: [], clientes: [], ops: [], docs: [], tarjetas: [], historial: [], porId: {} };
+    try { localStorage.removeItem(SES); } catch (e) {}
+    cerrarDrawer(); cerrarMenu(); IC.closeModal();
+    $("adView").innerHTML = "";
+    $("adPanel").classList.add("hidden");
+    $("adLogin").classList.remove("hidden");
+    $("adLoginError").textContent = "Tu acceso al panel fue retirado. Si crees que es un error, habla con el administrador.";
+    $("adLoginError").classList.remove("hidden");
+  }
+
+  /* ======================= fotos de documentos (administrador y soporte) ======================= */
+  /* enlaces firmados de corta duración (15 min): si alguien copia uno,
+     deja de servir enseguida */
+  var VIDA_FOTO = 900;
+  async function urlFoto(ruta) {
+    if (!ruta || !verFotos()) return null;
+    var c = cacheFotos[ruta];
+    if (c && c.vence > Date.now()) return c.url;
+    try {
+      var r = await api("/storage/v1/object/sign/" + BUCKET + "/" + encodeURI(ruta), { method: "POST", body: JSON.stringify({ expiresIn: VIDA_FOTO }) });
+      cacheFotos[ruta] = { url: base + "/storage/v1" + r.signedURL, vence: Date.now() + (VIDA_FOTO - 60) * 1000 };
+      return cacheFotos[ruta].url;
     } catch (e) { return null; }
   }
   async function pintarFotos(cont) {
@@ -397,6 +494,22 @@
       fr.readAsDataURL(archivo);
     });
   }
+  /* elegir el tipo de acceso de un trabajador (Consulta o Soporte) */
+  function elegirRolHTML(nombreCampo, actual) {
+    function op(v, tit, txt) {
+      return '<label class="ad-op-rol"><input type="radio" name="' + nombreCampo + '" value="' + v + '"' + (actual === v ? " checked" : "") + ">" +
+        "<span><b>" + tit + "</b><small>" + txt + "</small></span></label>";
+    }
+    return '<div class="ad-campo-rol"><span class="ad-campo-tit" id="' + nombreCampo + 'Tit">Tipo de acceso</span>' +
+      '<div class="ad-elegir-rol" role="radiogroup" aria-labelledby="' + nombreCampo + 'Tit">' +
+        op("consulta", "Consulta", "Ve clientes y operaciones. No ve fotos.") +
+        op("soporte", "Soporte", "Además ve las fotos del DNI, la selfie y las tarjetas.") +
+      "</div><p class=\"ad-campo-nota\">En los dos: cuentas, celulares y correos ocultos; no aprueba, no cambia nada ni descarga datos.</p></div>";
+  }
+  function rolElegido(nombreCampo) {
+    var r = document.querySelector('input[name="' + nombreCampo + '"]:checked');
+    return r ? r.value : "consulta";
+  }
   /* formulario de perfil reutilizable (mi perfil y editar trabajador) */
   function modalPerfil(o) {
     var foto = o.avatar || null, cambio = null;   // cambio: null = sin tocar, "" = quitar, dataURL = nueva
@@ -408,13 +521,14 @@
         '<div class="field"><label for="pfNombre">Nombre</label><input id="pfNombre" maxlength="80" value="' + esc(o.nombre || "") + '"></div>' +
         '<div class="field"><label for="pfPuesto">Puesto de trabajo</label><input id="pfPuesto" maxlength="60" value="' + esc(o.puesto || "") + '"' + (o.puestoBloqueado ? " disabled" : "") + ' placeholder="Ej. Asesora comercial"></div>' +
         (o.puestoBloqueado ? '<p class="muted" style="font-size:.78rem">El puesto lo asigna el administrador.</p>' : "") +
+        (o.rol ? elegirRolHTML("pfRol", o.rol) : "") +
         '<p class="form-error hidden" id="pfErr"></p>',
       actions: [{ label: "Cancelar", cls: "btn-outline-dark" },
         { label: "Guardar", cls: "btn-primary", keepOpen: true, onClick: async function (b) {
             var nom = $("pfNombre").value.trim(), pue = $("pfPuesto").value.trim(), err = $("pfErr");
             if (nom.length < 2) { err.textContent = "Escribe el nombre."; err.classList.remove("hidden"); return; }
             b.disabled = true; b.textContent = "Guardando...";
-            try { await o.guardar(nom, pue, cambio); IC.closeModal(); IC.toast("Perfil guardado.", "ok"); }
+            try { await o.guardar(nom, pue, cambio, o.rol ? rolElegido("pfRol") : null); IC.closeModal(); IC.toast(o.aviso ? o.aviso() : "Perfil guardado.", "ok"); }
             catch (e) { b.disabled = false; b.textContent = "Guardar"; err.textContent = faltaFuncion(e) ? "Primero ejecuta supabase-equipo-consulta.sql en Supabase." : (e.message || "No se pudo guardar."); err.classList.remove("hidden"); }
           } }]
     });
@@ -903,14 +1017,14 @@
         '<p class="ad-meta">' + esc(p.tipo_doc || "DNI") + " " + esc(p.documento || "—") + " · " + esc(p.celular || "sin celular") + " · enviado " + esc(hace(f.creado_en)) + "</p>" +
       "</div><div>" + chip(f.estado) + "</div></header>" +
       (item.clase === "tarjeta" ? '<p class="ad-detalle"><b>' + esc(f.banco || "") + "</b> " + esc(f.marca || "") + " ···· " + esc(f.ultimos4 || "") + " · Titular: " + esc(f.titular || "—") + "</p>" : "") +
-      (esConsulta()
+      (!verFotos()
         ? '<ul class="ad-recibidos">' + fotos.map(function (x) { return '<li class="' + (x[2] ? "si" : "no") + '">' + (x[2] ? "✓ " : "✗ ") + esc(x[0]) + "</li>"; }).join("") + "</ul>"
         : '<div class="ad-fotos">' + fotos.map(function (x) { return "<figure><figcaption>" + esc(x[0]) + '</figcaption><div class="ad-foto" data-foto="' + esc(x[1] || "") + '"><span class="ad-cargando"></span></div></figure>'; }).join("") + "</div>") +
       '<footer class="ad-acciones"><button class="btn btn-outline-dark btn-sm" data-ficha-p="' + i + '">Ver ficha 360°</button>' +
         (esAdmin()
           ? '<div class="ad-acciones-der"><button class="btn btn-outline-dark btn-sm ad-wa" data-wa="' + i + '" title="Escribir por WhatsApp" aria-label="Escribir por WhatsApp">' + ICO.wa + "</button>" +
             '<button class="btn btn-danger btn-sm" data-no="' + i + '">Rechazar</button><button class="btn btn-primary btn-sm" data-si="' + i + '">Aprobar</button></div>'
-          : '<span class="ad-sub">Solo el administrador ve las fotos y aprueba.</span>') +
+          : '<span class="ad-sub">' + (verFotos() ? "Solo el administrador aprueba o rechaza." : "Solo el administrador ve las fotos y aprueba.") + "</span>") +
       "</footer></article>";
   }
   function vistaPendientes(cont) {
@@ -922,7 +1036,7 @@
         '<span class="ad-sub" style="margin-left:auto">Primero lo que más tiempo lleva esperando</span></div>' +
       (lista.length ? '<div class="ad-revision">' + lista.map(function (it) { return tarjetaPendiente(it, todos.indexOf(it)); }).join("") + "</div>" : '<div class="ad-vacio"><h3>Nada en esta categoría</h3></div>');
     enlazarSeg("adPendTipo", function (v) { pend.tipo = v; render(); });
-    if (esAdmin()) pintarFotos(cont);
+    if (verFotos()) pintarFotos(cont);
     cont.querySelectorAll("[data-si]").forEach(function (b) { b.addEventListener("click", function () { accion(function () { return decidir(todos[+b.dataset.si], true); }, b); }); });
     cont.querySelectorAll("[data-no]").forEach(function (b) { b.addEventListener("click", function () { pedirMotivo(todos[+b.dataset.no]); }); });
     cont.querySelectorAll("[data-wa]").forEach(function (b) { b.addEventListener("click", function () { var it = todos[+b.dataset.wa]; waCliente(it.cliente ? it.cliente.perfil : null); }); });
@@ -1019,14 +1133,14 @@
         "<div>" +
           '<section class="ad-card"><div class="ad-card-tit"><div><h3>Identidad y documentos</h3><p>DNI, selfie y tarjetas registradas</p></div></div>' +
             (idn ? '<p class="ad-detalle" style="margin-top:0">' + chip(idn.estado) + " Enviado el " + esc(fechaHora(idn.creado_en)) + (idn.revisado_en ? " · revisado el " + esc(fechaHora(idn.revisado_en)) : "") + "</p>" +
-                (esConsulta() ? '<ul class="ad-recibidos">' + fotosId.map(function (x) { return '<li class="' + (x[2] ? "si" : "no") + '">' + (x[2] ? "✓ " : "✗ ") + esc(x[0]) + "</li>"; }).join("") + "</ul>"
+                (!verFotos() ? '<ul class="ad-recibidos">' + fotosId.map(function (x) { return '<li class="' + (x[2] ? "si" : "no") + '">' + (x[2] ? "✓ " : "✗ ") + esc(x[0]) + "</li>"; }).join("") + "</ul>"
                               : fotosHTML(fotosId.filter(function (x) { return x[1]; })))
                  : '<p class="ad-sub">Todavía no subió su DNI ni su selfie.</p>') +
             '<p class="ad-bloque-tit">Tarjetas</p>' +
             (c.tarjetas.length ? c.tarjetas.map(function (t) {
               var fs = [["Frente", t.foto_frontal], ["Reverso", t.foto_posterior]].filter(function (x) { return x[1]; });
               return '<div class="ad-sub-bloque"><p class="ad-detalle" style="margin:0"><b>' + esc(t.banco || "") + "</b> " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + " · Titular: " + esc(t.titular || "—") + (t.principal ? " · principal" : "") + " " + chip(t.estado) + "</p>" +
-                (esAdmin() && fs.length ? fotosHTML(fs) : "") + "</div>";
+                (verFotos() && fs.length ? fotosHTML(fs) : "") + "</div>";
             }).join("") : '<p class="ad-sub">Todavía no registró ninguna tarjeta.</p>') +
             '<p class="ad-bloque-tit">Cuentas donde recibe el dinero</p>' +
             (c.cuentas.length ? c.cuentas.map(function (a) { return '<dl class="ad-filas ad-sub-bloque">' + fila("Banco", a.banco) + fila("Número", a.numero) + fila("Tipo", (a.tipo || "") + " · " + (a.moneda || "")) + (esAdmin() ? fila("CCI", a.cci) : "") + fila("Titular", a.titular) + "</dl>"; }).join("")
@@ -1049,7 +1163,7 @@
             linea.slice(0, 30).map(function (x) { return '<li class="' + (x[2] ? "gris" : "") + '">' + esc(x[1]) + "<time>" + esc(fechaHora(x[0])) + "</time></li>"; }).join("") + "</ul></section>" +
         "</div></div>";
 
-    if (esAdmin()) pintarFotos(cont);
+    if (verFotos()) pintarFotos(cont);
     $("adVolver").addEventListener("click", function () { irA("clientes"); });
     if ($("adWaFicha")) $("adWaFicha").addEventListener("click", function () { waCliente(p); });
     filasClicables(cont, function (k) { abrirOperacion(c.ops[+k]); });
@@ -1147,12 +1261,14 @@
       html: '<p class="muted">Tendrá acceso de <b>solo lectura</b>: ve clientes y operaciones, pero no cambia nada ni descarga datos.</p>' +
         '<div class="field mt-8"><label for="eqNombre">Nombre</label><input id="eqNombre" maxlength="80" placeholder="Ej. Lucía Ramos" autocomplete="off"></div>' +
         '<div class="field"><label for="eqPuesto">Puesto de trabajo</label><input id="eqPuesto" maxlength="60" placeholder="Ej. Asesora comercial" autocomplete="off"></div>' +
+        elegirRolHTML("eqRol", "consulta") +
         '<div class="field"><label for="eqCorreo">Correo con el que entrará</label><input id="eqCorreo" type="email" maxlength="120" placeholder="lucia@ejemplo.com" autocomplete="off"></div>' +
         '<div class="field"><label for="eqClave">Contraseña temporal</label><div class="ad-clave-gen"><input id="eqClave" maxlength="72" autocomplete="off" spellcheck="false"><button type="button" class="btn btn-outline-dark btn-sm" id="eqGenerar">Generar</button></div></div>' +
         '<p class="muted" style="font-size:.78rem">Al entrar, que la cambie en su menú → «Cambiar contraseña». La foto se agrega después con «Editar».</p><p class="form-error hidden" id="eqErr"></p>',
       actions: [{ label: "Cancelar", cls: "btn-outline-dark" },
         { label: "Crear acceso", cls: "btn-primary", keepOpen: true, onClick: async function (b) {
             var nom = $("eqNombre").value.trim(), pue = $("eqPuesto").value.trim(), correo = $("eqCorreo").value.trim().toLowerCase(), clave = $("eqClave").value, err = $("eqErr");
+            var tipo = rolElegido("eqRol");
             function mal(t) { err.textContent = t; err.classList.remove("hidden"); }
             if (nom.length < 2) return mal("Escribe su nombre.");
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return mal("Escribe un correo válido.");
@@ -1160,9 +1276,15 @@
             b.disabled = true; b.textContent = "Creando...";
             var nueva = true;
             try {
-              try { await api("/auth/v1/signup", { method: "POST", sinSesion: true, body: JSON.stringify({ email: correo, password: clave, data: { nombre: nom, equipo: true } }) }); }
-              catch (e) { if (/already|registered|exists/i.test(e.message)) nueva = false; else throw e; }
-              await api("/rest/v1/rpc/equipo_agregar", { method: "POST", body: JSON.stringify({ p_email: correo, p_nombre: nom, p_puesto: pue || null }) });
+              try { await api("/auth/v1/signup", { method: "POST", sinSesion: true, body: JSON.stringify({ email: correo, password: clave, data: { nombre: nom, equipo: true } }) }); recienCreadas[correo] = clave; }
+              catch (e) { if (/already|registered|exists/i.test(e.message)) nueva = recienCreadas[correo] === clave; else throw e; }
+              try { await api("/rest/v1/rpc/equipo_agregar", { method: "POST", body: JSON.stringify({ p_email: correo, p_nombre: nom, p_puesto: pue || null, p_rol: tipo }) }); }
+              catch (e) {
+                /* sin supabase-equipo-soporte.sql todavía: Consulta funciona igual, Soporte no */
+                if (!faltaFuncion(e)) throw e;
+                if (tipo === "soporte") throw new Error("Para dar acceso Soporte, primero ejecuta supabase-equipo-soporte.sql en Supabase. Mientras tanto puedes crearlo como Consulta.");
+                await api("/rest/v1/rpc/equipo_agregar", { method: "POST", body: JSON.stringify({ p_email: correo, p_nombre: nom, p_puesto: pue || null }) });
+              }
               IC.closeModal();
               mostrarCredenciales(nom, correo, nueva ? clave : null);
               await cargarEquipo();
@@ -1187,41 +1309,116 @@
         { label: "Listo", cls: "btn-primary" }]
     });
   }
+  /* estado de conexión: [color del punto, texto, detalle] */
+  function estadoConexion(t) {
+    if (t.estado === "en_linea") return ["verde", "En línea", "Usando el panel ahora"];
+    if (t.estado === "ausente") return ["ambar", "Ausente", "Panel abierto, sin uso"];
+    return ["rojo", "Desconectado", t.visto_en ? "Visto " + hace(t.visto_en) : t.ultimo_ingreso ? "Último ingreso " + hace(t.ultimo_ingreso) : "Aún no entra"];
+  }
+  function estadoHTML(e) {
+    return '<span class="ad-punto ' + e[0] + '" aria-hidden="true"></span><span class="txt"><b>' + esc(e[1]) + '</b><span class="cuando">' + esc(e[2]) + "</span></span>";
+  }
+  function accesoHTML(r) { return '<span class="ad-acceso ' + esc(r) + '">' + esc(NOMBRE_ROL[r] || "Consulta") + "</span>"; }
+  function resumenEquipo() {
+    var l = eq.lista || [], s = plural(l.length, "trabajador con acceso", "trabajadores con acceso");
+    if (!eq.conEstado || !l.length) return s;
+    var on = l.filter(function (t) { return t.estado === "en_linea"; }).length, aus = l.filter(function (t) { return t.estado === "ausente"; }).length;
+    return s + " · " + on + " en línea" + (aus ? " · " + plural(aus, "ausente", "ausentes") : "");
+  }
+  /* cada 30 s, mientras se ve "Equipo": actualiza solo los puntos */
+  function refrescarEquipo() {
+    if (vista !== "equipo" || !esAdmin() || document.visibilityState === "hidden") return;
+    var firma = function () { return (eq.lista || []).map(function (t) { return t.id + ":" + t.rol; }).join(","); };
+    var antes = firma();
+    cargarEquipo().then(function () {
+      if (vista !== "equipo") return;
+      if (firma() !== antes || eq.error) return render();
+      eq.lista.forEach(function (t) {
+        var celda = document.querySelector('[data-eqestado="' + t.id + '"]');
+        if (celda) celda.innerHTML = estadoHTML(estadoConexion(t));
+      });
+      if ($("eqResumen")) $("eqResumen").textContent = resumenEquipo();
+    });
+  }
   function vistaEquipo(cont) {
     if (!esAdmin()) { irA("inicio"); return; }
     if (eq.lista === null) { cont.innerHTML = '<div class="ad-vacio"><span class="ad-cargando grande"></span><p>Cargando el equipo...</p></div>'; cargarEquipo().then(render); return; }
+    if (!eqReloj) eqReloj = setInterval(refrescarEquipo, 30000);
+    var conEstado = eq.conEstado;
+    var cuantos = function (r) { return eq.lista.filter(function (t) { return (t.rol === "soporte" ? "soporte" : "consulta") === r; }).length; };
+    function tarjetaRol(titulo, extra, texto, puntos) {
+      return '<div class="ad-rol"><h4>' + titulo + " " + extra + "</h4><p>" + texto + "</p><ul>" +
+        puntos.map(function (p) { return '<li class="' + p[0] + '">' + p[1] + "</li>"; }).join("") + "</ul></div>";
+    }
     var roles =
-      '<section class="ad-card"><div class="ad-card-tit"><div><h3>Roles de acceso</h3><p>Lo que cada persona puede hacer. Lo controla el servidor, no solo la pantalla.</p></div></div><div class="ad-roles">' +
-        '<div class="ad-rol"><h4>Administrador <span class="ad-chip ok">Tú</span></h4><p>Control total del negocio.</p><ul>' +
-          '<li class="si">Ve todo, incluidas las fotos de DNI y tarjetas</li><li class="si">Aprueba o rechaza documentos y tarjetas</li><li class="si">Marca depósitos y cancela operaciones</li><li class="si">Descarga reportes a Excel</li><li class="si">Administra al equipo y ve la auditoría</li></ul></div>' +
-        '<div class="ad-rol"><h4>Consulta <span class="ad-chip">Trabajadores</span></h4><p>Para atender clientes sin riesgo.</p><ul>' +
-          '<li class="si">Ve clientes, operaciones, reportes y notas</li><li class="si">Datos sensibles ocultos (cuentas, celulares, correos)</li><li class="no">No ve fotos de DNI, selfie ni tarjetas</li><li class="no">No aprueba, no cambia, no borra</li><li class="no">No descarga datos ni ve la auditoría</li></ul></div>' +
+      '<section class="ad-card"><div class="ad-card-tit"><div><h3>Tipos de acceso</h3><p>Lo que cada persona puede hacer. Lo controla el servidor, no solo la pantalla.</p></div></div><div class="ad-roles tres">' +
+        tarjetaRol("Administrador", '<span class="ad-tu">Tú</span>', "Control total del negocio.",
+          [["si", "Ve todo: fotos y datos completos"], ["si", "Aprueba o rechaza documentos y tarjetas"], ["si", "Marca depósitos y cancela operaciones"], ["si", "Descarga reportes a Excel"], ["si", "Administra al equipo y ve la auditoría"]]) +
+        tarjetaRol("Soporte", '<span class="ad-cuenta-rol">' + plural(cuantos("soporte"), "persona", "personas") + "</span>", "Para validar identidades y resolver casos.",
+          [["si", "Ve clientes, operaciones, reportes y notas"], ["si", "Ve las fotos del DNI, la selfie y las tarjetas"], ["no", "No ve cuentas, celulares ni correos completos"], ["no", "No aprueba, no cambia, no borra"], ["no", "No descarga datos ni ve la auditoría"]]) +
+        tarjetaRol("Consulta", '<span class="ad-cuenta-rol">' + plural(cuantos("consulta"), "persona", "personas") + "</span>", "Para atender clientes sin riesgo.",
+          [["si", "Ve clientes, operaciones, reportes y notas"], ["no", "No ve fotos del DNI, la selfie ni las tarjetas"], ["no", "No ve cuentas, celulares ni correos completos"], ["no", "No aprueba, no cambia, no borra"], ["no", "No descarga datos ni ve la auditoría"]]) +
       "</div></section>";
+
+    var yoPuesto = perfil.puesto && perfil.puesto.trim().toLowerCase() !== "administrador" ? perfil.puesto : "";
+    var filaYo = '<li class="ad-eq-fila">' +
+        '<div class="ad-eq-persona">' + avatarHTML(perfil.nombre, perfil.avatar) + '<div class="quien"><b>' + esc(perfil.nombre) + ' <span class="ad-tu">Tú</span></b>' +
+          (yoPuesto ? '<span class="puesto">' + esc(yoPuesto) + "</span>" : "") + '<span class="mail">' + esc(perfil.email || "") + "</span></div></div>" +
+        '<div class="ad-eq-acceso">' + accesoHTML("admin") + "</div>" +
+        (conEstado ? '<div class="ad-eq-estado">' + estadoHTML(["verde", "En línea", "Eres tú"]) + "</div>" : "") +
+        '<div class="acc"><button class="btn btn-outline-dark btn-sm" id="eqYo">Editar mi perfil</button></div></li>';
+    var filas = eq.lista.map(function (t, i) {
+      var e = estadoConexion(t);
+      return '<li class="ad-eq-fila">' +
+        '<div class="ad-eq-persona">' + avatarHTML(t.nombre || t.email, t.avatar) + '<div class="quien"><b>' + esc(t.nombre || "Sin nombre") + "</b>" +
+          (t.puesto ? '<span class="puesto">' + esc(t.puesto) + "</span>" : "") +
+          '<span class="mail">' + esc(t.email || "") + " · desde " + esc(fecha(t.desde)) +
+            (conEstado ? "" : " · " + (t.ultimo_ingreso ? "último ingreso " + esc(hace(t.ultimo_ingreso)) : "aún no entra")) + "</span></div></div>" +
+        '<div class="ad-eq-acceso">' + accesoHTML(t.rol === "soporte" ? "soporte" : "consulta") + "</div>" +
+        (conEstado ? '<div class="ad-eq-estado" data-eqestado="' + esc(t.id) + '">' + estadoHTML(e) + "</div>" : "") +
+        '<div class="acc"><button class="btn btn-outline-dark btn-sm" data-eqeditar="' + i + '">Editar</button>' +
+          '<button class="btn btn-outline-dark btn-sm" data-eqclave="' + i + '" title="Le llega a su correo un enlace para crear una contraseña nueva">Restablecer clave</button>' +
+          '<button class="btn btn-outline-dark btn-sm" data-eqquitar="' + i + '">Quitar acceso</button></div></li>';
+    }).join("");
+
+    var leyenda = conEstado
+      ? '<div class="ad-eq-leyenda"><span><i class="ad-punto verde"></i><b>En línea</b> usando el panel</span>' +
+          '<span><i class="ad-punto ambar"></i><b>Ausente</b> panel abierto, pero sin uso hace 5 min o en otra pestaña</span>' +
+          '<span><i class="ad-punto rojo"></i><b>Desconectado</b> cerró el panel o perdió la conexión</span>' +
+          '<span class="ad-eq-auto">Se actualiza solo cada 30 segundos</span></div>'
+      : "";
+    var falta2 = !conEstado && eq.lista.length
+      ? '<ul class="ad-avisos" style="margin-bottom:14px"><li class="warn"><b>Activa el acceso Soporte y los puntos de conexión (una sola vez):</b><br>' +
+          "1. Entra a supabase.com → tu proyecto → <b>SQL Editor</b> → <b>New query</b>.<br>" +
+          "2. Pega todo el archivo <b>supabase-equipo-soporte.sql</b> y pulsa <b>Run</b>.<br>" +
+          "3. Vuelve aquí y recarga la página (F5).</li></ul>"
+      : "";
     var lista = eq.error === "falta_sql"
       ? '<ul class="ad-avisos"><li class="warn"><b>Falta activar el equipo en Supabase (una sola vez):</b><br>' +
           "1. Entra a supabase.com → tu proyecto → <b>SQL Editor</b> → <b>New query</b>.<br>" +
-          "2. Pega todo el archivo <b>supabase-equipo-consulta.sql</b> y pulsa <b>Run</b>.<br>" +
+          "2. Pega todo el archivo <b>supabase-equipo-consulta.sql</b> y pulsa <b>Run</b>. Luego haz lo mismo con <b>supabase-equipo-soporte.sql</b>.<br>" +
           "3. Vuelve aquí y recarga la página (F5): aparecerá el botón <b>+ Agregar trabajador</b>.</li></ul>"
       : eq.error ? '<p class="ad-sub">No se pudo cargar el equipo: ' + esc(eq.error) + "</p>"
-      : '<ul class="ad-equipo"><li>' + avatarHTML(perfil.nombre, perfil.avatar) + '<div class="quien"><b>' + esc(perfil.nombre) + ' <span class="ad-chip ok">Administrador</span></b><span class="puesto">' + esc(perfil.puesto || "Administrador") + '</span><span class="mail">' + esc(perfil.email || "") + "</span></div>" +
-          '<div class="acc"><button class="btn btn-outline-dark btn-sm" id="eqYo">Editar mi perfil</button></div></li>' +
-        eq.lista.map(function (t, i) {
-          return "<li>" + avatarHTML(t.nombre || t.email, t.avatar) + '<div class="quien"><b>' + esc(t.nombre || "Sin nombre") + "</b>" + (t.puesto ? '<span class="puesto">' + esc(t.puesto) + "</span>" : "") +
-            '<span class="mail">' + esc(t.email || "") + " · desde " + esc(fecha(t.desde)) + " · " + (t.ultimo_ingreso ? "último ingreso " + esc(hace(t.ultimo_ingreso)) : "aún no entra") + "</span></div>" +
-            '<div class="acc"><button class="btn btn-outline-dark btn-sm" data-eqeditar="' + i + '">Editar</button><button class="btn btn-outline-dark btn-sm" data-eqclave="' + i + '">Enviar cambio de contraseña</button>' +
-            '<button class="btn btn-outline-dark btn-sm" data-eqquitar="' + i + '">Quitar acceso</button></div></li>';
-        }).join("") + "</ul>" + (eq.lista.length ? "" : '<p class="ad-sub" style="margin-top:10px">Todavía no agregaste trabajadores.</p>');
+      : falta2 + '<ul class="ad-equipo' + (conEstado ? "" : " sin-estado") + '">' +
+          '<li class="ad-eq-cab" aria-hidden="true"><span>Persona</span><span>Acceso</span>' + (conEstado ? "<span>Conexión</span>" : "") + "<span></span></li>" +
+          filaYo + filas + "</ul>" +
+          (eq.lista.length ? "" : '<p class="ad-sub" style="margin-top:10px">Todavía no agregaste trabajadores.</p>') + leyenda;
     cont.innerHTML =
-      '<section class="ad-card"><div class="ad-card-tit"><div><h3>Equipo</h3><p>' + plural(eq.lista.length, "trabajador con acceso", "trabajadores con acceso") + "</p></div>" +
+      '<section class="ad-card"><div class="ad-card-tit"><div><h3>Equipo</h3><p id="eqResumen">' + esc(resumenEquipo()) + "</p></div>" +
         (eq.error !== "falta_sql" ? '<button class="btn btn-primary btn-sm" id="eqAgregar">+ Agregar trabajador</button>' : "") + "</div>" + lista + "</section>" + roles;
     if ($("eqAgregar")) $("eqAgregar").addEventListener("click", agregarTrabajador);
     if ($("eqYo")) $("eqYo").addEventListener("click", miPerfil);
     cont.querySelectorAll("[data-eqeditar]").forEach(function (b) {
       b.addEventListener("click", function () {
-        var t = eq.lista[+b.dataset.eqeditar];
+        var t = eq.lista[+b.dataset.eqeditar], aviso = null;
         modalPerfil({ titulo: "Editar a " + (t.nombre || t.email), nombre: t.nombre, puesto: t.puesto, avatar: t.avatar,
-          guardar: async function (nom, pue, foto) {
-            await api("/rest/v1/rpc/equipo_guardar", { method: "POST", body: JSON.stringify({ p_id: t.id, p_nombre: nom, p_puesto: pue || null, p_avatar: foto }) });
+          rol: conEstado ? (t.rol === "soporte" ? "soporte" : "consulta") : null,
+          aviso: function () { return aviso || "Perfil guardado."; },
+          guardar: async function (nom, pue, foto, nuevoRol) {
+            var cuerpo = { p_id: t.id, p_nombre: nom, p_puesto: pue || null, p_avatar: foto };
+            if (nuevoRol) cuerpo.p_rol = nuevoRol;
+            await api("/rest/v1/rpc/equipo_guardar", { method: "POST", body: JSON.stringify(cuerpo) });
+            if (nuevoRol && nuevoRol !== t.rol) aviso = nom + " ahora tiene acceso " + NOMBRE_ROL[nuevoRol] + ". Si está conectado, su panel se actualiza solo en menos de un minuto.";
             await cargarEquipo(); render();
           } });
       });
@@ -1229,7 +1426,7 @@
     cont.querySelectorAll("[data-eqquitar]").forEach(function (b) {
       b.addEventListener("click", function () {
         var t = eq.lista[+b.dataset.eqquitar];
-        IC.modal({ title: "Quitar acceso", html: "<p><b>" + esc(t.nombre || t.email) + "</b> ya no podrá entrar al panel. Su cuenta no se borra: puedes volver a darle acceso cuando quieras.</p>",
+        IC.modal({ title: "Quitar acceso", html: "<p><b>" + esc(t.nombre || t.email) + "</b> ya no podrá entrar al panel. Si está conectado, el panel se le cierra en menos de un minuto. Su cuenta no se borra: puedes volver a darle acceso cuando quieras.</p>",
           actions: [{ label: "Volver", cls: "btn-outline-dark" }, { label: "Quitar acceso", cls: "btn-danger", onClick: function () {
             accion(async function () { await api("/rest/v1/rpc/equipo_quitar", { method: "POST", body: JSON.stringify({ p_id: t.id }) }); IC.toast("Acceso quitado.", "ok"); await cargarEquipo(); await cargar(); render(); });
           } }] });
@@ -1250,9 +1447,12 @@
   function textoAccion(h) {
     var d = h.detalle || {};
     if (h.accion === "ingreso_panel") return "entró al panel";
-    if (h.accion === "equipo_alta") return "dio acceso de consulta a " + (d.nombre || d.email || "una persona");
+    if (h.accion === "equipo_alta") return "dio acceso de " + (d.rol === "soporte" ? "soporte" : "consulta") + " a " + (d.nombre || d.email || "una persona");
     if (h.accion === "equipo_baja") return "quitó el acceso a " + (d.nombre || "una persona");
-    if (h.accion === "equipo_edicion") return "editó el perfil de " + (d.nombre || "una persona");
+    if (h.accion === "equipo_edicion") {
+      if (d.rol && d.rol_antes && d.rol !== d.rol_antes) return "cambió el acceso de " + (d.nombre || "una persona") + " a " + (NOMBRE_ROL[d.rol] || d.rol);
+      return "editó el perfil de " + (d.nombre || "una persona");
+    }
     if (h.accion === "cambio_estado") {
       var que = { documentos: "la identidad", tarjetas: "la tarjeta", operaciones: "la operación" }[h.tabla] || h.tabla;
       var hizo = { verificado: "aprobó", verificada: "aprobó", rechazado: "rechazó", completada: "marcó como pagada", cancelada: "canceló", en_revision: "devolvió a revisión" }[h.despues] || ("cambió a «" + h.despues + "»");
@@ -1289,7 +1489,7 @@
         ? '<div class="ad-tabla-wrap"><table class="ad-tabla cards"><thead><tr><th>Fecha</th><th>Quién</th><th>Qué hizo</th><th>Cliente</th><th>Cambio</th></tr></thead><tbody>' +
             vis.map(function (h) {
               var c = h.cliente_id && datos.porId[h.cliente_id], pz = personas[h.actor_email] || { nombre: h.actor_email || (h.actor_rol === "cliente" ? "Cliente" : "Sistema") };
-              return '<tr><td class="fecha" data-label="Fecha">' + esc(fechaHora(h.creado_en)) + '</td><td data-label="Quién"><div class="ad-celda-persona">' + avatarHTML(pz.nombre, pz.avatar, "chico") + "<div><b>" + esc(pz.nombre) + '</b><span class="ad-sub">' + esc(h.actor_rol || "") + "</span></div></div></td>" +
+              return '<tr><td class="fecha" data-label="Fecha">' + esc(fechaHora(h.creado_en)) + '</td><td data-label="Quién"><div class="ad-celda-persona">' + avatarHTML(pz.nombre, pz.avatar, "chico") + "<div><b>" + esc(pz.nombre) + '</b><span class="ad-sub">' + esc(NOMBRE_ROL[h.actor_rol] || h.actor_rol || "") + "</span></div></div></td>" +
                 '<td data-label="Qué hizo">' + esc(textoAccion(h) + detalleAccion(h)) + '</td><td data-label="Cliente">' + (c ? esc(nombre(c)) : '<span class="ad-sub">—</span>') + '</td><td data-label="Cambio">' +
                 (h.antes && h.despues ? chip(h.antes) + " → " + chip(h.despues) : '<span class="ad-sub">—</span>') + "</td></tr>";
             }).join("") + "</tbody></table></div>" + paginador(lista.length, aud, "aud", ["registro", "registros"])
@@ -1312,6 +1512,7 @@
   function render() {
     var cont = $("adView"), n = datos.pendientes.length;
     graficos = [];
+    if (vista !== "equipo" && eqReloj) { clearInterval(eqReloj); eqReloj = null; }
     $("adBadge").textContent = n;
     $("adBadge").style.display = n ? "" : "none";
     document.querySelectorAll(".ad-tab").forEach(function (b) {
@@ -1339,8 +1540,11 @@
   /* ======================= arranque ======================= */
   function prepararSegunRol() {
     var consulta = esConsulta();
-    $("adRolTag").textContent = consulta ? "Equipo" : "Administración";
+    $("adRolTag").textContent = esAdmin() ? "Administración" : NOMBRE_ROL[rol];
     $("adPillRol").classList.toggle("hidden", !consulta);
+    $("adPillRol").title = verFotos()
+      ? "Acceso Soporte: ves clientes, operaciones y las fotos del DNI, la selfie y las tarjetas, pero no puedes aprobar, cambiar ni descargar datos. Cuentas, celulares y correos se muestran ocultos."
+      : "Acceso Consulta: ves clientes y operaciones, pero no puedes aprobar, cambiar ni descargar datos. Las fotos y lo sensible se muestran ocultos.";
     document.querySelectorAll(".ad-solo-admin").forEach(function (x) { x.classList.toggle("hidden", !esAdmin()); });
     var cl = CFG.claims || {};
     $("adPie").textContent = "Impulsa Crédito · " + [cl.company, cl.ruc ? "RUC " + cl.ruc : ""].filter(Boolean).join(" · ") + " · Uso interno";
@@ -1359,6 +1563,7 @@
     $("adPanel").classList.remove("hidden");
     $("adView").innerHTML = '<div class="ad-vacio"><span class="ad-cargando grande"></span><p>Cargando la información...</p></div>';
     api("/rest/v1/rpc/registrar_ingreso", { method: "POST", body: "{}" }).catch(function () {});
+    iniciarPresencia();
     await cargarPerfil();
     try { await cargar(); render(); }
     catch (e) {

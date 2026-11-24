@@ -413,20 +413,70 @@
 
 /* ---------------- Equipo y accesos ---------------- */
 .ad-roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.ad-roles.tres{grid-template-columns:repeat(3,minmax(0,1fr));}
 .ad-rol{border:1px solid var(--ad-borde);border-radius:14px;padding:16px 18px;background:#fbfcfb;}
-.ad-rol h4{margin:0 0 4px;font-size:.92rem;font-weight:800;display:flex;align-items:center;gap:8px;}
+.ad-rol h4{margin:0 0 4px;font-size:.92rem;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .ad-rol p{margin:0 0 10px;font-size:.78rem;color:var(--ad-suave);}
 .ad-rol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.8rem;}
-.ad-rol li.si::before{content:"✓";color:var(--ad-verde-txt);font-weight:800;margin-right:8px;}
-.ad-rol li.no::before{content:"✕";color:#b91c1c;font-weight:800;margin-right:8px;}
-.ad-equipo{list-style:none;margin:0;padding:0;}
-.ad-equipo li{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--ad-borde-2);flex-wrap:wrap;}
-.ad-equipo li:last-child{border-bottom:0;}
-.ad-equipo .quien{flex:1;min-width:200px;}
+.ad-rol li{display:flex;gap:8px;line-height:1.45;}
+.ad-rol li.si::before{content:"✓";color:var(--ad-verde-txt);font-weight:800;flex:none;}
+.ad-rol li.no::before{content:"✕";color:#b91c1c;font-weight:800;flex:none;}
+.ad-cuenta-rol{font-size:.7rem;font-weight:700;color:var(--ad-tenue);background:#eef2ef;padding:3px 9px;border-radius:999px;}
+.ad-tu{display:inline-block;vertical-align:1px;margin-left:4px;font-size:.64rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ad-verde-txt);background:var(--ad-verde-claro);padding:2px 8px;border-radius:999px;}
+
+/* tipo de acceso: colores propios (no se confunden con los puntos de conexión) */
+.ad-acceso{display:inline-block;font-size:.72rem;font-weight:800;padding:5px 11px;border-radius:999px;white-space:nowrap;background:#eef2ef;color:#3d4a44;border:1px solid #e1e8e3;}
+.ad-acceso.admin{background:var(--ad-texto);color:#fff;border-color:var(--ad-texto);}
+.ad-acceso.soporte{background:#eef2ff;color:#4338ca;border-color:#dfe3fb;}
+
+/* puntos de conexión */
+.ad-punto{display:inline-block;flex:none;width:10px;height:10px;border-radius:50%;background:#c5cec9;}
+.ad-punto.verde{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18);animation:adLatido 2.4s ease-out infinite;}
+.ad-punto.ambar{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.18);}
+.ad-punto.rojo{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.15);}
+@keyframes adLatido{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}70%{box-shadow:0 0 0 7px rgba(34,197,94,0);}100%{box-shadow:0 0 0 3px rgba(34,197,94,.18);}}
+@media (prefers-reduced-motion:reduce){.ad-punto.verde{animation:none;}}
+
+/* lista del equipo: persona · acceso · conexión · acciones, en columnas
+   alineadas entre todas las filas (subgrid) */
+.ad-equipo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) max-content max-content max-content;column-gap:22px;}
+.ad-equipo.sin-estado{grid-template-columns:minmax(0,1fr) max-content max-content;}
+.ad-equipo > li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:center;padding:14px 0;border-bottom:1px solid var(--ad-borde-2);}
+@supports not (grid-template-columns:subgrid){
+  .ad-equipo > li{grid-template-columns:minmax(0,1fr) 128px 196px 350px;column-gap:22px;}
+  .ad-equipo.sin-estado > li{grid-template-columns:minmax(0,1fr) 128px 350px;}
+}
+.ad-equipo > li:last-child{border-bottom:0;}
+.ad-equipo > li.ad-eq-cab{padding:0 0 10px;font-size:.64rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ad-tenue);}
+.ad-eq-persona{display:flex;align-items:center;gap:14px;min-width:0;}
+.ad-eq-persona .ad-avatar{width:42px;height:42px;}
+.ad-equipo .quien{min-width:0;}
 .ad-equipo .quien b{display:block;font-size:.9rem;}
 .ad-equipo .quien .puesto{display:inline-block;margin-top:3px;font-size:.72rem;font-weight:700;color:var(--ad-verde-txt);background:var(--ad-verde-claro);padding:2px 9px;border-radius:999px;}
-.ad-equipo .quien span.mail{display:block;font-size:.75rem;color:var(--ad-tenue);margin-top:3px;}
-.ad-equipo .acc{display:flex;gap:8px;flex-wrap:wrap;}
+.ad-equipo .quien span.mail{display:block;font-size:.75rem;color:var(--ad-tenue);margin-top:3px;overflow-wrap:anywhere;}
+.ad-eq-estado{display:flex;align-items:center;gap:11px;min-width:0;}
+.ad-eq-estado .txt{min-width:0;}
+.ad-eq-estado b{display:block;font-size:.84rem;font-weight:700;line-height:1.25;}
+.ad-eq-estado .cuando{display:block;font-size:.72rem;color:var(--ad-tenue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ad-equipo .acc{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.ad-eq-leyenda{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin-top:6px;padding-top:14px;border-top:1px solid var(--ad-borde-2);font-size:.74rem;color:var(--ad-suave);}
+.ad-eq-leyenda > span{display:inline-flex;align-items:center;gap:8px;}
+.ad-eq-leyenda .ad-punto{width:8px;height:8px;animation:none;}
+.ad-eq-leyenda b{color:var(--ad-texto);font-weight:700;}
+.ad-eq-auto{margin-left:auto;color:var(--ad-tenue);}
+
+/* elegir el tipo de acceso (al agregar o editar) */
+.ad-campo-rol{margin:2px 0 14px;}
+.ad-campo-tit{display:block;font-size:.82rem;font-weight:700;margin-bottom:8px;}
+.ad-elegir-rol{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ad-op-rol{position:relative;display:block;margin:0;border:1.5px solid var(--ad-borde);border-radius:12px;padding:12px 12px 12px 38px;cursor:pointer;background:#fff;transition:border-color .15s,background .15s;}
+.ad-op-rol:hover{border-color:#c9d3cd;}
+.ad-op-rol input{position:absolute;left:13px;top:14px;width:16px;height:16px;margin:0;accent-color:var(--ad-verde-osc);cursor:pointer;}
+.ad-op-rol b{display:block;font-size:.86rem;font-weight:800;color:var(--ad-texto);}
+.ad-op-rol small{display:block;margin-top:3px;font-size:.74rem;line-height:1.45;color:var(--ad-suave);font-weight:500;}
+.ad-op-rol:has(input:checked){border-color:var(--ad-verde);background:var(--ad-verde-claro);}
+.ad-op-rol:has(input:focus-visible){outline:3px solid var(--ad-verde);outline-offset:2px;}
+.ad-campo-nota{margin:8px 0 0;font-size:.74rem;line-height:1.5;color:var(--ad-tenue);}
 .ad-clave-gen{display:flex;gap:8px;}
 .ad-clave-gen input{flex:1;font-family:ui-monospace,Menlo,monospace;}
 .ad-credenciales{background:#f8faf9;border:1px dashed var(--ad-verde);border-radius:12px;padding:14px;font-size:.86rem;line-height:1.8;}
@@ -451,6 +501,22 @@
   .ad-tabla th{padding:12px 9px;font-size:.64rem;letter-spacing:.05em;}
   .ad-tabla td{padding:12px 9px;}
   .ad-tabla .ad-avatar.chico{display:none;}
+}
+/* equipo: en pantallas medianas cada persona ocupa dos líneas
+   (arriba: persona y conexión; abajo: acceso y botones) */
+@media (max-width:1440px){
+  .ad-equipo,.ad-equipo.sin-estado{grid-template-columns:minmax(0,1fr) max-content;}
+  .ad-equipo > li{grid-template-areas:"persona estado" "acceso acc";row-gap:10px;}
+  .ad-equipo.sin-estado > li{grid-template-areas:"persona acceso" "acc acc";}
+  .ad-equipo > li.ad-eq-cab{display:none;}
+  .ad-eq-persona{grid-area:persona;}
+  .ad-eq-acceso{grid-area:acceso;}
+  .ad-eq-estado{grid-area:estado;}
+  .ad-equipo .acc{grid-area:acc;}
+  .ad-equipo:not(.sin-estado) .ad-eq-acceso{padding-left:56px;}
+}
+@supports not (grid-template-columns:subgrid){
+  @media (max-width:1440px){ .ad-equipo > li,.ad-equipo.sin-estado > li{grid-template-columns:minmax(0,1fr) 350px;} }
 }
 @media (max-width:1280px){
   .ad-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -483,6 +549,7 @@
   .ad-tabla.cards td[data-label=""]::before{display:none;}
   .ad-tabla.cards td[data-label=""] > *{grid-column:1;}
   .ad-celda-persona{justify-content:flex-end;}
+  .ad-roles.tres{grid-template-columns:1fr;}
 }
 @media (max-width:640px){
   .ad-main{padding:14px 14px 30px;}
@@ -499,6 +566,12 @@
   .ad-card{padding:16px;}
   .ad-360-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ad-roles{grid-template-columns:1fr;}
+  .ad-equipo > li{grid-template-areas:"persona persona" "estado acceso" "acc acc";}
+  .ad-equipo.sin-estado > li{grid-template-areas:"persona persona" "acceso acceso" "acc acc";}
+  .ad-equipo:not(.sin-estado) .ad-eq-acceso{padding-left:0;justify-self:end;}
+  .ad-equipo .acc{justify-content:flex-start;}
+  .ad-eq-auto{margin-left:0;width:100%;}
+  .ad-elegir-rol{grid-template-columns:1fr;}
   .ad-acciones{flex-direction:column;align-items:stretch;}
   .ad-acciones .btn,.ad-acciones-der{width:100%;}
   .ad-acciones-der .btn{flex:1;}

@@ -33,6 +33,8 @@
 --      entrar, que la cambie en "Mi cuenta → Cambiar contraseña".
 --
 -- Ejecútalo DESPUÉS de supabase-admin.sql y supabase-mejoras-orden.sql.
+-- Después ejecuta supabase-equipo-soporte.sql (acceso Soporte y estado
+-- de conexión). Si vuelves a ejecutar este archivo, ejecuta ese otra vez.
 -- =====================================================================
 
 
@@ -381,6 +383,10 @@ begin
 end;
 $$;
 
+-- (si antes se ejecutó supabase-equipo-soporte.sql, se quita su versión
+--  para que no haya dos iguales; vuelve a ejecutar ese archivo después)
+drop function if exists public.equipo_agregar(text, text, text, text);
+drop function if exists public.equipo_guardar(uuid, text, text, text, text);
 drop function if exists public.equipo_agregar(text, text);
 create or replace function public.equipo_agregar(p_email text, p_nombre text, p_puesto text default null)
 returns jsonb
