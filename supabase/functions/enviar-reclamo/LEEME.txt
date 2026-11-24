@@ -1,0 +1,32 @@
+IMPULSA CRÉDITO — Activar la copia del reclamo por correo
+==========================================================
+
+Mientras no lo actives, el Libro de Reclamaciones funciona igual: guarda el
+reclamo y le muestra al cliente su constancia para imprimir. Al activarlo,
+además le llega la copia a su correo (y a ti una copia oculta).
+
+Necesitas una cuenta gratis en Resend (resend.com: 3.000 correos al mes).
+
+1. RESEND
+   a. Crea la cuenta en https://resend.com
+   b. Domains → Add Domain → impulsacredito.com
+      Te da 3 o 4 registros DNS. Agrégalos donde compraste el dominio
+      (si es Vercel: vercel.com → Domains → impulsacredito.com → DNS Records).
+      Espera a que Resend diga "Verified" (de minutos a unas horas).
+   c. API Keys → Create API Key → permiso "Sending access" → copia la clave.
+
+2. SUPABASE
+   a. SQL Editor → pega supabase-reclamos-correo.sql → Run.
+   b. Edge Functions → Deploy a new function → Via Editor.
+      Nombre:  enviar-reclamo
+      Borra el ejemplo, pega TODO el archivo index.ts de esta carpeta → Deploy.
+   c. Edge Functions → Secrets (o Project Settings → Edge Functions) → agrega:
+        RESEND_API_KEY     = la clave del paso 1c
+        CORREO_REMITENTE   = Impulsa Crédito <reclamos@impulsacredito.com>
+        CORREO_EMPRESA     = contacto@impulsacredito.com
+      (SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY ya vienen puestas solas.)
+
+3. PRUEBA
+   Llena un reclamo de prueba en impulsacredito.com/reclamaciones con TU
+   correo. Al terminar debe decir "Te enviamos una copia a ...".
+   Luego borra ese reclamo de prueba en Supabase → Table Editor → reclamos.

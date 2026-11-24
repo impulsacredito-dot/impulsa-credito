@@ -95,7 +95,8 @@
       var all = JSON.parse(localStorage.getItem(KEY) || "[]");
       all.push(record); localStorage.setItem(KEY, JSON.stringify(all));
     } catch (err) { /* si falla el guardado local, igual mostramos la constancia */ }
-    if (IC.backend) { try { IC.backend.reclamo(record); } catch (err) {} }
+    var guardado = Promise.resolve({ ok: false });
+    if (IC.backend) { try { guardado = IC.backend.reclamo(record); } catch (err) {} }
 
     var waMsg = "LIBRO DE RECLAMACIONES - " + code + "\n" +
       "Tipo: " + tipo + "\n" +
@@ -113,12 +114,31 @@
     res.innerHTML =
       '<div class="card claims-ok"><div style="text-align:center"><div class="success-anim"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#08130c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>' +
       "<h3>Reclamo registrado</h3><p class='text-muted mt-8'>Guarda tu código de registro. Te responderemos al correo indicado.</p>" +
-      '<div class="claims-code">' + esc(code) + "</div></div>" +
+      '<div class="claims-code">' + esc(code) + "</div>" +
+      '<p class="small text-muted mt-8" id="claimsCorreo" role="status">Enviando una copia a tu correo...</p></div>' +
       '<div class="calc mt-24"><div class="r"><span>Tipo</span><b>' + esc(tipo) + '</b></div><div class="r"><span>Consumidor</span><b>' + esc(record.nombres + " " + record.apellidos) + '</b></div><div class="r"><span>Documento</span><b>' + esc(record.docType + " " + record.doc) + '</b></div><div class="r"><span>Fecha</span><b>' + IC.fmtDateTime(record.at) + '</b></div>' +
       (record.monto ? '<div class="r"><span>Monto reclamado</span><b>S/ ' + esc(record.monto) + "</b></div>" : "") + "</div>" +
       '<div class="note amber mt-16"><div>' + esc(C.deadlineNote || "") + "</div></div>" +
       '<div class="wz-actions no-print"><a href="index.html" class="btn btn-outline-dark">Volver al inicio</a><div class="row"><button class="btn btn-soft" id="printClaim">🖨️ Imprimir constancia</button><a class="btn btn-primary" target="_blank" rel="noopener" href="' + IC.waLink(waMsg) + '">Enviar copia por WhatsApp</a></div></div></div>';
     document.getElementById("printClaim").addEventListener("click", function () { window.print(); });
+
+    /* Copia por correo: la envía el servidor (función "enviar-reclamo").
+       Si aún no está activada, se avisa y el cliente guarda o imprime. */
+    var aviso = document.getElementById("claimsCorreo");
+    guardado.then(function (r) {
+      if (!r || !r.ok) throw new Error("no guardado en el servidor");
+      var B = CFG.backend || {};
+      return fetch(String(B.supabaseUrl || "").replace(/\/+$/, "") + "/functions/v1/enviar-reclamo", {
+        method: "POST",
+        headers: { apikey: B.supabaseAnonKey, Authorization: "Bearer " + B.supabaseAnonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ codigo: code })
+      }).then(function (res) { return res.ok ? res.json() : { ok: false }; });
+    }).then(function (r) {
+      if (!r || !r.ok) throw new Error("sin envío");
+      aviso.innerHTML = "✓ Te enviamos una copia a <b>" + esc(record.email) + "</b>. Si no la ves, revisa la carpeta de spam.";
+    }).catch(function () {
+      aviso.textContent = "No pudimos enviarte la copia por correo en este momento. Guarda el código o imprime esta constancia.";
+    });
     IC.confetti();
     res.scrollIntoView({ behavior: "smooth", block: "start" });
   });

@@ -5,6 +5,7 @@ redes-sociales/
 
 # Estructura y reglas de la base de datos (Supabase): solo para ti
 *.sql
+supabase/
 
 # Configuración de herramientas (GitHub, VS Code, Claude)
 .github/

@@ -413,7 +413,8 @@ var SITE_CONFIG = {
     legalTitle: "Legal",
     legalLinks: [
       { label: "Términos y condiciones", href: "reclamaciones.html#terminos" },
-      { label: "Política de privacidad", href: "reclamaciones.html#privacidad" }
+      { label: "Política de privacidad", href: "reclamaciones.html#privacidad" },
+      { label: "Configurar cookies", href: "#configurar-cookies" }
     ],
     claimsLabel: "Libro de Reclamaciones",
     claimsHref: "reclamaciones.html",

@@ -160,6 +160,18 @@ begin
               when others then r := r || ('No puede quitar accesos|ERROR ' || sqlstate || ' ' || sqlerrm);
     end;
     begin
+      perform public.equipo_guardar(consulta, 'Prueba', 'Gerente', null);
+      r := r || ('No puede editar al equipo|FALLA');
+    exception when insufficient_privilege then r := r || ('No puede editar al equipo|PASA');
+              when others then r := r || ('No puede editar al equipo|ERROR ' || sqlstate || ' ' || sqlerrm);
+    end;
+    begin
+      perform public.mi_perfil_guardar(null, 'Puesto inventado por la prueba', null);
+      r := r || ('No puede cambiarse su propio puesto|' ||
+        case when coalesce(public.mi_perfil() ->> 'puesto', '') = 'Puesto inventado por la prueba' then 'FALLA' else 'PASA' end);
+    exception when others then r := r || ('No puede cambiarse su propio puesto|ERROR ' || sqlstate || ' ' || sqlerrm);
+    end;
+    begin
       insert into public.consultores (id, nombre) values (falso, 'Prueba');
       r := r || ('No puede dar acceso a otras personas|FALLA');
     exception when insufficient_privilege then r := r || ('No puede dar acceso a otras personas|PASA');

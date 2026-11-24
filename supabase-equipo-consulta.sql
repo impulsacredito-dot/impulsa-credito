@@ -341,6 +341,23 @@ create policy "admin: escribir notas" on public.notas_cliente
 -- pestaña "Equipo" del panel, sin entrar a Supabase. Cada función
 -- comprueba en el servidor que quien la llama es administrador.
 
+-- puesto de trabajo y foto de perfil (la foto se guarda pequeña, 160 px)
+alter table public.consultores add column if not exists puesto text;
+alter table public.consultores add column if not exists avatar text;
+alter table public.admins      add column if not exists puesto text;
+alter table public.admins      add column if not exists avatar text;
+
+-- una foto válida: imagen en base64 de menos de ~90 KB (o vacía para quitarla)
+create or replace function public.ic_avatar_valido(p text)
+returns boolean
+language sql
+immutable
+as $$
+  select p is null or p = ''
+      or (p ~ '^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$' and length(p) <= 120000);
+$$;
+revoke all on function public.ic_avatar_valido(text) from public;
+
 create or replace function public.equipo_listar()
 returns jsonb
 language plpgsql
@@ -354,7 +371,8 @@ begin
   end if;
   return coalesce((
     select jsonb_agg(jsonb_build_object(
-             'id', c.id, 'nombre', c.nombre, 'email', u.email, 'desde', c.creado_en,
+             'id', c.id, 'nombre', c.nombre, 'puesto', c.puesto, 'avatar', c.avatar,
+             'email', u.email, 'desde', c.creado_en,
              'ultimo_ingreso', (select max(a.creado_en) from public.auditoria a
                                 where a.actor = c.id and a.accion = 'ingreso_panel'))
            order by c.creado_en)
@@ -363,7 +381,8 @@ begin
 end;
 $$;
 
-create or replace function public.equipo_agregar(p_email text, p_nombre text)
+drop function if exists public.equipo_agregar(text, text);
+create or replace function public.equipo_agregar(p_email text, p_nombre text, p_puesto text default null)
 returns jsonb
 language plpgsql
 security definer
@@ -385,13 +404,42 @@ begin
   if exists (select 1 from public.perfiles p where p.id = uid) then
     raise exception 'Ese correo es de un cliente registrado. Usa otro correo para el trabajador' using errcode = 'P0001';
   end if;
-  insert into public.consultores (id, nombre)
-  values (uid, nullif(trim(p_nombre), ''))
-  on conflict (id) do update set nombre = excluded.nombre;
+  insert into public.consultores (id, nombre, puesto)
+  values (uid, nullif(trim(p_nombre), ''), nullif(trim(p_puesto), ''))
+  on conflict (id) do update set nombre = excluded.nombre, puesto = excluded.puesto;
   insert into public.auditoria (actor, actor_email, actor_rol, accion, registro_id, detalle)
   values (auth.uid(), auth.jwt() ->> 'email', 'admin', 'equipo_alta', uid::text,
-          jsonb_build_object('email', lower(trim(p_email)), 'nombre', p_nombre));
+          jsonb_build_object('email', lower(trim(p_email)), 'nombre', p_nombre, 'puesto', p_puesto));
   return jsonb_build_object('id', uid);
+end;
+$$;
+
+-- el administrador edita nombre, puesto y foto de un trabajador
+-- (p_avatar null = no tocar la foto; '' = quitarla)
+create or replace function public.equipo_guardar(p_id uuid, p_nombre text, p_puesto text, p_avatar text default null)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.es_admin() then
+    raise exception 'Solo el administrador puede editar al equipo' using errcode = '42501';
+  end if;
+  if not public.ic_avatar_valido(p_avatar) then
+    raise exception 'La foto no es válida o pesa demasiado' using errcode = 'P0001';
+  end if;
+  update public.consultores
+     set nombre = coalesce(nullif(trim(p_nombre), ''), nombre),
+         puesto = nullif(trim(p_puesto), ''),
+         avatar = case when p_avatar is null then avatar else nullif(p_avatar, '') end
+   where id = p_id;
+  if not found then
+    raise exception 'Esa persona ya no está en el equipo' using errcode = 'P0001';
+  end if;
+  insert into public.auditoria (actor, actor_email, actor_rol, accion, registro_id, detalle)
+  values (auth.uid(), auth.jwt() ->> 'email', 'admin', 'equipo_edicion', p_id::text,
+          jsonb_build_object('nombre', p_nombre, 'puesto', p_puesto));
 end;
 $$;
 
@@ -415,12 +463,72 @@ begin
 end;
 $$;
 
-revoke all on function public.equipo_listar()             from public;
-revoke all on function public.equipo_agregar(text, text)  from public;
-revoke all on function public.equipo_quitar(uuid)         from public;
-grant execute on function public.equipo_listar()            to authenticated;
-grant execute on function public.equipo_agregar(text, text) to authenticated;
-grant execute on function public.equipo_quitar(uuid)        to authenticated;
+revoke all on function public.equipo_listar()                          from public;
+revoke all on function public.equipo_agregar(text, text, text)         from public;
+revoke all on function public.equipo_guardar(uuid, text, text, text)   from public;
+revoke all on function public.equipo_quitar(uuid)                      from public;
+grant execute on function public.equipo_listar()                        to authenticated;
+grant execute on function public.equipo_agregar(text, text, text)       to authenticated;
+grant execute on function public.equipo_guardar(uuid, text, text, text) to authenticated;
+grant execute on function public.equipo_quitar(uuid)                    to authenticated;
+
+
+-- ---------- 7. MI PERFIL (cada persona del equipo) ----------
+-- Cada uno ve su nombre, puesto y foto, y puede cambiar SU foto y su
+-- nombre. El puesto de un trabajador lo asigna el administrador.
+
+create or replace function public.mi_perfil()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  r jsonb;
+begin
+  select jsonb_build_object('rol', 'admin', 'nombre', a.nombre, 'puesto', a.puesto, 'avatar', a.avatar)
+    into r from public.admins a where a.id = auth.uid();
+  if r is null then
+    select jsonb_build_object('rol', 'consulta', 'nombre', c.nombre, 'puesto', c.puesto, 'avatar', c.avatar)
+      into r from public.consultores c where c.id = auth.uid();
+  end if;
+  return r;   -- null: no es del equipo
+end;
+$$;
+
+create or replace function public.mi_perfil_guardar(p_nombre text, p_puesto text default null, p_avatar text default null)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.ic_avatar_valido(p_avatar) then
+    raise exception 'La foto no es válida o pesa demasiado' using errcode = 'P0001';
+  end if;
+  if public.es_admin() then
+    update public.admins
+       set nombre = coalesce(nullif(trim(p_nombre), ''), nombre),
+           puesto = nullif(trim(p_puesto), ''),
+           avatar = case when p_avatar is null then avatar else nullif(p_avatar, '') end
+     where id = auth.uid();
+  elsif public.es_consulta() then
+    -- un trabajador cambia su nombre y su foto, NO su puesto
+    update public.consultores
+       set nombre = coalesce(nullif(trim(p_nombre), ''), nombre),
+           avatar = case when p_avatar is null then avatar else nullif(p_avatar, '') end
+     where id = auth.uid();
+  else
+    raise exception 'Solo para el equipo' using errcode = '42501';
+  end if;
+end;
+$$;
+
+revoke all on function public.mi_perfil()                          from public;
+revoke all on function public.mi_perfil_guardar(text, text, text)  from public;
+grant execute on function public.mi_perfil()                         to authenticated;
+grant execute on function public.mi_perfil_guardar(text, text, text) to authenticated;
 
 
 -- =====================================================================
