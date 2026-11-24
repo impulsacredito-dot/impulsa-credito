@@ -10,8 +10,10 @@ Necesitas una cuenta gratis en Resend (resend.com: 3.000 correos al mes).
 1. RESEND
    a. Crea la cuenta en https://resend.com
    b. Domains → Add Domain → impulsacredito.com
-      Te da 3 o 4 registros DNS. Agrégalos donde compraste el dominio
-      (si es Vercel: vercel.com → Domains → impulsacredito.com → DNS Records).
+      Te da 3 o 4 registros DNS. Agrégalos donde se administra el dominio:
+      Namecheap → Domain List → impulsacredito.com → Manage → Advanced DNS.
+      Si alguno es de tipo MX, NO cambies "Mail Settings" sin revisar antes
+      (puede cortar el reenvío de correos que ya tengas).
       Espera a que Resend diga "Verified" (de minutos a unas horas).
    c. API Keys → Create API Key → permiso "Sending access" → copia la clave.
 
