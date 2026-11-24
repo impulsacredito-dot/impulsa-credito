@@ -41,23 +41,25 @@
 .ad-login-nota svg{flex:none;margin-top:2px;color:var(--ad-verde);}
 
 /* ---------------- Estructura: menú lateral + contenido ---------------- */
-.ad-app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh;}
+.ad-app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh;}
 .ad-side{
   position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--ad-borde);
   display:flex;flex-direction:column;padding:22px 14px 14px;z-index:70;
 }
-.ad-side-marca{display:flex;align-items:center;justify-content:space-between;padding:0 8px 18px;}
-.ad-brand.sm{font-size:30px;margin:0;}
-.ad-brand.sm .bl-tag{font-size:.2em;letter-spacing:.13em;}
+.ad-side-marca{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 20px;}
+.ad-brand.sm{font-size:38px;margin:0;}
+.ad-brand.sm .bl-mark{height:1.25em;}
+.ad-brand.sm .bl-name{font-size:.44em;}
+.ad-brand.sm .bl-tag{font-size:.235em;letter-spacing:.1em;font-weight:700;}
 .ad-nav{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
-.ad-nav-grupo{margin:16px 12px 6px;font-size:.66rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ad-tenue);}
+.ad-nav-grupo{margin:18px 12px 6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ad-tenue);}
 .ad-nav-grupo:first-child{margin-top:4px;}
 .ad-tab{
   display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;
-  padding:10px 12px;border-radius:11px;font:600 .88rem "Montserrat",sans-serif;color:var(--ad-suave);
+  padding:11px 12px;border-radius:11px;font:600 .95rem "Montserrat",sans-serif;color:var(--ad-suave);
   transition:background .15s ease,color .15s ease;
 }
-.ad-tab svg{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.ad-tab svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .ad-tab:hover{background:#f2f6f3;color:var(--ad-texto);}
 .ad-tab.on{background:var(--ad-texto);color:#fff;}
 .ad-tab:focus-visible{outline:3px solid var(--ad-verde);outline-offset:2px;}
@@ -70,8 +72,8 @@
 .ad-yo:hover{background:#f2f6f3;}
 .ad-yo:focus-visible{outline:3px solid var(--ad-verde);outline-offset:2px;}
 .ad-yo-txt{flex:1;min-width:0;}
-.ad-yo-txt b{display:block;font-size:.84rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ad-texto);}
-.ad-yo-txt span{display:block;font-size:.72rem;color:var(--ad-tenue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ad-yo-txt b{display:block;font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ad-texto);}
+.ad-yo-txt span{display:block;font-size:.78rem;color:var(--ad-tenue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ad-yo-flecha{width:16px;height:16px;fill:none;stroke:var(--ad-tenue);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transform:rotate(180deg);}
 
 /* avatar: foto o iniciales */
@@ -444,6 +446,7 @@
    ===================================================================== */
 /* laptops: tablas un poco más compactas para que no se oculte ninguna columna */
 @media (max-width:1400px){
+  .ad-main{padding:24px 24px 40px;}
   .ad-tabla{font-size:.8rem;}
   .ad-tabla th{padding:12px 9px;font-size:.64rem;letter-spacing:.05em;}
   .ad-tabla td{padding:12px 9px;}

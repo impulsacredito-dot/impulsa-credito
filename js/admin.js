@@ -1198,7 +1198,10 @@
           '<li class="si">Ve clientes, operaciones, reportes y notas</li><li class="si">Datos sensibles ocultos (cuentas, celulares, correos)</li><li class="no">No ve fotos de DNI, selfie ni tarjetas</li><li class="no">No aprueba, no cambia, no borra</li><li class="no">No descarga datos ni ve la auditoría</li></ul></div>' +
       "</div></section>";
     var lista = eq.error === "falta_sql"
-      ? '<p class="ad-sub">Para agregar trabajadores, primero ejecuta <b>supabase-equipo-consulta.sql</b> en Supabase (SQL Editor → Run).</p>'
+      ? '<ul class="ad-avisos"><li class="warn"><b>Falta activar el equipo en Supabase (una sola vez):</b><br>' +
+          "1. Entra a supabase.com → tu proyecto → <b>SQL Editor</b> → <b>New query</b>.<br>" +
+          "2. Pega todo el archivo <b>supabase-equipo-consulta.sql</b> y pulsa <b>Run</b>.<br>" +
+          "3. Vuelve aquí y recarga la página (F5): aparecerá el botón <b>+ Agregar trabajador</b>.</li></ul>"
       : eq.error ? '<p class="ad-sub">No se pudo cargar el equipo: ' + esc(eq.error) + "</p>"
       : '<ul class="ad-equipo"><li>' + avatarHTML(perfil.nombre, perfil.avatar) + '<div class="quien"><b>' + esc(perfil.nombre) + ' <span class="ad-chip ok">Administrador</span></b><span class="puesto">' + esc(perfil.puesto || "Administrador") + '</span><span class="mail">' + esc(perfil.email || "") + "</span></div>" +
           '<div class="acc"><button class="btn btn-outline-dark btn-sm" id="eqYo">Editar mi perfil</button></div></li>' +
