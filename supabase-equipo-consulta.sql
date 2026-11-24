@@ -24,16 +24,13 @@
 --
 -- CÓMO USARLO
 --   1. Supabase → SQL Editor → New query → pega TODO este archivo → Run
---   2. Supabase → Authentication → Users → "Add user" → "Create new user"
---        Correo:     el correo de la persona del equipo
---        Contraseña: una temporal (mínimo 8 caracteres, con números)
---        Marca "Auto Confirm User"
---   3. Vuelve al SQL Editor y ejecuta el ÚLTIMO bloque de este archivo
---      (INSERT INTO public.consultores), poniendo su correo y su nombre.
---   4. Ejecuta supabase-equipo-prueba.sql para comprobar que todo quedó
+--   2. Entra al panel (impulsacredito.com/admin) con tu cuenta de
+--      administrador → pestaña "Equipo" → "Agregar trabajador".
+--      Ahí escribes su nombre, su correo y una contraseña temporal.
+--   3. Ejecuta supabase-equipo-prueba.sql para comprobar que todo quedó
 --      cerrado (no cambia nada: todo lo que prueba se deshace solo).
---   5. Pásale a esa persona su correo y la contraseña temporal. Al
---      entrar, que la cambie en el botón "Mi contraseña" del panel.
+--   4. Pásale a esa persona su correo y la contraseña temporal. Al
+--      entrar, que la cambie en "Mi cuenta → Cambiar contraseña".
 --
 -- Ejecútalo DESPUÉS de supabase-admin.sql y supabase-mejoras-orden.sql.
 -- =====================================================================
@@ -339,10 +336,97 @@ create policy "admin: escribir notas" on public.notas_cliente
 -- Sin cambiar ni borrar: las notas quedan como historial.
 
 
+-- ---------- 6. ADMINISTRAR EL EQUIPO DESDE EL PANEL ----------
+-- Con esto el administrador agrega y quita trabajadores desde la
+-- pestaña "Equipo" del panel, sin entrar a Supabase. Cada función
+-- comprueba en el servidor que quien la llama es administrador.
+
+create or replace function public.equipo_listar()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.es_admin() then
+    raise exception 'Solo el administrador puede ver el equipo' using errcode = '42501';
+  end if;
+  return coalesce((
+    select jsonb_agg(jsonb_build_object(
+             'id', c.id, 'nombre', c.nombre, 'email', u.email, 'desde', c.creado_en,
+             'ultimo_ingreso', (select max(a.creado_en) from public.auditoria a
+                                where a.actor = c.id and a.accion = 'ingreso_panel'))
+           order by c.creado_en)
+    from public.consultores c
+    join auth.users u on u.id = c.id), '[]'::jsonb);
+end;
+$$;
+
+create or replace function public.equipo_agregar(p_email text, p_nombre text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  uid uuid;
+begin
+  if not public.es_admin() then
+    raise exception 'Solo el administrador puede agregar personas al equipo' using errcode = '42501';
+  end if;
+  select u.id into uid from auth.users u where lower(u.email) = lower(trim(p_email)) limit 1;
+  if uid is null then
+    raise exception 'No existe una cuenta con ese correo' using errcode = 'P0001';
+  end if;
+  if exists (select 1 from public.admins a where a.id = uid) then
+    raise exception 'Esa cuenta ya es de administrador' using errcode = 'P0001';
+  end if;
+  if exists (select 1 from public.perfiles p where p.id = uid) then
+    raise exception 'Ese correo es de un cliente registrado. Usa otro correo para el trabajador' using errcode = 'P0001';
+  end if;
+  insert into public.consultores (id, nombre)
+  values (uid, nullif(trim(p_nombre), ''))
+  on conflict (id) do update set nombre = excluded.nombre;
+  insert into public.auditoria (actor, actor_email, actor_rol, accion, registro_id, detalle)
+  values (auth.uid(), auth.jwt() ->> 'email', 'admin', 'equipo_alta', uid::text,
+          jsonb_build_object('email', lower(trim(p_email)), 'nombre', p_nombre));
+  return jsonb_build_object('id', uid);
+end;
+$$;
+
+create or replace function public.equipo_quitar(p_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  quien text;
+begin
+  if not public.es_admin() then
+    raise exception 'Solo el administrador puede quitar accesos' using errcode = '42501';
+  end if;
+  select nombre into quien from public.consultores where id = p_id;
+  delete from public.consultores where id = p_id;
+  insert into public.auditoria (actor, actor_email, actor_rol, accion, registro_id, detalle)
+  values (auth.uid(), auth.jwt() ->> 'email', 'admin', 'equipo_baja', p_id::text,
+          jsonb_build_object('nombre', quien));
+end;
+$$;
+
+revoke all on function public.equipo_listar()             from public;
+revoke all on function public.equipo_agregar(text, text)  from public;
+revoke all on function public.equipo_quitar(uuid)         from public;
+grant execute on function public.equipo_listar()            to authenticated;
+grant execute on function public.equipo_agregar(text, text) to authenticated;
+grant execute on function public.equipo_quitar(uuid)        to authenticated;
+
+
 -- =====================================================================
--- ÚLTIMO PASO — ejecútalo SOLO después de crear el usuario en
--- Authentication → Users. Cambia el correo y el nombre por los reales.
--- (Puedes repetirlo para otra persona del equipo.)
+-- OPCIONAL — dar acceso a mano desde aquí (lo normal es hacerlo desde
+-- la pestaña "Equipo" del panel). Primero crea el usuario en
+-- Authentication → Users y luego cambia el correo y el nombre.
 -- =====================================================================
 -- insert into public.consultores (id, nombre)
 -- select id, 'Nombre de la persona' from auth.users where email = 'correo.de.la.persona@ejemplo.com'

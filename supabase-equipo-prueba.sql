@@ -8,8 +8,8 @@
 -- final se DESHACE solo. No crea, no cambia y no borra ningún dato.
 -- Las escrituras que prueba son justamente las que deben ser RECHAZADAS.
 --
--- CÓMO USARLO (después de supabase-equipo-consulta.sql y de inscribir
--- al menos a una persona en public.consultores):
+-- CÓMO USARLO (después de supabase-equipo-consulta.sql y de agregar al
+-- menos a un trabajador desde la pestaña "Equipo" del panel):
 --   Supabase → SQL Editor → New query → pega TODO → Run
 --   Verás una tabla: cada fila debe decir PASA.
 --   Si alguna dice FALLA o ERROR, cópiala y pásamela.
@@ -38,7 +38,7 @@ begin
   select a.id into admin from public.admins a order by a.creado_en asc limit 1;
 
   if consulta is null then
-    r := r || ('Hay un usuario de consulta inscrito|FALTA: créalo en Authentication y ejecuta el último bloque de supabase-equipo-consulta.sql');
+    r := r || ('Hay un trabajador con acceso de consulta|FALTA: agrégalo desde la pestaña Equipo del panel y vuelve a ejecutar esta prueba');
   end if;
 
   if consulta is not null then
@@ -146,6 +146,18 @@ begin
       r := r || ('No puede volverse administrador|FALLA');
     exception when insufficient_privilege then r := r || ('No puede volverse administrador|PASA');
               when others then r := r || ('No puede volverse administrador|ERROR ' || sqlstate || ' ' || sqlerrm);
+    end;
+    begin
+      perform public.equipo_agregar('prueba@impulsa.test', 'Prueba');
+      r := r || ('No puede agregar trabajadores desde el panel|FALLA');
+    exception when insufficient_privilege then r := r || ('No puede agregar trabajadores desde el panel|PASA');
+              when others then r := r || ('No puede agregar trabajadores desde el panel|ERROR ' || sqlstate || ' ' || sqlerrm);
+    end;
+    begin
+      perform public.equipo_quitar(consulta);
+      r := r || ('No puede quitar accesos|FALLA');
+    exception when insufficient_privilege then r := r || ('No puede quitar accesos|PASA');
+              when others then r := r || ('No puede quitar accesos|ERROR ' || sqlstate || ' ' || sqlerrm);
     end;
     begin
       insert into public.consultores (id, nombre) values (falso, 'Prueba');
