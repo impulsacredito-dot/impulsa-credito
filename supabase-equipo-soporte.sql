@@ -286,7 +286,7 @@ security definer
 set search_path = public
 as $$
 declare
-  antes text;
+  rol_previo text;
 begin
   if not public.es_admin() then
     raise exception 'Solo el administrador puede editar al equipo' using errcode = '42501';
@@ -297,7 +297,7 @@ begin
   if p_rol is not null and p_rol not in ('consulta', 'soporte') then
     raise exception 'Tipo de acceso no válido' using errcode = 'P0001';
   end if;
-  select rol into antes from public.consultores where id = p_id;
+  select rol into rol_previo from public.consultores where id = p_id;
   update public.consultores
      set nombre = coalesce(nullif(trim(p_nombre), ''), nombre),
          puesto = nullif(trim(p_puesto), ''),
@@ -310,7 +310,7 @@ begin
   insert into public.auditoria (actor, actor_email, actor_rol, accion, registro_id, detalle)
   values (auth.uid(), auth.jwt() ->> 'email', 'admin', 'equipo_edicion', p_id::text,
           jsonb_strip_nulls(jsonb_build_object('nombre', p_nombre, 'puesto', p_puesto,
-            'rol', coalesce(p_rol, antes), 'rol_antes', antes)));
+            'rol', coalesce(p_rol, rol_previo), 'rol_antes', rol_previo)));
 end;
 $$;
 
