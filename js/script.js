@@ -678,7 +678,7 @@
      scroll reveal (con efecto escalonado / stagger)
   --------------------------------------------------------------- */
   function applyStaggerDelays() {
-    $all(".why-list, .steps-grid, .stats-cards, .accordion, .marquee-track, .bento-grid").forEach(function (group) {
+    $all(".why-list, .steps-grid, .stats-cards, .accordion, .marquee-track, .bento-grid, .tipos-grid, .guias-grid, .lista-check").forEach(function (group) {
       $all(":scope > [data-reveal]", group).forEach(function (child, i) {
         child.style.transitionDelay = Math.min(i * 90, 450) + "ms";
       });
@@ -694,6 +694,8 @@
           if (entry.isIntersecting) {
             entry.target.classList.add("in");
             io.unobserve(entry.target);
+            // ya apareció: sin retraso, para que el realce al pasar el mouse sea inmediato
+            (function (t) { setTimeout(function () { t.style.transitionDelay = ""; }, 1300); })(entry.target);
           }
         });
       },

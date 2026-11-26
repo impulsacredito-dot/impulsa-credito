@@ -84,7 +84,10 @@ var SITE_CONFIG = {
   --------------------------------------------------------------- */
   analytics: {
     ga4Id: "G-NPQG433B0C",
-    gtmId: "GTM-N4STXGGZ",
+    // PAUSADO (26-nov-2026): el contenedor publicado tiene una etiqueta de
+    // Analytics (contaría doble) y aún no tiene el píxel de Meta. Cuando
+    // se corrija en Tag Manager, volver a poner "GTM-N4STXGGZ".
+    gtmId: "",
     // Microsoft Clarity (mapas de calor y grabaciones con los textos ocultos).
     // Pega aquí el ID del proyecto (clarity.microsoft.com → Configuración).
     // Se carga solo con "Análisis" aceptado y nunca en el área del cliente.
@@ -443,7 +446,9 @@ var SITE_CONFIG = {
     ],
     claimsLabel: "Libro de Reclamaciones",
     claimsHref: "reclamaciones.html",
-    legal: "Impulsa Crédito es operado por PRIMEVISION CONSULTANCY S.A.C., empresa de asesoría y gestión crediticia. La efectivización se realiza mediante medios de pago autorizados. No otorgamos préstamos directamente."
+    // texto pequeño extra al pie (vacío = no se muestra). La razón social,
+    // el RUC y el domicilio ya aparecen en la línea de arriba.
+    legal: ""
   },
 
   /* ---------------------------------------------------------------

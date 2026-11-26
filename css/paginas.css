@@ -57,9 +57,11 @@
 .tipos-grid{margin-top:44px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;}
 .tipo-card{
   background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:24px 22px;
-  transition:transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s;
+  transition:opacity .7s var(--ease), transform .4s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease), background-color .25s var(--ease);
 }
-.tipo-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);border-color:rgba(34,197,94,.3);}
+.tipo-card:hover{transform:translateY(-3px);background-color:#f6fdf8;border-color:rgba(34,197,94,.45);box-shadow:0 20px 40px -26px rgba(22,163,74,.55);}
+.tipo-card h3,.guia-card h3{transition:color .2s var(--ease);}
+.tipo-card:hover h3,.guia-card:hover h3{color:var(--green-dark);}
 .tipo-icono{width:46px;height:46px;border-radius:14px;background:rgba(34,197,94,.1);color:var(--green-dark);
   display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
 .tipo-card h3{font-size:1.05rem;margin-bottom:8px;}
@@ -69,7 +71,12 @@
 .revision-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start;}
 .revision-grid > *{min-width:0;}
 .lista-check{display:flex;flex-direction:column;gap:0;}
-.lista-check li{display:flex;gap:16px;padding:20px 0;border-top:1px solid var(--border);}
+.lista-check li{display:flex;gap:16px;padding:20px 14px;margin:0 -14px;border-top:1px solid var(--border);border-radius:12px;transition:opacity .7s var(--ease), transform .4s var(--ease), background-color .25s var(--ease);}
+.lista-check li:hover{background-color:#f3fbf6;}
+.lista-check .ic{transition:background-color .25s var(--ease), color .25s var(--ease);}
+.lista-check li:hover .ic{background:var(--green);color:#fff;}
+.lista-check h3{transition:color .2s var(--ease);}
+.lista-check li:hover h3{color:var(--green-dark);}
 .lista-check li:last-child{border-bottom:1px solid var(--border);}
 .lista-check .ic{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(34,197,94,.12);color:var(--green-dark);
   display:flex;align-items:center;justify-content:center;}
@@ -85,9 +92,11 @@
 .guia-card{
   display:flex;flex-direction:column;gap:10px;height:100%;
   background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:26px 24px;
-  transition:transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s;
+  transition:opacity .7s var(--ease), transform .4s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease), background-color .25s var(--ease);
 }
-.guia-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);border-color:rgba(34,197,94,.35);}
+.guia-card:hover{transform:translateY(-3px);background-color:#f6fdf8;border-color:rgba(34,197,94,.45);box-shadow:0 20px 40px -26px rgba(22,163,74,.55);}
+.guia-pie b{display:inline-block;transition:transform .25s var(--ease);}
+.guia-card:hover .guia-pie b{transform:translateX(4px);}
 .guia-tema{align-self:flex-start;font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--green-dark);
   background:rgba(34,197,94,.1);padding:5px 10px;border-radius:var(--radius-pill);text-transform:uppercase;}
 .guia-card h3{font-size:1.08rem;line-height:1.3;}
