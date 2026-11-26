@@ -84,7 +84,11 @@ var SITE_CONFIG = {
   --------------------------------------------------------------- */
   analytics: {
     ga4Id: "G-NPQG433B0C",
-    gtmId: "GTM-N4STXGGZ"
+    gtmId: "GTM-N4STXGGZ",
+    // Microsoft Clarity (mapas de calor y grabaciones con los textos ocultos).
+    // Pega aquí el ID del proyecto (clarity.microsoft.com → Configuración).
+    // Se carga solo con "Análisis" aceptado y nunca en el área del cliente.
+    clarityId: ""
   },
 
   /* ---------------------------------------------------------------
@@ -118,7 +122,9 @@ var SITE_CONFIG = {
     address: "Calle Francisco del Castillo 506, Miraflores, Lima",
     hoursLabel: "Lunes a Sábado, 10:00 a.m. – 7:00 p.m.",
     hoursShort: ["Lunes a Sábado", "10:00 a.m. – 7:00 p.m."],
-    defaultMessage: "Hola Impulsa Crédito, quiero efectivizar mi tarjeta de crédito"
+    defaultMessage: "Hola Impulsa Crédito, quiero efectivizar mi tarjeta de crédito",
+    // mensaje de los botones de la sección Asesoría y de las Guías
+    asesoriaMessage: "Hola Impulsa Crédito, quiero asesoría para conseguir un préstamo"
   },
 
   /* ---------------------------------------------------------------
@@ -180,9 +186,10 @@ var SITE_CONFIG = {
      5b. MENÚ DE NAVEGACIÓN
   --------------------------------------------------------------- */
   nav: [
+    { label: "Asesoría", href: "/asesoria" },
     { label: "¿Cómo funciona?", href: "#como-funciona" },
     { label: "Beneficios", href: "#beneficios" },
-    { label: "Nosotros", href: "#nosotros" },
+    { label: "Guías", href: "/guias" },
     { label: "Preguntas Frecuentes", href: "#faq" }
   ],
   navMobileExtra: [

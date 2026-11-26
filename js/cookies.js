@@ -25,6 +25,7 @@
       if (v[k]) { esperando[k].forEach(function (fn) { try { fn(); } catch (e) {} }); esperando[k] = []; }
     });
     aplicarGoogle(v);
+    aplicarClarity(v);
     try { document.dispatchEvent(new CustomEvent("ic:cookies", { detail: v })); } catch (e) {}
     return v;
   }
@@ -85,6 +86,30 @@
       google.gtm = true;
     }
   }
+  /* ---------- Microsoft Clarity (mapas de calor y grabaciones) ----------
+     · SOLO si la persona acepta "Análisis".
+     · Nunca en el área del cliente (/app), el panel ni /recuperar.
+     · En páginas con formularios de datos personales (login, registro,
+       reclamaciones) se oculta TODO el contenido en las grabaciones.
+     · En clarity.microsoft.com → Configuración → Enmascaramiento, deja
+       el modo "Estricto" para ocultar todos los textos del sitio. */
+  var clarityEstado = { cargado: false };
+  function idClarity() {
+    var a = (window.SITE_CONFIG && window.SITE_CONFIG.analytics) || {};
+    return /^[a-z0-9]{6,14}$/i.test(a.clarityId || "") ? a.clarityId : "";
+  }
+  function aplicarClarity(v) {
+    var id = idClarity();
+    if (!id || !paginaPermitida() || /^\/app(\.html)?\/?$/i.test(location.pathname)) return;
+    if (clarityEstado.cargado) { window.clarity("consent", !!v.analitica); return; }
+    if (!v.analitica) return;
+    if (/\/(login|registro|reclamaciones)(\.html)?\/?$/i.test(location.pathname)) document.body.setAttribute("data-clarity-mask", "True");
+    window.clarity = window.clarity || function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
+    window.clarity("consent");
+    cargarScript("https://www.clarity.ms/tag/" + encodeURIComponent(id));
+    clarityEstado.cargado = true;
+  }
+
   /* registra una acción importante (sin datos personales), solo si la
      persona sigue aceptando:
      · a Analytics con su nombre (registro_completado, …);
@@ -174,7 +199,7 @@
       '<div class="ck-detalle" id="ckDetalle"' + (conDetalle ? "" : " hidden") + ">" +
         '<div class="ck-op"><div><b>Necesarias</b><span>Tu sesión, tus preferencias y esta elección. Siempre activas.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" checked disabled aria-label="Cookies necesarias (siempre activas)"><i></i></label></div>' +
-        '<div class="ck-op"><div><b>Análisis</b><span>Google Analytics: qué páginas se visitan, sin tu nombre, DNI ni celular.</span></div>' +
+        '<div class="ck-op"><div><b>Análisis</b><span>Google Analytics y Microsoft Clarity: cómo se usa la web, sin tu nombre, DNI ni celular.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" id="ckAnalitica"' + (actual.analitica ? " checked" : "") + ' aria-label="Cookies de análisis"><i></i></label></div>' +
         '<div class="ck-op"><div><b>Marketing</b><span>Píxel de Meta: publicidad de Impulsa Crédito en Facebook e Instagram.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" id="ckMarketing"' + (actual.marketing ? " checked" : "") + ' aria-label="Cookies de marketing"><i></i></label></div>' +
@@ -218,7 +243,7 @@
     if (wa) evento("whatsapp_clic", { ubicacion: location.pathname });
   });
 
-  function iniciar() { var v = leer(); if (v) aplicarGoogle(v); else abrir(false); }
+  function iniciar() { var v = leer(); if (v) { aplicarGoogle(v); aplicarClarity(v); } else abrir(false); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
   else iniciar();
 })();

@@ -16,6 +16,22 @@
   function $all(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
   function setText(id, value) { var el = document.getElementById(id); if (el && value != null) el.textContent = value; }
   function el(tag, className) { var n = document.createElement(tag); if (className) n.className = className; return n; }
+  /* en páginas que no son el inicio (asesoría, guías), los enlaces a
+     secciones del inicio (#como-funciona…) deben llevar al inicio */
+  var ES_INICIO = !!document.getElementById("inicio");
+  function ruta(href) {
+    if (!href) return href;
+    if (href.charAt(0) === "#") return ES_INICIO ? href : "/" + href;
+    if (/^(\/|[a-z]+:)/i.test(href)) return href;
+    return "/" + href;   // "login.html" funciona igual desde /guias/...
+  }
+  function marcarActivo(a, href) {
+    var aqui = location.pathname.replace(/\.html$/, "").replace(/\/index$/, "").replace(/\/$/, "") || "/";
+    var h = String(href || "").replace(/\.html$/, "").replace(/\/$/, "");
+    if (h && h.charAt(0) === "/" && h.length > 1 && (aqui === h || aqui.indexOf(h + "/") === 0)) {
+      a.classList.add("activo"); a.setAttribute("aria-current", "page");
+    }
+  }
   function waLink(number, message) {
     return "https://wa.me/" + number + "?text=" + encodeURIComponent(message || "");
   }
@@ -60,14 +76,15 @@
 
   function applyMeta() {
     if (CFG.meta) {
-      if (CFG.meta.title) { document.title = CFG.meta.title; setText("pageTitle", CFG.meta.title); }
+      // solo en el inicio: las demás páginas tienen su propio título
+      if (CFG.meta.title && document.getElementById("pageTitle")) { document.title = CFG.meta.title; setText("pageTitle", CFG.meta.title); }
       var descEl = document.getElementById("pageDescription");
       if (descEl && CFG.meta.description) descEl.setAttribute("content", CFG.meta.description);
     }
     if (CFG.brand) {
-      $all(".js-brand-mark").forEach(function (img) { img.src = CFG.brand.icon || CFG.brand.logo; });
+      $all(".js-brand-mark").forEach(function (img) { img.src = ruta(CFG.brand.icon || CFG.brand.logo); });
       var fav = document.getElementById("faviconLink");
-      if (fav && CFG.brand.favicon) fav.href = CFG.brand.favicon;
+      if (fav && CFG.brand.favicon) fav.href = ruta(CFG.brand.favicon);
     }
   }
 
@@ -75,7 +92,8 @@
     var c = CFG.contact || {};
     var messages = {
       default: c.defaultMessage || "Hola, quiero información",
-      steps: (CFG.steps && CFG.steps.ctaWhatsappMessage) || c.defaultMessage
+      steps: (CFG.steps && CFG.steps.ctaWhatsappMessage) || c.defaultMessage,
+      asesoria: c.asesoriaMessage || c.defaultMessage
     };
     $all(".js-wa-link").forEach(function (a) {
       var key = a.getAttribute("data-wa-msg") || "default";
@@ -88,19 +106,20 @@
     setText("headerWhatsappLabel", h.whatsappLabel);
     setText("headerCta", h.ctaLabel);
     var cta = document.getElementById("headerCta");
-    if (cta && h.ctaHref) cta.setAttribute("href", h.ctaHref);
+    if (cta && h.ctaHref) cta.setAttribute("href", ruta(h.ctaHref));
     var login = document.getElementById("headerLogin");
-    if (login) { if (h.loginLabel) login.textContent = h.loginLabel; if (h.loginHref) login.setAttribute("href", h.loginHref); }
+    if (login) { if (h.loginLabel) login.textContent = h.loginLabel; if (h.loginHref) login.setAttribute("href", ruta(h.loginHref)); }
 
     var nav = document.getElementById("mainNav");
     if (!nav) return;
     nav.innerHTML = "";
     (CFG.nav || []).forEach(function (item) {
-      var a = el("a"); a.href = item.href; a.textContent = item.label;
+      var a = el("a"); a.href = ruta(item.href); a.textContent = item.label;
+      marcarActivo(a, item.href);
       nav.appendChild(a);
     });
     (CFG.navMobileExtra || []).forEach(function (item) {
-      var a = el("a", "nav-only-mobile"); a.href = item.href; a.textContent = item.label;
+      var a = el("a", "nav-only-mobile"); a.href = ruta(item.href); a.textContent = item.label;
       nav.appendChild(a);
     });
   }
@@ -485,7 +504,7 @@
       navWrap.innerHTML = "";
       (CFG.nav || []).concat([{ label: (CFG.header && CFG.header.ctaLabel) || "Solicita tu asesoría", href: (CFG.header && CFG.header.ctaHref) || "#solicitar" }])
         .forEach(function (item) {
-          var a = el("a"); a.href = item.href; a.textContent = item.label;
+          var a = el("a"); a.href = ruta(item.href); a.textContent = item.label;
           navWrap.appendChild(a);
         });
     }
@@ -495,13 +514,13 @@
     if (legalWrap) {
       legalWrap.innerHTML = "";
       (f.legalLinks || []).forEach(function (item) {
-        var a = el("a"); a.href = item.href; a.textContent = item.label;
+        var a = el("a"); a.href = item.href.charAt(0) === "#" ? item.href : ruta(item.href); a.textContent = item.label;
         legalWrap.appendChild(a);
       });
     }
     var claims = document.getElementById("claimsBadge");
     if (claims) {
-      if (f.claimsHref) claims.href = f.claimsHref;
+      if (f.claimsHref) claims.href = ruta(f.claimsHref);
       var b = claims.querySelector("b");
       if (b && f.claimsLabel) b.textContent = f.claimsLabel;
     }
@@ -728,8 +747,9 @@
   /* ---------------------------------------------------------------
      acordeón FAQ
   --------------------------------------------------------------- */
-  var accordion = document.getElementById("accordion");
-  if (accordion) {
+  /* todas las listas de preguntas (.accordion): la del inicio y las de
+     otras páginas (asesoría, guías) */
+  $all(".accordion").forEach(function (accordion) {
     accordion.addEventListener("click", function (e) {
       var trigger = e.target.closest(".acc-trigger");
       if (!trigger) return;
@@ -749,7 +769,7 @@
         trigger.setAttribute("aria-expanded", "true");
       }
     });
-  }
+  });
 
   /* ---------------------------------------------------------------
      formulario "Solicita tu asesoría" -> WhatsApp
