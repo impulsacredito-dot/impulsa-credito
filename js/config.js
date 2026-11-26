@@ -91,7 +91,11 @@ var SITE_CONFIG = {
     // Microsoft Clarity (mapas de calor y grabaciones con los textos ocultos).
     // Pega aquí el ID del proyecto (clarity.microsoft.com → Configuración).
     // Se carga solo con "Análisis" aceptado y nunca en el área del cliente.
-    clarityId: "zjvyvnle0k"
+    clarityId: "zjvyvnle0k",
+    // Píxel de Meta (Facebook e Instagram), cargado directo, sin Tag Manager.
+    // Pega aquí el ID del conjunto de datos (solo números). Se carga solo con
+    // "Marketing" aceptado. Si lo usas aquí, NO lo pongas también en Tag Manager.
+    metaPixelId: ""
   },
 
   /* ---------------------------------------------------------------

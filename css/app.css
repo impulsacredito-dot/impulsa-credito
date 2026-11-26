@@ -626,3 +626,31 @@ button{font-family:inherit;}
     padding-right:14px;
   }
 }
+
+/* ---------- tarjetas de resumen del inicio: íconos a dos tonos ---------- */
+.stat{transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;}
+.stat:hover{transform:translateY(-2px);box-shadow:0 18px 36px -24px rgba(11,15,13,.35);}
+.stat .ic{width:50px;height:50px;border-radius:15px;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);box-shadow:inset 0 0 0 1px rgba(34,197,94,.22);}
+.stat .ic.blue{background:linear-gradient(135deg,#eff6ff,#dbeafe);box-shadow:inset 0 0 0 1px rgba(37,99,235,.2);}
+.stat .ic.amber{background:linear-gradient(135deg,#fffbeb,#fef3c7);box-shadow:inset 0 0 0 1px rgba(245,158,11,.25);}
+.stat .ic svg{width:28px;height:28px;}
+
+/* ---------- registrar tarjeta: una sola foto, fácil de entender ---------- */
+.doc-opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.doc-op{position:relative;display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid var(--line);border-radius:14px;
+  background:#fff;cursor:pointer;transition:border-color .2s ease, background-color .2s ease, box-shadow .2s ease;}
+.doc-op:hover{border-color:rgba(34,197,94,.45);}
+.doc-op input{position:absolute;opacity:0;width:1px;height:1px;}
+.doc-op b{display:block;font-size:.86rem;line-height:1.25;}
+.doc-op small{display:block;font-size:.74rem;color:var(--muted);line-height:1.35;margin-top:2px;}
+.doc-op:has(input:checked){border-color:var(--green);background:#f3fcf6;box-shadow:0 0 0 3px rgba(34,197,94,.12);}
+.doc-op:has(input:focus-visible){outline:3px solid var(--green);outline-offset:2px;}
+.doc-ico{flex:none;width:40px;height:40px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;}
+.doc-pasos{list-style:none;margin:14px 0 0;padding:14px 16px;background:#f7faf8;border:1px solid var(--line);border-radius:14px;counter-reset:dp;
+  display:flex;flex-direction:column;gap:8px;}
+.doc-pasos li{position:relative;padding-left:30px;font-size:.84rem;line-height:1.5;counter-increment:dp;}
+.doc-pasos li::before{content:counter(dp);position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;
+  background:var(--green);color:#06210f;font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
+@media (max-width:520px){ .doc-opciones{grid-template-columns:1fr;} }
+@media (prefers-reduced-motion:reduce){ .stat,.stat:hover{transition:none;transform:none;} }

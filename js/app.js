@@ -46,6 +46,28 @@
   }
   var WA_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.05-1.32A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>';
 
+  /* íconos a dos tonos (estilo de las ilustraciones de la web) */
+  function svg2(cuerpo, size) {
+    return '<svg viewBox="0 0 24 24" width="' + (size || 26) + '" height="' + (size || 26) + '" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + cuerpo + "</svg>";
+  }
+  var STAT_ICO = {
+    // billete con moneda: total operado
+    total: svg2('<rect x="2.5" y="5.5" width="15" height="10" rx="2.2" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/>' +
+      '<circle cx="10" cy="10.5" r="2.3" stroke="#15803D" stroke-width="1.6"/><path d="M5 8.2v.01M15 12.8v.01" stroke="#15803D" stroke-width="2"/>' +
+      '<circle cx="17" cy="15.5" r="4.6" fill="#22C55E" stroke="#15803D" stroke-width="1.6"/><path d="M17 13.6v3.8M15.2 15.5h3.6" stroke="#fff" stroke-width="1.6"/>'),
+    // sello con visto bueno: completadas
+    completadas: svg2('<path d="M12 2.8l2.2 1.6 2.7-.1.9 2.6 2.3 1.5-.8 2.6.8 2.6-2.3 1.5-.9 2.6-2.7-.1L12 21.2l-2.2-1.6-2.7.1-.9-2.6-2.3-1.5.8-2.6-.8-2.6 2.3-1.5.9-2.6 2.7.1z" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>' +
+      '<path d="M8.5 12.2l2.4 2.4 4.7-4.9" stroke="#1D4ED8" stroke-width="1.9"/>'),
+    // reloj de arena: operaciones activas
+    activas: svg2('<path d="M6.5 3h11M6.5 21h11" stroke="#B45309" stroke-width="1.8"/>' +
+      '<path d="M7.6 3v3a4.5 4.5 0 0 0 2 3.7L12 12l2.4-2.3a4.5 4.5 0 0 0 2-3.7V3M7.6 21v-3a4.5 4.5 0 0 1 2-3.7L12 12l2.4 2.3a4.5 4.5 0 0 1 2 3.7v3" fill="#FEF3C7" stroke="#B45309" stroke-width="1.6"/>' +
+      '<path d="M9.7 19.2h4.6L12 16.8z" fill="#F59E0B"/><path d="M10.4 6.6h3.2" stroke="#F59E0B" stroke-width="1.6"/>')
+  };
+  var DOC_ICO = {
+    tarjeta: '<span class="doc-ico">' + svg2('<rect x="2.5" y="5" width="19" height="14" rx="2.6" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/><path d="M2.5 9.5h19" stroke="#15803D" stroke-width="2.2"/><rect x="5.5" y="12.5" width="4" height="3" rx=".8" fill="#22C55E"/><path d="M13 15h5" stroke="#15803D" stroke-width="1.6"/>', 24) + "</span>",
+    estado: '<span class="doc-ico">' + svg2('<path d="M6.5 2.8h7.8L18 6.5v14.7H6.5z" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/><path d="M14 2.8V7h4" stroke="#15803D" stroke-width="1.6"/><path d="M9 11h6M9 14h6M9 17h3.5" stroke="#22C55E" stroke-width="1.7"/>', 24) + "</span>"
+  };
+
   /* ---------- shell ---------- */
   var NAV = [
     { route: "#/inicio", label: "Inicio", icon: "home" },
@@ -318,9 +340,9 @@
     }
 
     html += '<div class="stat-cards">' +
-      '<div class="card stat"><div class="ic">' + ic("dollar", 20) + '</div><span class="chip">' + user.ops.length + ' OPS</span><div class="lbl">TOTAL OPERADO</div><div class="val">' + IC.money(total) + "</div></div>" +
-      '<div class="card stat"><div class="ic blue">' + ic("check", 20) + '</div><div class="lbl">COMPLETADAS</div><div class="val">' + completed + "</div></div>" +
-      '<div class="card stat"><div class="ic amber">' + ic("clock", 20) + '</div><div class="lbl">OPS. ACTIVAS</div><div class="val">' + active + "</div></div></div>";
+      '<div class="card stat"><div class="ic">' + STAT_ICO.total + '</div><span class="chip">' + user.ops.length + ' OPS</span><div class="lbl">TOTAL OPERADO</div><div class="val">' + IC.money(total) + "</div></div>" +
+      '<div class="card stat"><div class="ic blue">' + STAT_ICO.completadas + '</div><div class="lbl">COMPLETADAS</div><div class="val">' + completed + "</div></div>" +
+      '<div class="card stat"><div class="ic amber">' + STAT_ICO.activas + '</div><div class="lbl">OPS. ACTIVAS</div><div class="val">' + active + "</div></div></div>";
 
     html += '<div class="dash-grid"><div class="card"><div class="card-h"><div><h3>Operaciones recientes</h3><p>Historial de tus últimas transacciones</p></div><a href="#/historial" class="small text-green">Ver todas ›</a></div>' +
       (recent.length ? '<div class="list">' + recent.map(opRow).join("") + "</div>" : emptyState("swap", "Sin operaciones todavía", "Realiza tu primera operación y aparecerá aquí", '<a href="#/operacion" class="btn btn-primary btn-sm">' + ic("plus", 14) + " Nueva operación</a>")) + "</div>" +
@@ -430,13 +452,17 @@
     var state = { bank: "", brand: (P.cardBrands || [])[0] || "Visa", last4: "", holder: "", payDay: "", primary: user.cards.length === 0, front: null, back: null };
     var html = '<div class="wizard" style="max-width:1000px"><div class="page-h"><div class="left"><a href="#/tarjetas" class="icon-btn">' + ic("left", 16) + '</a><div><h2>Agregar Tarjeta de Crédito</h2><p>Registra una nueva tarjeta de crédito</p></div></div><button class="btn btn-soft btn-sm" id="howBtn">❓ ¿Cómo lleno esto?</button></div>' +
       '<div class="card"><div class="grid-2" style="gap:28px"><div>' +
-      '<b class="small" style="letter-spacing:.08em">FOTO DEL LADO FRONTAL DE LA TARJETA</b>' +
-      '<div class="note amber mt-8">' + ic("info", 16) + "<div>Si tu tarjeta no tiene tu nombre impreso como titular, adjunta también un <b>estado de cuenta</b> o el contrato para validar la titularidad.</div></div>" +
-      '<div class="calc mt-16"><b class="small">Antes de tomar la foto:</b><div class="small mt-8">✔ Deja visibles solo tus nombres y los últimos 4 dígitos.</div><div class="small">✔ Con nuestro editor puedes <b>tapar los datos sensibles</b> directamente en la foto.</div></div>' +
-      '<div class="cc mt-16" id="ccPreview"></div>' +
-      '<div class="legend"><div class="r"><i></i><b>Rojo:</b> tápalo, no debe verse en la foto.</div><div class="g"><i></i><b>Verde:</b> déjalo visible en la foto.</div></div>' +
-      '<div class="mt-16" id="frontWrap">' + dropzoneHTML("dzFront", "Sube o toma la foto frontal", "Luego podrás tapar los datos sensibles", "environment") + "</div>" +
+      /* una sola foto: el frente de la tarjeta O el estado de cuenta */
+      '<b class="small" style="letter-spacing:.08em">FOTO PARA VALIDAR TU TARJETA</b>' +
+      '<p class="small text-muted mt-8">Sube <b>una</b> de estas dos opciones:</p>' +
+      '<div class="doc-opciones" role="radiogroup" aria-label="Qué vas a subir">' +
+        '<label class="doc-op"><input type="radio" name="docTipo" value="tarjeta" checked>' + DOC_ICO.tarjeta + '<span><b>Foto de tu tarjeta</b><small>Solo el lado de adelante</small></span></label>' +
+        '<label class="doc-op"><input type="radio" name="docTipo" value="estado">' + DOC_ICO.estado + '<span><b>Estado de cuenta</b><small>Foto o captura de tu banco</small></span></label>' +
+      "</div>" +
+      '<ol class="doc-pasos" id="docPasos"></ol>' +
+      '<div class="mt-16" id="frontWrap">' + dropzoneHTML("dzFront", "Sube o toma la foto", "JPG o PNG, desde tu celular o computadora", "environment") + "</div>" +
       '<div class="dz-actions"><button type="button" class="btn btn-sm btn-soft" id="camFront">' + ic("camera", 14) + " Usar cámara</button></div>" +
+      '<p class="small text-muted mt-8">🔒 Nunca te pediremos el CVV ni la clave de tu tarjeta.</p>' +
       "</div><div>" +
       '<div class="field"><label>Banco</label><div class="bank-select" id="bankSel">' + banks.map(function (b) { return '<div class="bank-opt" data-bank="' + esc(b.name) + '">' + bankDot(b.name) + esc(b.name) + "</div>"; }).join("") + "</div></div>" +
       '<div class="grid-2"><div class="field"><label>Marca</label><select id="brand">' + (P.cardBrands || []).map(function (b) { return "<option>" + esc(b) + "</option>"; }).join("") + '</select></div><div class="field"><label>Últimos 4 dígitos</label><input id="last4" inputmode="numeric" maxlength="4" placeholder="Ej. 4598"><span class="hint">Solo los últimos 4</span></div></div>' +
@@ -444,17 +470,38 @@
       '<div class="field"><label>Día de pago</label><input id="payDay" inputmode="numeric" maxlength="2" placeholder="Ej. 15"><span class="hint">Día del mes en que vence el pago</span></div>' +
       '<label class="check"><input type="checkbox" id="primary"' + (state.primary ? " checked" : "") + '> Usar como tarjeta de crédito principal</label>' +
       '<button class="btn btn-primary btn-block btn-lg mt-24" id="saveCard" disabled>Registrar Tarjeta de Crédito</button>' +
-      '<hr style="border:none;border-top:1px solid var(--line);margin:26px 0">' +
-      '<b class="small" style="letter-spacing:.08em">FOTO DEL LADO POSTERIOR (opcional)</b><div class="mt-8" id="backWrap">' + dropzoneHTML("dzBack", "O sube la foto posterior", "Tapa el CVV con el editor", "environment") + "</div>" +
+      '<p class="small text-muted mt-8" id="faltaCard"></p>' +
       "</div></div></div>" +
       '<div class="note blue mt-16">' + ic("info", 18) + "<div><b>Ten en cuenta:</b> verificamos tarjetas en horario de " + esc(P.verificationHours || "oficina") + ". Fuera de ese horario, se verifica el siguiente día hábil.</div></div></div>";
 
     return { title: "Mis Tarjetas", html: html, mount: function (el) {
-      var cc = el.querySelector("#ccPreview");
-      function renderCC() {
-        cc.innerHTML = '<div class="bank">' + (state.bank ? esc(state.bank).toUpperCase() : "TU BANCO") + '</div><div class="chipc"></div><div class="num"><i>••••</i><i>••••</i><i>••••</i><i class="ok">' + (state.last4 ? esc(state.last4) : "•598") + '</i></div><div class="meta"><span>VENC<i>••/••</i></span><span>CVV<i>•••</i></span></div><div class="holder">' + (state.holder ? esc(state.holder).toUpperCase() : "NOMBRE DEL TITULAR") + "</div>";
+      /* instrucciones cortas según lo que eligió subir */
+      var PASOS = {
+        tarjeta: ["Toma la foto del <b>frente</b> de tu tarjeta.",
+                  "En el siguiente paso, <b>tapa los números con el dedo</b>. Deja visibles tu nombre y los últimos 4 dígitos.",
+                  "Toca <b>Listo</b> y registra tu tarjeta."],
+        estado: ["Toma una foto o captura de tu <b>estado de cuenta</b>.",
+                 "Que se vean <b>tu nombre, tu banco</b> y los últimos 4 dígitos de la tarjeta.",
+                 "Si aparece el número completo, tápalo en el siguiente paso y toca <b>Listo</b>."]
+      };
+      state.docType = "tarjeta";
+      function renderPasos() {
+        el.querySelector("#docPasos").innerHTML = PASOS[state.docType].map(function (t) { return "<li>" + t + "</li>"; }).join("");
       }
-      function validate() { el.querySelector("#saveCard").disabled = !(state.bank && /^\d{4}$/.test(state.last4) && state.holder.trim().length > 2 && state.front); }
+      el.querySelectorAll('input[name="docTipo"]').forEach(function (r) {
+        r.addEventListener("change", function () { state.docType = this.value; renderPasos(); });
+      });
+      renderPasos();
+      function renderCC() {}
+      function validate() {
+        var falta = [];
+        if (!state.bank) falta.push("elige tu banco");
+        if (!/^\d{4}$/.test(state.last4)) falta.push("escribe los últimos 4 dígitos");
+        if (state.holder.trim().length <= 2) falta.push("escribe el nombre del titular");
+        if (!state.front) falta.push("sube la foto");
+        el.querySelector("#saveCard").disabled = falta.length > 0;
+        el.querySelector("#faltaCard").textContent = falta.length ? "Para continuar: " + falta.join(", ") + "." : "";
+      }
       el.querySelectorAll(".bank-opt").forEach(function (b) { b.addEventListener("click", function () { el.querySelectorAll(".bank-opt").forEach(function (x) { x.classList.remove("active"); }); b.classList.add("active"); state.bank = b.dataset.bank; renderCC(); validate(); }); });
       el.querySelector("#brand").addEventListener("change", function () { state.brand = this.value; });
       el.querySelector("#last4").addEventListener("input", function () { this.value = this.value.replace(/\D/g, "").slice(0, 4); state.last4 = this.value; renderCC(); validate(); });
@@ -476,18 +523,18 @@
         fresh();
         return { open: function (data) { maskEditor(wrap, data, function (masked) { state[key] = masked; showDone(masked); validate(); }, fresh); } };
       }
-      var front = setupPhoto("front", "frontWrap", "dzFront", "Sube o toma la foto frontal", "Luego podrás tapar los datos sensibles");
-      setupPhoto("back", "backWrap", "dzBack", "O sube la foto posterior", "Tapa el CVV con el editor");
+      var front = setupPhoto("front", "frontWrap", "dzFront", "Sube o toma la foto", "JPG o PNG, desde tu celular o computadora");
       el.querySelector("#camFront").addEventListener("click", function () { openCamera("environment", "rect", front.open); });
+      validate();
 
       el.querySelector("#howBtn").addEventListener("click", function () {
-        IC.modal({ title: "¿Cómo registro mi tarjeta?", html: "<ol style='padding-left:18px;font-size:.9rem;line-height:1.7'><li>Elige tu banco y escribe los <b>últimos 4 dígitos</b>.</li><li>Sube la foto frontal de la tarjeta.</li><li>En el editor, <b>arrastra sobre los números</b> para taparlos (deja visible tu nombre y los últimos 4).</li><li>Presiona <b>Listo</b> y luego <b>Registrar</b>.</li></ol><p class='small mt-8'>Nunca te pediremos el CVV ni tu clave.</p>" });
+        IC.modal({ title: "¿Cómo registro mi tarjeta?", html: "<ol style='padding-left:18px;font-size:.9rem;line-height:1.7'><li>Elige tu banco y escribe los <b>últimos 4 dígitos</b>.</li><li>Sube <b>una</b> foto: el frente de tu tarjeta <b>o</b> tu estado de cuenta.</li><li>Tapa los números con el dedo: deja visibles tu nombre y los últimos 4 dígitos.</li><li>Toca <b>Listo</b> y luego <b>Registrar</b>.</li></ol><p class='small mt-8'>Nunca te pediremos el CVV ni la clave de tu tarjeta.</p>" });
       });
       el.querySelector("#saveCard").addEventListener("click", async function () {
         var btn = this; btn.disabled = true; btn.textContent = "Registrando...";
         var nueva = { id: IC.uid("c"), bank: state.bank, brand: state.brand, last4: state.last4,
                       holder: state.holder.trim(), payDay: state.payDay, primary: state.primary,
-                      photoFront: state.front, photoBack: state.back, status: "review", createdAt: Date.now() };
+                      photoFront: state.front, photoBack: null, docType: state.docType, status: "review", createdAt: Date.now() };
         try {
           if (NUBE) { user = await IC.cloud.agregarTarjeta(nueva, user); }
           else {

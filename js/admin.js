@@ -1010,7 +1010,7 @@
     var p = (item.cliente && item.cliente.perfil) || {}, f = item.fila;
     var fotos = item.clase === "identidad"
       ? [["DNI — frente", f.dni_frontal, f.tiene_dni_frontal], ["DNI — reverso", f.dni_posterior, f.tiene_dni_posterior], ["Selfie", f.selfie, f.tiene_selfie]]
-      : [["Tarjeta — frente", f.foto_frontal, f.tiene_foto_frontal], ["Tarjeta — reverso", f.foto_posterior, f.tiene_foto_posterior]];
+      : [["Tarjeta (frente) o estado de cuenta", f.foto_frontal, f.tiene_foto_frontal]].concat(f.foto_posterior || f.tiene_foto_posterior ? [["Tarjeta — reverso", f.foto_posterior, f.tiene_foto_posterior]] : []);
     return '<article class="ad-card"><header class="ad-card-head"><div>' +
         '<span class="ad-tipo ' + (item.clase === "identidad" ? "t-id" : "t-card") + '">' + (item.clase === "identidad" ? "Identidad" : "Tarjeta") + "</span>" +
         "<h3>" + esc(nombre(item.cliente)) + "</h3>" +
@@ -1138,7 +1138,7 @@
                  : '<p class="ad-sub">Todavía no subió su DNI ni su selfie.</p>') +
             '<p class="ad-bloque-tit">Tarjetas</p>' +
             (c.tarjetas.length ? c.tarjetas.map(function (t) {
-              var fs = [["Frente", t.foto_frontal], ["Reverso", t.foto_posterior]].filter(function (x) { return x[1]; });
+              var fs = [["Frente o estado de cuenta", t.foto_frontal], ["Reverso", t.foto_posterior]].filter(function (x) { return x[1]; });
               return '<div class="ad-sub-bloque"><p class="ad-detalle" style="margin:0"><b>' + esc(t.banco || "") + "</b> " + esc(t.marca || "") + " ····" + esc(t.ultimos4 || "") + " · Titular: " + esc(t.titular || "—") + (t.principal ? " · principal" : "") + " " + chip(t.estado) + "</p>" +
                 (verFotos() && fs.length ? fotosHTML(fs) : "") + "</div>";
             }).join("") : '<p class="ad-sub">Todavía no registró ninguna tarjeta.</p>') +

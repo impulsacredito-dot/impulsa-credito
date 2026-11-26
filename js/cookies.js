@@ -26,6 +26,7 @@
     });
     aplicarGoogle(v);
     aplicarClarity(v);
+    aplicarMeta(v);
     try { document.dispatchEvent(new CustomEvent("ic:cookies", { detail: v })); } catch (e) {}
     return v;
   }
@@ -110,14 +111,48 @@
     clarityEstado.cargado = true;
   }
 
+  /* ---------- Píxel de Meta (Facebook e Instagram), directo ----------
+     · SOLO si la persona acepta "Marketing".
+     · autoConfig apagado: no lee formularios ni botones; solo recibe la
+       visita y las acciones clave que le mandamos (sin datos personales).
+     · Si retira el permiso, se le avisa a Meta al instante. */
+  var metaEstado = { cargado: false };
+  var META_ACCION = { registro_completado: "CompleteRegistration", formulario_whatsapp: "Lead",
+                      whatsapp_clic: "Contact", operacion_creada: "SubmitApplication" };
+  function idMeta() {
+    var a = (window.SITE_CONFIG && window.SITE_CONFIG.analytics) || {};
+    return /^\d{10,20}$/.test(String(a.metaPixelId || "")) ? String(a.metaPixelId) : "";
+  }
+  function aplicarMeta(v) {
+    var id = idMeta();
+    if (!id || !paginaPermitida()) return;
+    if (metaEstado.cargado) { window.fbq("consent", v.marketing ? "grant" : "revoke"); return; }
+    if (!v.marketing) return;
+    if (!window.fbq) {
+      var n = window.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!window._fbq) window._fbq = n;
+      n.push = n; n.loaded = true; n.version = "2.0"; n.queue = [];
+    }
+    window.fbq("set", "autoConfig", false, id);
+    window.fbq("init", id);
+    window.fbq("track", "PageView");
+    cargarScript("https://connect.facebook.net/en_US/fbevents.js");
+    metaEstado.cargado = true;
+  }
+
   /* registra una acción importante (sin datos personales), solo si la
      persona sigue aceptando:
      · a Analytics con su nombre (registro_completado, …);
      · a Tag Manager como "ic.<nombre>", para el píxel de Meta. */
   function evento(nombre, datos) {
-    if (!google.listo || !/^[a-z_]{3,40}$/.test(nombre)) return;
+    if (!/^[a-z_]{3,40}$/.test(nombre)) return;
     var v = leer() || {}, p = {}, k;
     for (k in (datos || {})) if (typeof datos[k] === "number" || typeof datos[k] === "string") p[k] = datos[k];
+    if (metaEstado.cargado && v.marketing && META_ACCION[nombre]) {
+      if (nombre === "operacion_creada" && p.value > 0) window.fbq("track", META_ACCION[nombre], { value: p.value, currency: "PEN" });
+      else window.fbq("track", META_ACCION[nombre]);
+    }
+    if (!google.listo) return;
     if (google.ga4 && v.analitica) window.gtag("event", nombre, p);
     if (google.gtm && v.marketing) {
       var o = { event: "ic." + nombre };
@@ -243,7 +278,7 @@
     if (wa) evento("whatsapp_clic", { ubicacion: location.pathname });
   });
 
-  function iniciar() { var v = leer(); if (v) { aplicarGoogle(v); aplicarClarity(v); } else abrir(false); }
+  function iniciar() { var v = leer(); if (v) { aplicarGoogle(v); aplicarClarity(v); aplicarMeta(v); } else abrir(false); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
   else iniciar();
 })();
