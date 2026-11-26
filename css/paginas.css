@@ -29,7 +29,7 @@
 .ph-trust{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;color:#b8c8bf;font-size:.86rem;font-weight:600;}
 .ph-trust li{display:flex;align-items:center;gap:8px;}
 .ph-trust svg{color:var(--green);flex:none;}
-.ph-foto{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/3;max-width:100%;
+.ph-foto{position:relative;margin:0;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/3;max-width:100%;
   box-shadow:0 30px 60px -30px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08);}
 .ph-foto img{width:100%;height:100%;object-fit:cover;}
 .ph-foto figcaption{
@@ -139,6 +139,71 @@
 
 .relacionadas{background:var(--surface);}
 
+/* ---------- ilustraciones tipo sticker ---------- */
+.sticker{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:30px;
+  border:1px solid rgba(15,21,18,.06);box-shadow:0 18px 40px -18px rgba(0,0,0,.45);}
+.sticker img{width:76%;height:76%;}
+
+/* cabecera de Asesoría: foto con etiquetas flotantes */
+.ph-visual{position:relative;}
+.ph-chip{
+  position:absolute;z-index:2;display:flex;align-items:center;gap:10px;
+  background:#fff;color:var(--text);border-radius:16px;padding:10px 16px 10px 10px;
+  box-shadow:0 20px 40px -18px rgba(0,0,0,.6);border:1px solid rgba(15,21,18,.06);
+  font-size:.84rem;font-weight:800;line-height:1.25;white-space:nowrap;
+  animation:floaty 6s ease-in-out infinite;
+}
+.ph-chip img{width:38px;height:38px;flex:none;border-radius:11px;background:#f0fbf4;padding:4px;}
+.ph-chip small{display:block;font-size:.72rem;font-weight:600;color:var(--text-muted);}
+.ph-chip.c1{left:-26px;top:28px;}
+.ph-chip.c2{right:-20px;top:46%;animation-delay:1.6s;}
+
+/* tipos de préstamo: ilustración */
+.tipo-ilus{width:76px;height:76px;border-radius:22px;background:linear-gradient(135deg,#f0fbf4,#e3f6ea);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;transition:transform .3s var(--ease);}
+.tipo-ilus img{width:58px;height:58px;}
+.tipo-card:hover .tipo-ilus{transform:translateY(-2px) rotate(-3deg);}
+
+/* pasos: ícono */
+.step-ilus{width:54px;height:54px;margin-bottom:14px;position:relative;}
+
+/* "Lo que revisamos": foto con sello */
+.revision-foto{position:relative;margin:30px 0 0;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:16/11;max-width:100%;
+  box-shadow:0 24px 50px -30px rgba(11,15,13,.45);}
+.revision-foto img{width:100%;height:100%;object-fit:cover;}
+.revision-sello{position:absolute;right:16px;bottom:16px;width:78px;height:78px;border-radius:22px;}
+
+/* tarjetas de guías: ilustración arriba */
+.guia-ilus{display:flex;align-items:center;justify-content:center;height:132px;margin:-26px -24px 6px;
+  border-radius:var(--radius-md) var(--radius-md) 0 0;background:linear-gradient(135deg,#f0fbf4,#e3f6ea);border-bottom:1px solid var(--border);}
+.guia-ilus img{width:96px;height:96px;transition:transform .3s var(--ease);}
+.guia-card:hover .guia-ilus img{transform:translateY(-3px) rotate(-3deg);}
+
+/* cabecera de Guías: grupo de stickers */
+.ph-stickers{position:relative;height:290px;}
+.ph-stickers .sticker{position:absolute;}
+.ph-stickers .s1{width:150px;height:150px;left:6%;top:30px;transform:rotate(-8deg);}
+.ph-stickers .s2{width:176px;height:176px;left:40%;top:0;transform:rotate(6deg);}
+.ph-stickers .s3{width:132px;height:132px;left:26%;top:150px;transform:rotate(4deg);}
+.ph-stickers .s4{width:112px;height:112px;left:70%;top:168px;transform:rotate(-5deg);}
+
+/* cabecera de cada guía: sticker del tema */
+.articulo-hero .ph-grid{grid-template-columns:minmax(0,1fr) auto;}
+.articulo-sticker{width:168px;height:168px;transform:rotate(-6deg);}
+
+/* página 404 */
+.pagina-404{min-height:72vh;display:flex;align-items:center;}
+.pagina-404 .ph-grid{grid-template-columns:minmax(0,1fr) auto;width:100%;}
+.sticker-404{width:220px;height:220px;transform:rotate(-8deg);}
+.enlaces-404{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;}
+.enlaces-404 a{color:#cfe0d6;font-weight:600;font-size:.92rem;text-decoration:underline;text-underline-offset:3px;}
+.enlaces-404 a:hover{color:var(--green-light);}
+
+@media (prefers-reduced-motion:reduce){
+  .ph-chip{animation:none;}
+  .tipo-ilus,.guia-ilus img{transition:none;}
+}
+
 /* ---------- responsive ---------- */
 @media (max-width:1100px){
   .tipos-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -150,8 +215,17 @@
   .ph-grid,.revision-grid{grid-template-columns:1fr;gap:36px;}
   .guias-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ph-foto{aspect-ratio:16/10;}
+  .ph-chip.c1{left:12px;top:12px;}
+  .ph-chip.c2{right:12px;top:auto;bottom:92px;}
+  .ph-stickers{display:none;}
+  .articulo-hero .ph-grid,.pagina-404 .ph-grid{grid-template-columns:minmax(0,1fr);}
+  .articulo-sticker{display:none;}
+  .sticker-404{width:140px;height:140px;order:-1;}
 }
 @media (max-width:720px){
+  .ph-chip{font-size:.76rem;padding:8px 12px 8px 8px;}
+  .ph-chip img{width:32px;height:32px;}
+  .ph-chip.c2{display:none;}
   .page-hero{padding:110px 0 56px;}
   .articulo-hero{padding:104px 0 40px;}
   .tipos-grid,.guias-grid{grid-template-columns:1fr;}

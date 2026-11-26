@@ -88,7 +88,7 @@ var SITE_CONFIG = {
     // Microsoft Clarity (mapas de calor y grabaciones con los textos ocultos).
     // Pega aquí el ID del proyecto (clarity.microsoft.com → Configuración).
     // Se carga solo con "Análisis" aceptado y nunca en el área del cliente.
-    clarityId: ""
+    clarityId: "zjvyvnle0k"
   },
 
   /* ---------------------------------------------------------------

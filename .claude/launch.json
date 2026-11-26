@@ -4,7 +4,7 @@
     {
       "name": "impulsa-credito",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5173"],
+      "runtimeArgs": [".claude/servidor.py", "5173"],
       "port": 5173
     }
   ]
