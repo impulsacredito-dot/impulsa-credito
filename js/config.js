@@ -70,21 +70,21 @@ var SITE_CONFIG = {
   },
 
   /* ---------------------------------------------------------------
-     GOOGLE ANALYTICS (y Tag Manager para píxeles más adelante)
-     · Analytics se carga SOLO si el visitante acepta "Análisis" en el
-       aviso de cookies (js/cookies.js). Tag Manager, con "Análisis"
-       o "Marketing".
-     · Nunca en el panel /admin ni en /recuperar (datos privados).
-     · ga4Id: el ID de medición de Analytics (G-...). Ya envía las
-       visitas y las acciones clave; no hace falta configurar nada más.
-     · gtmId: déjalo vacío hasta que quieras agregar píxeles (Meta,
-       TikTok) en Tag Manager. Entonces pon "GTM-N4STXGGZ" y NO
-       crees ahí una etiqueta de Analytics (se contaría doble).
+     GOOGLE ANALYTICS Y TAG MANAGER (píxel de Meta)
+     · ga4Id: Google Analytics. Se carga SOLO si el visitante acepta
+       "Análisis" en el aviso de cookies (js/cookies.js). Ya envía las
+       visitas y las acciones clave; no hay que configurar nada más.
+     · gtmId: Google Tag Manager, donde vive el píxel de Meta. Se carga
+       SOLO si el visitante acepta "Marketing". En Tag Manager NO crees
+       una etiqueta de Analytics: se contaría doble.
+       Las acciones clave le llegan como ic.registro_completado,
+       ic.formulario_whatsapp, ic.whatsapp_clic e ic.operacion_creada.
+     · Nunca se cargan en el panel /admin ni en /recuperar.
      Para apagar algo, deja su ID en "".
   --------------------------------------------------------------- */
   analytics: {
     ga4Id: "G-NPQG433B0C",
-    gtmId: ""
+    gtmId: "GTM-N4STXGGZ"
   },
 
   /* ---------------------------------------------------------------
