@@ -174,6 +174,7 @@
       }
       if (!res.ok) { btn.disabled = false; btn.textContent = "Crear mi cuenta"; IC.toast(res.error, "err"); return; }
       IC.confetti();
+      if (window.ICCookies) ICCookies.evento("registro_completado");
       btn.textContent = "¡Cuenta creada! Entrando...";
       setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 1100);
     });
@@ -196,6 +197,7 @@
         ? await IC.cloud.login(doc.value, pass.value)
         : await IC.auth.login(doc.value, pass.value);
       if (!res.ok) { btn.disabled = false; btn.textContent = "INGRESAR"; err.textContent = res.error; err.classList.remove("hidden"); return; }
+      if (window.ICCookies) ICCookies.evento("inicio_sesion");
       btn.textContent = "¡Bienvenido! Entrando...";
       setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 500);
     });

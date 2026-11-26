@@ -140,6 +140,7 @@
       aviso.textContent = "No pudimos enviarte la copia por correo en este momento. Guarda el código o imprime esta constancia.";
     });
     IC.confetti();
+    if (window.ICCookies) ICCookies.evento("reclamo_enviado");
     res.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 })();

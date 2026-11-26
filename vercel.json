@@ -7,8 +7,8 @@
       "destination": "https://impulsacredito.com/$1",
       "permanent": true
     },
-    { "source": "/ig", "destination": "/enlaces?src=ig", "permanent": false },
-    { "source": "/tt", "destination": "/enlaces?src=tt", "permanent": false }
+    { "source": "/ig", "destination": "/enlaces?src=ig&utm_source=instagram&utm_medium=social&utm_campaign=bio", "permanent": false },
+    { "source": "/tt", "destination": "/enlaces?src=tt&utm_source=tiktok&utm_medium=social&utm_campaign=bio", "permanent": false }
   ],
   "headers": [
     {

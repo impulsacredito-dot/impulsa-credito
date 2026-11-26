@@ -4,8 +4,9 @@
    · Necesarias (siempre activas): mantener la sesión, recordar
      preferencias y esta misma elección.
    · Análisis y Marketing: SOLO se activan si la persona las acepta.
-     Hoy la web no usa ninguna. Cuando agregues Google Analytics o el
-     píxel de Meta, cárgalos así para respetar la elección:
+     Google Tag Manager (config.js → analytics.gtmId) ya se carga así,
+     y desde él se manejan Google Analytics y los píxeles. Para algo
+     que quieras cargar aquí mismo, hazlo así:
 
        ICCookies.cuandoAcepte("analitica", function () { ...cargar GA... });
        ICCookies.cuandoAcepte("marketing", function () { ...cargar píxel... });
@@ -24,8 +25,52 @@
     ["analitica", "marketing"].forEach(function (k) {
       if (v[k]) { esperando[k].forEach(function (fn) { try { fn(); } catch (e) {} }); esperando[k] = []; }
     });
+    aplicarGoogle(v);
     try { document.dispatchEvent(new CustomEvent("ic:cookies", { detail: v })); } catch (e) {}
     return v;
+  }
+
+  /* ---------- Google Tag Manager (Analytics y píxeles) ----------
+     Se carga SOLO después de que la persona acepta "Análisis" o
+     "Marketing", con el modo de consentimiento de Google: cada etiqueta
+     sabe qué se aceptó. Si luego cambia su elección, se le avisa a
+     Google al instante. Nunca en páginas con datos privados. */
+  var google = { cargado: false };
+  function idGoogle() {
+    var a = (window.SITE_CONFIG && window.SITE_CONFIG.analytics) || {};
+    return /^GTM-[A-Z0-9]{4,12}$/.test(a.gtmId || "") ? a.gtmId : "";
+  }
+  function paginaPermitida() {
+    if (/\/(admin|recuperar)(\.html)?\/?$/i.test(location.pathname)) return false;
+    // enlaces de recuperación o de acceso: nunca se mandan a nadie
+    if (/token|type=recovery|code=/i.test(location.hash + location.search)) return false;
+    return true;
+  }
+  function estadoGoogle(v) {
+    var a = v.analitica ? "granted" : "denied", m = v.marketing ? "granted" : "denied";
+    return { analytics_storage: a, ad_storage: m, ad_user_data: m, ad_personalization: m };
+  }
+  function aplicarGoogle(v) {
+    var id = idGoogle();
+    if (!id || !paginaPermitida()) return;
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) window.gtag = function () { window.dataLayer.push(arguments); };
+    if (google.cargado) { window.gtag("consent", "update", estadoGoogle(v)); return; }
+    if (!v.analitica && !v.marketing) return;
+    window.gtag("consent", "default", estadoGoogle(v));
+    window.gtag("js", new Date());
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(id);
+    document.head.appendChild(s);
+    google.cargado = true;
+  }
+  /* registra una acción importante (sin datos personales) */
+  function evento(nombre, datos) {
+    if (!google.cargado || !/^[a-z_]{3,40}$/.test(nombre)) return;
+    var o = { event: nombre };
+    for (var k in (datos || {})) if (typeof datos[k] === "number" || typeof datos[k] === "string") o[k] = datos[k];
+    window.dataLayer.push(o);
   }
 
   var css =
@@ -77,7 +122,7 @@
       '<div class="ck-detalle" id="ckDetalle"' + (conDetalle ? "" : " hidden") + ">" +
         '<div class="ck-op"><div><b>Necesarias</b><span>Mantienen tu sesión, tus preferencias y esta elección. Siempre activas.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" checked disabled aria-label="Cookies necesarias (siempre activas)"><i></i></label></div>' +
-        '<div class="ck-op"><div><b>Análisis</b><span>Nos dicen qué páginas se visitan para mejorar el sitio. Sin datos que te identifiquen.</span></div>' +
+        '<div class="ck-op"><div><b>Análisis</b><span>Con Google Analytics vemos qué páginas se visitan para mejorar el sitio. Sin tu nombre, DNI ni celular.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" id="ckAnalitica"' + (actual.analitica ? " checked" : "") + ' aria-label="Cookies de análisis"><i></i></label></div>' +
         '<div class="ck-op"><div><b>Marketing</b><span>Permiten mostrarte publicidad de Impulsa Crédito en redes sociales.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" id="ckMarketing"' + (actual.marketing ? " checked" : "") + ' aria-label="Cookies de marketing"><i></i></label></div>' +
@@ -106,15 +151,18 @@
   window.ICCookies = {
     consentimiento: function () { return leer() || { analitica: false, marketing: false }; },
     abrir: function () { abrir(true); },
-    cuandoAcepte: function (tipo, fn) { var v = leer(); if (v && v[tipo]) fn(); else esperando[tipo].push(fn); }
+    cuandoAcepte: function (tipo, fn) { var v = leer(); if (v && v[tipo]) fn(); else esperando[tipo].push(fn); },
+    evento: evento
   };
 
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest('a[href$="#configurar-cookies"]');
-    if (a) { e.preventDefault(); abrir(true); }
+    if (a) { e.preventDefault(); abrir(true); return; }
+    var wa = e.target.closest && e.target.closest('a[href*="wa.me/"]');
+    if (wa) evento("whatsapp_clic", { ubicacion: location.pathname });
   });
 
-  function iniciar() { if (!leer()) abrir(false); }
+  function iniciar() { var v = leer(); if (v) aplicarGoogle(v); else abrir(false); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
   else iniciar();
 })();

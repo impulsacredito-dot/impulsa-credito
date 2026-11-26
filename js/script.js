@@ -816,6 +816,8 @@
       enviando = true;
       setTimeout(function () { enviando = false; }, 3000);
       avisar("¡Listo! Te llevamos a WhatsApp para enviar tu solicitud...", true);
+      // solo el tipo de servicio: nunca el nombre ni el celular
+      if (window.ICCookies) ICCookies.evento("formulario_whatsapp", { tipo: String(type).slice(0, 60) });
 
       window.open(url, "_blank", "noopener");
       applyForm.reset();

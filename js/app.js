@@ -655,6 +655,7 @@
               IC.toast("No se pudo crear la operación. Revisa tu conexión.", "err"); return;
             }
             notify("Operación " + op.code + " creada", "Realiza el pago con tu tarjeta para continuar.");
+            if (window.ICCookies) ICCookies.evento("operacion_creada", { value: Number(op.amount || state.amount) || 0, currency: "PEN" });
             state.op = op; state.step = 2; render(); IC.confetti();
           });
           calc();

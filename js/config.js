@@ -70,6 +70,18 @@ var SITE_CONFIG = {
   },
 
   /* ---------------------------------------------------------------
+     GOOGLE (Tag Manager → Analytics, y más adelante otros píxeles)
+     · Solo se carga si el visitante acepta "Análisis" o "Marketing"
+       en el aviso de cookies (js/cookies.js).
+     · Nunca en el panel /admin ni en /recuperar (datos privados).
+     · Lo que se mide se configura en tagmanager.google.com, no aquí.
+     Para desactivarlo, deja gtmId en "".
+  --------------------------------------------------------------- */
+  analytics: {
+    gtmId: "GTM-N4STXGGZ"
+  },
+
+  /* ---------------------------------------------------------------
      3. COLORES DEL SITIO
      Cambia estos valores (formato #rrggbb) y todo el sitio se
      actualiza automáticamente: botones, fondos, acentos, etc.
