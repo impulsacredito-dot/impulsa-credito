@@ -4,9 +4,8 @@
    · Necesarias (siempre activas): mantener la sesión, recordar
      preferencias y esta misma elección.
    · Análisis y Marketing: SOLO se activan si la persona las acepta.
-     Google Tag Manager (config.js → analytics.gtmId) ya se carga así,
-     y desde él se manejan Google Analytics y los píxeles. Para algo
-     que quieras cargar aquí mismo, hazlo así:
+     Google Analytics y Tag Manager (config.js → analytics) ya se
+     cargan así. Para otra cosa que quieras cargar aquí, hazlo así:
 
        ICCookies.cuandoAcepte("analitica", function () { ...cargar GA... });
        ICCookies.cuandoAcepte("marketing", function () { ...cargar píxel... });
@@ -30,15 +29,24 @@
     return v;
   }
 
-  /* ---------- Google Tag Manager (Analytics y píxeles) ----------
-     Se carga SOLO después de que la persona acepta "Análisis" o
-     "Marketing", con el modo de consentimiento de Google: cada etiqueta
-     sabe qué se aceptó. Si luego cambia su elección, se le avisa a
-     Google al instante. Nunca en páginas con datos privados. */
-  var google = { cargado: false };
-  function idGoogle() {
+  /* ---------- Google Analytics y Tag Manager ----------
+     Analytics se carga SOLO si la persona acepta "Análisis"; Tag
+     Manager (para píxeles), si acepta "Análisis" o "Marketing". Usa el
+     modo de consentimiento de Google: cada etiqueta sabe qué se aceptó
+     y, si luego cambia su elección, se le avisa a Google al instante.
+     Nunca en páginas con datos privados. */
+  var google = { listo: false, ga4: false, gtm: false };
+  function idsGoogle() {
     var a = (window.SITE_CONFIG && window.SITE_CONFIG.analytics) || {};
-    return /^GTM-[A-Z0-9]{4,12}$/.test(a.gtmId || "") ? a.gtmId : "";
+    return {
+      ga4: /^G-[A-Z0-9]{6,14}$/.test(a.ga4Id || "") ? a.ga4Id : "",
+      gtm: /^GTM-[A-Z0-9]{4,12}$/.test(a.gtmId || "") ? a.gtmId : ""
+    };
+  }
+  function cargarScript(src) {
+    var s = document.createElement("script");
+    s.async = true; s.src = src;
+    document.head.appendChild(s);
   }
   function paginaPermitida() {
     if (/\/(admin|recuperar)(\.html)?\/?$/i.test(location.pathname)) return false;
@@ -51,26 +59,37 @@
     return { analytics_storage: a, ad_storage: m, ad_user_data: m, ad_personalization: m };
   }
   function aplicarGoogle(v) {
-    var id = idGoogle();
-    if (!id || !paginaPermitida()) return;
+    var id = idsGoogle();
+    if ((!id.ga4 && !id.gtm) || !paginaPermitida()) return;
+    var quiereGa4 = !!(id.ga4 && v.analitica), quiereGtm = !!(id.gtm && (v.analitica || v.marketing));
     window.dataLayer = window.dataLayer || [];
     if (!window.gtag) window.gtag = function () { window.dataLayer.push(arguments); };
-    if (google.cargado) { window.gtag("consent", "update", estadoGoogle(v)); return; }
-    if (!v.analitica && !v.marketing) return;
-    window.gtag("consent", "default", estadoGoogle(v));
-    window.gtag("js", new Date());
-    var s = document.createElement("script");
-    s.async = true;
-    s.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(id);
-    document.head.appendChild(s);
-    google.cargado = true;
+    if (google.listo) {
+      window.gtag("consent", "update", estadoGoogle(v));
+    } else {
+      if (!quiereGa4 && !quiereGtm) return;
+      window.gtag("consent", "default", estadoGoogle(v));
+      window.gtag("js", new Date());
+      google.listo = true;
+    }
+    if (quiereGa4 && !google.ga4) {
+      window.gtag("config", id.ga4);
+      cargarScript("https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id.ga4));
+      google.ga4 = true;
+    }
+    if (quiereGtm && !google.gtm) {
+      cargarScript("https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(id.gtm));
+      google.gtm = true;
+    }
   }
-  /* registra una acción importante (sin datos personales) */
+  /* registra una acción importante (sin datos personales), solo si la
+     persona sigue aceptando */
   function evento(nombre, datos) {
-    if (!google.cargado || !/^[a-z_]{3,40}$/.test(nombre)) return;
-    var o = { event: nombre };
-    for (var k in (datos || {})) if (typeof datos[k] === "number" || typeof datos[k] === "string") o[k] = datos[k];
-    window.dataLayer.push(o);
+    if (!google.listo || !/^[a-z_]{3,40}$/.test(nombre)) return;
+    var v = leer() || {}, p = {};
+    for (var k in (datos || {})) if (typeof datos[k] === "number" || typeof datos[k] === "string") p[k] = datos[k];
+    if (google.ga4 && v.analitica) { window.gtag("event", nombre, p); return; }
+    if (google.gtm && (v.analitica || v.marketing)) { p.event = nombre; window.dataLayer.push(p); }
   }
 
   var css =
