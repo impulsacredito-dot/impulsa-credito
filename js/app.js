@@ -118,7 +118,7 @@
     });
   }
   document.getElementById("logoutBtn").addEventListener("click", function () {
-    IC.modal({ title: "Cerrar sesión", text: "¿Seguro que deseas salir de tu cuenta?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Salir", cls: "btn-dark", onClick: async function () { if (NUBE) { await IC.cloud.logout(); } else { IC.auth.logout(); } window.location.href = P.loginHref || "login.html"; } }] });
+    IC.modal({ title: "Cerrar sesión", text: "¿Seguro que deseas salir de tu cuenta?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Salir", cls: "btn-dark", onClick: async function () { if (NUBE) { await IC.cloud.logout(); } else { IC.auth.logout(); } window.location.href = P.loginHref || "/login"; } }] });
   });
   var backdrop = document.getElementById("sidebarBackdrop");
   function setMenu(open) {
@@ -711,7 +711,7 @@
           var msg = "Hola Impulsa Crédito, acabo de crear la operación " + op.code + " por " + IC.money(op.amount) + " (" + opTypeLabel(op.type) + "). Tarjeta " + card.bank + " •••• " + card.last4 + ". Quedo atento al link de pago.";
           body.innerHTML = '<div style="text-align:center"><div class="success-anim">' + ic("check", 40) + '</div><h3>¡Operación creada!</h3><p class="text-muted mt-8">Código <b class="code">' + esc(op.code) + '</b> · Estado: ' + statusBadge(op.status) + "</p></div>" +
             '<div class="calc mt-24"><div class="r"><span>Tipo</span><b>' + opTypeLabel(op.type) + '</b></div><div class="r"><span>Tarjeta</span><b>' + esc(card.bank) + " •••• " + esc(card.last4) + '</b></div><div class="r"><span>Cuenta destino</span><b>' + esc(acc.bank) + " · " + esc(acc.number) + '</b></div><div class="r"><span>Monto</span><b>' + IC.money(op.amount) + '</b></div><div class="r"><span>Comisión (' + op.commissionPct + '%)</span><b>- ' + IC.money(op.commission) + '</b></div><div class="r total"><span>Recibes</span><span class="v">' + IC.money(op.net) + "</span></div></div>" +
-            '<div class="note amber mt-16">' + ic("bolt", 18) + "<div><b>Siguiente paso: el cobro a tu tarjeta.</b> Te escribimos por WhatsApp y te enviamos un <b>link de pago seguro</b> para que pagues desde tu celular, sin moverte de casa (también podemos coordinar un POS). Pagas con <b>tu propia tarjeta</b>, como en cualquier compra, y recibes tu comprobante. Apenas se confirme, te depositamos <b>en minutos</b>.</div></div>" +
+            '<div class="note amber mt-16">' + ic("bolt", 18) + "<div><b>Siguiente paso: el cobro a tu tarjeta.</b> Te escribimos por WhatsApp y te enviamos un <b>link de pago seguro</b> para que pagues desde tu celular, sin moverte de casa (también podemos coordinar un POS). Pagas con <b>tu propia tarjeta</b>, como en cualquier compra, y recibes tu comprobante. Apenas se confirme, te depositamos <b>el mismo día</b>.</div></div>" +
             '<div class="wz-actions"><a href="#/operacion/' + op.id + '" class="btn btn-outline-dark">Ver detalle</a><a href="' + IC.waLink(msg) + '" target="_blank" rel="noopener" class="btn btn-primary">' + WA_SVG + " Avisar por WhatsApp</a></div>";
         }
       }
@@ -814,7 +814,7 @@
         IC.toast("Contraseña actualizada"); el.querySelector("#pass0").value = ""; el.querySelector("#pass1").value = "";
       });
       el.querySelector("#deleteAcc").addEventListener("click", function () {
-        IC.modal({ title: "Eliminar cuenta", text: "Se borrarán tus datos, tarjetas, cuentas y operaciones de este dispositivo. ¿Continuar?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Eliminar todo", cls: "btn-danger", onClick: async function () { if (NUBE) { await IC.cloud.logout(); IC.toast("Sesión cerrada. Escríbenos por WhatsApp para borrar definitivamente tus datos."); } else { IC.auth.deleteAccount(); } window.location.href = "index.html"; } }] });
+        IC.modal({ title: "Eliminar cuenta", text: "Se borrarán tus datos, tarjetas, cuentas y operaciones de este dispositivo. ¿Continuar?", actions: [{ label: "Cancelar", cls: "btn-outline-dark" }, { label: "Eliminar todo", cls: "btn-danger", onClick: async function () { if (NUBE) { await IC.cloud.logout(); IC.toast("Sesión cerrada. Escríbenos por WhatsApp para borrar definitivamente tus datos."); } else { IC.auth.deleteAccount(); } window.location.href = "/"; } }] });
       });
     } };
   }
@@ -825,7 +825,7 @@
       var v = document.getElementById("view");
       v.innerHTML = '<div class="empty" style="padding:80px 16px"><div class="ic">' + ic("refresh", 24) + "</div><b>Cargando tu cuenta…</b></div>";
       user = await IC.cloud.init();
-      if (!user) { window.location.href = (P.loginHref || "login.html") + "?next=1"; return; }
+      if (!user) { window.location.href = (P.loginHref || "/login") + "?next=1"; return; }
     } else {
       user = IC.auth.requireSession();
       if (!user) return;

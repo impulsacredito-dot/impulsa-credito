@@ -22,9 +22,9 @@ var SITE_CONFIG = {
      1. INFORMACIÓN GENERAL DEL SITIO (pestaña del navegador, SEO)
   --------------------------------------------------------------- */
   meta: {
-    title: "Impulsa Crédito — Efectiviza tu tarjeta de crédito al instante",
+    title: "Impulsa Crédito — Efectiviza tu tarjeta de crédito el mismo día",
     // máximo ~160 caracteres: Google corta lo que pase de ahí
-    description: "Efectiviza la línea de tu tarjeta de crédito con 1% de comisión y recibe el dinero en tu cuenta en minutos. Además, asesoría gratis para conseguir tu préstamo."
+    description: "Efectiviza la línea de tu tarjeta de crédito con 1% de comisión y recibe el dinero en tu cuenta el mismo día. Además, asesoría gratis para conseguir tu préstamo."
   },
 
   /* ---------------------------------------------------------------
@@ -140,18 +140,18 @@ var SITE_CONFIG = {
   header: {
     whatsappLabel: "Contáctanos",
     loginLabel: "Inicia sesión",
-    loginHref: "login.html",
+    loginHref: "/login",
     ctaLabel: "Regístrate gratis",
-    ctaHref: "registro.html"
+    ctaHref: "/registro"
   },
 
   /* ---------------------------------------------------------------
      5c. PLATAFORMA DE USUARIO (registro, panel, operaciones)
   --------------------------------------------------------------- */
   platform: {
-    loginHref: "login.html",
-    registerHref: "registro.html",
-    appHref: "app.html",
+    loginHref: "/login",
+    registerHref: "/registro",
+    appHref: "/app",
     recoverHref: "recuperar",  // pagina donde el cliente pone su contraseña nueva
     commissionPercent: 1,          // comisión por operación (%)
     minAmount: 100,                // monto mínimo por operación (S/)
@@ -166,10 +166,10 @@ var SITE_CONFIG = {
     // ⏱️ CUÁNTO TARDA EL DEPÓSITO. Se muestra en varios sitios de la web.
     //    Cambia estos dos textos si tu tiempo real es otro: es lo primero
     //    que quiere saber un cliente que está esperando su dinero.
-    depositTime: "en minutos",                    // corto, para etiquetas
-    depositTimeLong: "en minutos, máximo el mismo día hábil",   // largo, para frases
+    depositTime: "el mismo día",                  // corto, para etiquetas
+    depositTimeLong: "el mismo día hábil",       // largo, para frases
 
-    depositMessage: "Apenas confirmamos el cobro, te transferimos el dinero a tu cuenta en minutos (máximo el mismo día hábil). El cobro se hace con TU tarjeta, por POS o link de pago oficial, y recibes comprobante.",
+    depositMessage: "Apenas confirmamos el cobro, te transferimos el dinero a tu cuenta el mismo día hábil. El cobro se hace con TU tarjeta, por POS o link de pago oficial, y recibes comprobante.",
     cardBrands: ["Visa", "Mastercard", "American Express", "Diners Club"],
     accountTypes: ["Ahorros", "Corriente"],
     banks: [
@@ -201,8 +201,8 @@ var SITE_CONFIG = {
   ],
   navMobileExtra: [
     { label: "Contáctanos", href: "#contacto" },
-    { label: "Inicia sesión", href: "login.html" },
-    { label: "Regístrate gratis", href: "registro.html" }
+    { label: "Inicia sesión", href: "/login" },
+    { label: "Regístrate gratis", href: "/registro" }
   ],
 
   /* ---------------------------------------------------------------
@@ -212,16 +212,16 @@ var SITE_CONFIG = {
     badge: "💳 ¿Tienes línea disponible en tu tarjeta de crédito?",
     titleBefore: "Convierte tu tarjeta en",
     titleHighlight: "efectivo",        // palabra resaltada (caja verde)
-    titleAfter: "al instante.",
-    subtitle: "Efectivizamos la línea de tu tarjeta de crédito y te depositamos el dinero directo a tu cuenta bancaria, en minutos. Solo 1% de comisión, 100% digital y sin papeles.",
+    titleAfter: "el mismo día.",
+    subtitle: "Efectivizamos la línea de tu tarjeta de crédito y te depositamos el dinero directo a tu cuenta bancaria, el mismo día. Solo 1% de comisión, 100% digital y sin papeles.",
 
-    ctaPrimary: { label: "Regístrate gratis", href: "registro.html" },
-    ctaSecondary: { label: "Inicia sesión", href: "login.html" },
+    ctaPrimary: { label: "Regístrate gratis", href: "/registro" },
+    ctaSecondary: { label: "Inicia sesión", href: "/login" },
     ctaWhatsappLabel: "Contáctanos",
 
     trust: [
       "Comisión de solo 1%",
-      "Depósito en minutos",
+      "Depósito el mismo día",
       "100% digital",
       "Todas las tarjetas y bancos del Perú"
     ],
@@ -234,7 +234,7 @@ var SITE_CONFIG = {
     floatCards: [
       { kind: "check", text: "Depósito confirmado" },
       { kind: "stat", label: "Efectivizado", value: "S/ 5,000" },
-      { kind: "stat", label: "Tiempo de depósito", value: "En minutos", positive: true }
+      { kind: "stat", label: "Tiempo de depósito", value: "El mismo día", positive: true }
     ]
   },
 
@@ -281,7 +281,7 @@ var SITE_CONFIG = {
       tag: "SIN TRÁMITES",
       title: "Efectiviza tu tarjeta cuando lo necesites.",
       text: "Sin papeles, sin esperas, sin ir a una agencia. Todo desde tu celular por WhatsApp.",
-      button: { label: "Empieza ahora →", href: "registro.html" },
+      button: { label: "Empieza ahora →", href: "/registro" },
       // mini flujo visual dentro de la tarjeta principal
       // El monto de abajo se calcula solo con la comisión de platform.commissionPercent
       flow: { fromLabel: "Cargo a tu tarjeta", toLabel: "Recibes hoy", amount: 5000, note: "sin costos ocultos" }
@@ -300,7 +300,7 @@ var SITE_CONFIG = {
     ],
     wide: {
       icon: "bolt",
-      title: "El dinero, hoy mismo.",
+      title: "Tu dinero, el mismo día.",
       text: "Recibe tu efectivo el mismo día hábil. Sin esperas de semanas.",
       counter: { value: 500, suffix: "+", label: "operaciones procesadas" }
     },
@@ -313,7 +313,7 @@ var SITE_CONFIG = {
       labelFee: "Comisión",
       labelNet: "Recibes en tu cuenta",
       quick: [1000, 5000, 10000, 20000, 30000],
-      cta: { label: "Solicitar este monto →", href: "registro.html" },
+      cta: { label: "Solicitar este monto →", href: "/registro" },
       note: "Cálculo referencial. Te confirmamos la comisión exacta antes de realizar la operación."
     }
   },
@@ -327,7 +327,7 @@ var SITE_CONFIG = {
     imageBadge: "Equipo especializado en gestión crediticia",
     eyebrow: "NOSOTROS",
     title: "Efectivo hoy, y asesoría para tu próximo crédito.",
-    subtitle: "Somos especialistas en gestión crediticia. Efectivizamos tu tarjeta al instante y, si necesitas un préstamo personal, hipotecario, vehicular o para tu negocio, te asesoramos gratis para conseguir la mejor opción.",
+    subtitle: "Somos especialistas en gestión crediticia. Efectivizamos tu tarjeta el mismo día y, si necesitas un préstamo personal, hipotecario, vehicular o para tu negocio, te asesoramos gratis para conseguir la mejor opción.",
     items: [
       { icon: "card", title: "Efectivización de tarjetas", desc: "Convertimos la línea disponible de tu tarjeta en efectivo en tu cuenta, con una comisión menor a la disposición de efectivo del banco." },
       { icon: "target", title: "Asesoría crediticia gratuita", desc: "Comparamos entre decenas de entidades financieras para conseguirte el crédito con la mejor tasa." },
@@ -343,11 +343,11 @@ var SITE_CONFIG = {
     bg: "assets/img/chart-bg.jpg",
     eyebrow: "RESULTADOS",
     title: "Operaciones exitosas, todos los días.",
-    subtitle: "Cientos de personas y negocios ya obtuvieron liquidez inmediata con nosotros.",
+    subtitle: "Cientos de personas y negocios ya obtuvieron liquidez el mismo día con nosotros.",
     items: [
       { value: 500, suffix: "+", label: "operaciones realizadas" },
       { value: 97, suffix: "%", label: "clientes satisfechos" },
-      { value: 24, suffix: "h", label: "máximo para tu depósito" },
+      { value: 1, suffix: "%", label: "de comisión por operación" },
       { value: 15, suffix: "+", label: "bancos y tarjetas aceptadas" }
     ]
   },
@@ -361,12 +361,12 @@ var SITE_CONFIG = {
     subtitle: "En solo 4 pasos convertimos la línea de tu tarjeta en dinero real.",
     items: [
       { title: "Escríbenos por WhatsApp", desc: "Indícanos el monto que deseas efectivizar y el banco donde quieres recibir el dinero." },
-      { title: "Validamos tu tarjeta", desc: "Verificamos tu identidad y la línea disponible de tu tarjeta. Sin papeleos ni formularios." },
+      { title: "Validamos tu tarjeta", desc: "Verificamos tu identidad y la línea disponible de tu tarjeta. Todo desde tu celular." },
       { title: "Realiza el pago", desc: "Pagas con tu tarjeta de crédito a través de nuestro POS o link de pago 100% seguro." },
       { title: "Recibe tu efectivo", desc: "Te transferimos el dinero a tu cuenta el mismo día, descontando solo nuestra comisión." }
     ],
-    ctaText: "¿Listo para obtener tu efectivo? Toma solo unos minutos.",
-    ctaButton: { label: "Efectivizar ahora", href: "registro.html" },
+    ctaText: "¿Listo para obtener tu efectivo? Recíbelo el mismo día.",
+    ctaButton: { label: "Efectivizar ahora", href: "/registro" },
     ctaWhatsappLabel: "Preguntas por WhatsApp →",
     ctaWhatsappMessage: "Hola Impulsa Crédito, tengo preguntas sobre la efectivización de tarjetas"
   },
@@ -414,12 +414,12 @@ var SITE_CONFIG = {
     subtitleLink: "escríbenos",
     subtitleAfter: "directamente.",
     items: [
-      { q: "¿Qué es Impulsa Crédito?", a: "Somos una empresa peruana de asesoría y gestión crediticia. Nuestro servicio principal es la efectivización de tarjetas de crédito: convertimos tu línea disponible en dinero en tu cuenta, en minutos y 100% digital. Además te asesoramos gratis si buscas un préstamo personal, hipotecario, vehicular o para tu negocio." },
+      { q: "¿Qué es Impulsa Crédito?", a: "Somos una empresa peruana de asesoría y gestión crediticia. Nuestro servicio principal es la efectivización de tarjetas de crédito: convertimos tu línea disponible en dinero en tu cuenta, el mismo día y 100% digital. Además te asesoramos gratis si buscas un préstamo personal, hipotecario, vehicular o para tu negocio." },
       { q: "¿Qué significa efectivizar mi tarjeta?", a: "Es convertir la línea disponible de tu tarjeta de crédito en dinero depositado en tu cuenta bancaria. Pagas una comisión mucho menor que la de una disposición de efectivo o un retiro en cajero." },
       { q: "¿Cuánto cobran de comisión?", a: "El 1% del monto. Si efectivizas S/ 1,000, la comisión es S/ 10 y recibes S/ 990 en tu cuenta. Te confirmamos el monto exacto antes de hacer la operación. Sin costos ocultos." },
       { q: "¿Cuánto puedo efectivizar?", a: "Desde S/ 100 hasta S/ 30,000 por operación, siempre dentro de la línea disponible de tu tarjeta. Puedes hacer varias operaciones y usar más de una tarjeta si lo necesitas." },
       { q: "¿Cómo me cobran?", a: "Con TU PROPIA tarjeta, igual que cuando compras en una tienda. Te enviamos por WhatsApp un link de pago seguro y pagas desde tu celular sin moverte de casa, o coordinamos el cobro con un POS si lo prefieres. Recibes tu comprobante. Nunca te pedimos tu clave, tu CVV ni nos quedamos con tu tarjeta." },
-      { q: "¿En qué momento recibo el dinero?", a: "Apenas se confirma el cobro, transferimos a tu cuenta: normalmente llega en minutos y, como máximo, el mismo día hábil. Depositamos al banco que prefieras, siempre que la cuenta esté a tu nombre. Puedes seguir el estado de tu operación desde tu cuenta." },
+      { q: "¿En qué momento recibo el dinero?", a: "Apenas se confirma el cobro, transferimos a tu cuenta y el dinero te llega el mismo día hábil. Depositamos al banco que prefieras, siempre que la cuenta esté a tu nombre. Puedes seguir el estado de tu operación desde tu cuenta." },
       { q: "¿Qué necesito para empezar?", a: "Tres cosas: tu DNI vigente, una tarjeta de crédito con línea disponible y una cuenta bancaria a tu nombre. Aceptamos Visa, Mastercard, American Express y Diners de cualquier banco, caja o financiera del Perú." },
       { q: "¿Es seguro?", a: "Sí. El cobro se realiza por POS o link de pago oficial, siempre con comprobante. Tus documentos viajan encriptados y se usan únicamente para verificar tu identidad, conforme a la Ley de Protección de Datos Personales. Nunca pedimos claves bancarias ni retenemos tu tarjeta física." }
     ]
@@ -439,17 +439,17 @@ var SITE_CONFIG = {
      15. PIE DE PÁGINA
   --------------------------------------------------------------- */
   footer: {
-    tagline: "Convertimos tu tarjeta de crédito en efectivo, hoy mismo. Asesoría y gestión crediticia.",
+    tagline: "Convertimos tu tarjeta de crédito en efectivo, el mismo día. Asesoría y gestión crediticia.",
     navTitle: "Navegación",
     contactTitle: "Contacto",
     legalTitle: "Legal",
     legalLinks: [
-      { label: "Términos y condiciones", href: "reclamaciones.html#terminos" },
-      { label: "Política de privacidad", href: "reclamaciones.html#privacidad" },
+      { label: "Términos y condiciones", href: "/reclamaciones#terminos" },
+      { label: "Política de privacidad", href: "/reclamaciones#privacidad" },
       { label: "Configurar cookies", href: "#configurar-cookies" }
     ],
     claimsLabel: "Libro de Reclamaciones",
-    claimsHref: "reclamaciones.html",
+    claimsHref: "/reclamaciones",
     // texto pequeño extra al pie (vacío = no se muestra). La razón social,
     // el RUC y el domicilio ya aparecen en la línea de arriba.
     legal: ""

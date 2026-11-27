@@ -119,7 +119,7 @@
       '<div class="calc mt-24"><div class="r"><span>Tipo</span><b>' + esc(tipo) + '</b></div><div class="r"><span>Consumidor</span><b>' + esc(record.nombres + " " + record.apellidos) + '</b></div><div class="r"><span>Documento</span><b>' + esc(record.docType + " " + record.doc) + '</b></div><div class="r"><span>Fecha</span><b>' + IC.fmtDateTime(record.at) + '</b></div>' +
       (record.monto ? '<div class="r"><span>Monto reclamado</span><b>S/ ' + esc(record.monto) + "</b></div>" : "") + "</div>" +
       '<div class="note amber mt-16"><div>' + esc(C.deadlineNote || "") + "</div></div>" +
-      '<div class="wz-actions no-print"><a href="index.html" class="btn btn-outline-dark">Volver al inicio</a><div class="row"><button class="btn btn-soft" id="printClaim">🖨️ Imprimir constancia</button><a class="btn btn-primary" target="_blank" rel="noopener" href="' + IC.waLink(waMsg) + '">Enviar copia por WhatsApp</a></div></div></div>';
+      '<div class="wz-actions no-print"><a href="/" class="btn btn-outline-dark">Volver al inicio</a><div class="row"><button class="btn btn-soft" id="printClaim">🖨️ Imprimir constancia</button><a class="btn btn-primary" target="_blank" rel="noopener" href="' + IC.waLink(waMsg) + '">Enviar copia por WhatsApp</a></div></div></div>';
     document.getElementById("printClaim").addEventListener("click", function () { window.print(); });
 
     /* Copia por correo: la envía el servidor (función "enviar-reclamo").

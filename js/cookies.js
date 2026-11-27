@@ -230,7 +230,7 @@
     caja.innerHTML =
       '<div class="ck-cab"><span class="ck-ico" aria-hidden="true">' + ICONO + '</span><h2 id="ckTitulo">Usamos cookies</h2></div>' +
       '<p id="ckTexto">Las necesarias hacen que la web funcione. Si aceptas, también medimos visitas y mostramos publicidad relevante. ' +
-        '<a href="reclamaciones.html#cookies">Más información</a></p>' +
+        '<a href="/reclamaciones#cookies">Más información</a></p>' +
       '<div class="ck-detalle" id="ckDetalle"' + (conDetalle ? "" : " hidden") + ">" +
         '<div class="ck-op"><div><b>Necesarias</b><span>Tu sesión, tus preferencias y esta elección. Siempre activas.</span></div>' +
           '<label class="ck-sw"><input type="checkbox" checked disabled aria-label="Cookies necesarias (siempre activas)"><i></i></label></div>' +

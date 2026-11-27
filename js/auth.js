@@ -176,7 +176,7 @@
       IC.confetti();
       if (window.ICCookies) ICCookies.evento("registro_completado");
       btn.textContent = "¡Cuenta creada! Entrando...";
-      setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 1100);
+      setTimeout(function () { window.location.href = (P.appHref || "/app") + "#/inicio"; }, 1100);
     });
   }
 
@@ -199,7 +199,7 @@
       if (!res.ok) { btn.disabled = false; btn.textContent = "INGRESAR"; err.textContent = res.error; err.classList.remove("hidden"); return; }
       if (window.ICCookies) ICCookies.evento("inicio_sesion");
       btn.textContent = "¡Bienvenido! Entrando...";
-      setTimeout(function () { window.location.href = (P.appHref || "app.html") + "#/inicio"; }, 500);
+      setTimeout(function () { window.location.href = (P.appHref || "/app") + "#/inicio"; }, 500);
     });
     document.getElementById("forgotLink").addEventListener("click", function (e) {
       e.preventDefault();

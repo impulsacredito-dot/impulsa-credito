@@ -203,7 +203,7 @@
     },
     requireSession: function () {
       var u = auth.current();
-      if (!u) { window.location.href = (P.loginHref || "login.html") + "?next=1"; return null; }
+      if (!u) { window.location.href = (P.loginHref || "/login") + "?next=1"; return null; }
       return u;
     },
     deleteAccount: function () {
@@ -233,7 +233,7 @@
       { key: "identity", title: "Verifica tu identidad", desc: idReview ? "Estamos revisando tus documentos" : "Sube tu DNI y una selfie", done: idDone, review: idReview, route: "#/identificacion", cta: "Verificar" },
       { key: "card", title: "Registra tu tarjeta", desc: "Agrega la tarjeta de crédito que quieres efectivizar.", done: user.cards.length > 0, route: "#/tarjetas/nueva", cta: "Agregar tarjeta" },
       { key: "account", title: "Agrega tu cuenta bancaria", desc: "Donde recibirás tu dinero.", done: user.accounts.length > 0, route: "#/cuentas/nueva", cta: "Agregar cuenta" },
-      { key: "op", title: "Crea tu primera operación", desc: "Efectiviza tu tarjeta en minutos.", done: user.ops.length > 0, route: "#/operacion", cta: "Nueva operación" }
+      { key: "op", title: "Crea tu primera operación", desc: "Recibe tu efectivo el mismo día.", done: user.ops.length > 0, route: "#/operacion", cta: "Nueva operación" }
     ];
     var completed = steps.filter(function (s) { return s.done; }).length;
     return { steps: steps, completed: completed, total: steps.length, pct: Math.round(completed / steps.length * 100) };

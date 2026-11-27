@@ -58,7 +58,7 @@
   $("lnNota").textContent = "Te respondemos en minutos" + (h.length ? " · " + h.join(", ") : "");
 
   /* el registro también se entera de la red de origen (para medirlo más adelante) */
-  if (red) $("lnRegistro").href = (P.registerHref || "registro.html") + "?utm_source=" + src + "&utm_medium=bio";
+  if (red) $("lnRegistro").href = (P.registerHref || "/registro") + "?utm_source=" + src + "&utm_medium=bio";
 
   /* ---------- pestañas ---------- */
   var tabs = [$("tabCredito"), $("tabEfectivo")];
