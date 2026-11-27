@@ -55,9 +55,9 @@
     total: svg2('<rect x="2.5" y="5.5" width="15" height="10" rx="2.2" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/>' +
       '<circle cx="10" cy="10.5" r="2.3" stroke="#15803D" stroke-width="1.6"/><path d="M5 8.2v.01M15 12.8v.01" stroke="#15803D" stroke-width="2"/>' +
       '<circle cx="17" cy="15.5" r="4.6" fill="#22C55E" stroke="#15803D" stroke-width="1.6"/><path d="M17 13.6v3.8M15.2 15.5h3.6" stroke="#fff" stroke-width="1.6"/>'),
-    // sello con visto bueno: completadas
-    completadas: svg2('<path d="M12 2.8l2.2 1.6 2.7-.1.9 2.6 2.3 1.5-.8 2.6.8 2.6-2.3 1.5-.9 2.6-2.7-.1L12 21.2l-2.2-1.6-2.7.1-.9-2.6-2.3-1.5.8-2.6-.8-2.6 2.3-1.5.9-2.6 2.7.1z" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>' +
-      '<path d="M8.5 12.2l2.4 2.4 4.7-4.9" stroke="#1D4ED8" stroke-width="1.9"/>'),
+    // círculo con visto bueno: completadas
+    completadas: svg2('<circle cx="12" cy="12" r="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.6"/>' +
+      '<path d="M8.2 12.3l2.6 2.6 5-5.2" stroke="#1D4ED8" stroke-width="2"/>'),
     // reloj de arena: operaciones activas
     activas: svg2('<path d="M6.5 3h11M6.5 21h11" stroke="#B45309" stroke-width="1.8"/>' +
       '<path d="M7.6 3v3a4.5 4.5 0 0 0 2 3.7L12 12l2.4-2.3a4.5 4.5 0 0 0 2-3.7V3M7.6 21v-3a4.5 4.5 0 0 1 2-3.7L12 12l2.4 2.3a4.5 4.5 0 0 1 2 3.7v3" fill="#FEF3C7" stroke="#B45309" stroke-width="1.6"/>' +

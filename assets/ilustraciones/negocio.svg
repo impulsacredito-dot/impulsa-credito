@@ -1,12 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" stroke="#0F1512" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-<path d="M16 130h128"/>
-<rect x="30" y="60" width="100" height="70" rx="6" fill="#FFFFFF"/>
-<path d="M24 38h112v22H24z" fill="#22C55E"/>
-<path d="M46.4 38h22.4v22H46.4zM91.2 38h22.4v22H91.2z" fill="#FFFFFF" stroke="none"/>
-<path d="M24 38h112v22H24z"/>
-<path d="M24 60a11.2 8 0 0 0 22.4 0a11.2 8 0 0 0 22.4 0a11.2 8 0 0 0 22.4 0a11.2 8 0 0 0 22.4 0a11.2 8 0 0 0 22.4 0" fill="#22C55E"/>
-<rect x="42" y="80" width="36" height="26" rx="4" fill="#DCFCE7"/>
-<path d="M60 80v26"/>
-<rect x="90" y="84" width="28" height="46" rx="3" fill="#DCFCE7"/>
-<circle cx="111" cy="108" r="2.5" fill="#0F1512" stroke="none"/>
+<path d="M14 132h132"/>
+<path d="M30 132V62a4 4 0 0 1 4-4h92a4 4 0 0 1 4 4v70" fill="#FFFFFF"/>
+<rect x="20" y="26" width="120" height="14" rx="5" fill="#FFFFFF"/>
+<path d="M58 33h44" stroke="#22C55E" stroke-width="5"/>
+<path d="M22 40h23.2v18a11.6 9 0 0 1-23.2 0z" fill="#22C55E"/>
+<path d="M45.2 40h23.2v18a11.6 9 0 0 1-23.2 0z" fill="#FFFFFF"/>
+<path d="M68.4 40h23.2v18a11.6 9 0 0 1-23.2 0z" fill="#22C55E"/>
+<path d="M91.6 40h23.2v18a11.6 9 0 0 1-23.2 0z" fill="#FFFFFF"/>
+<path d="M114.8 40h23.2v18a11.6 9 0 0 1-23.2 0z" fill="#22C55E"/>
+<rect x="42" y="82" width="40" height="30" rx="4" fill="#DCFCE7"/>
+<path d="M62 82v30"/>
+<rect x="94" y="84" width="26" height="48" rx="3" fill="#DCFCE7"/>
+<circle cx="113" cy="109" r="3" fill="#0F1512" stroke="none"/>
 </svg>
