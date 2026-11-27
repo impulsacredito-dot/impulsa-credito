@@ -63,6 +63,33 @@
       '<path d="M7.6 3v3a4.5 4.5 0 0 0 2 3.7L12 12l2.4-2.3a4.5 4.5 0 0 0 2-3.7V3M7.6 21v-3a4.5 4.5 0 0 1 2-3.7L12 12l2.4 2.3a4.5 4.5 0 0 1 2 3.7v3" fill="#FEF3C7" stroke="#B45309" stroke-width="1.6"/>' +
       '<path d="M9.7 19.2h4.6L12 16.8z" fill="#F59E0B"/><path d="M10.4 6.6h3.2" stroke="#F59E0B" stroke-width="1.6"/>')
   };
+  /* ilustraciones para los avisos vacíos (mismo estilo que los stickers de la web) */
+  function svgEmpty(cuerpo) {
+    return '<svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="#0F1512" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + cuerpo + "</svg>";
+  }
+  var MAS = '<circle cx="37" cy="35" r="7.5" fill="#fff" stroke="#fff" stroke-width="5"/><circle cx="37" cy="35" r="7.5" fill="#22C55E"/><path d="M37 31.6v6.8M33.6 35h6.8" stroke="#fff" stroke-width="2.2"/>';
+  var EMPTY_ICO = {
+    // dos tarjetas y un "+" para agregar
+    card: svgEmpty('<rect x="10" y="9" width="28" height="18" rx="3.5" fill="#DCFCE7" transform="rotate(-9 24 18)"/>' +
+      '<rect x="6" y="15" width="30" height="20" rx="3.5" fill="#22C55E"/><rect x="6" y="19.5" width="30" height="4" fill="#0F1512" stroke="none"/>' +
+      '<rect x="6" y="15" width="30" height="20" rx="3.5"/><rect x="10" y="27" width="6.5" height="4.5" rx="1" fill="#fff" stroke-width="1.5"/>' + MAS),
+    // banco con columnas y un "+" para agregar
+    bank: svgEmpty('<path d="M6 17L22 8l16 9z" fill="#DCFCE7"/><circle cx="22" cy="13.6" r="1.8" fill="#22C55E" stroke="none"/>' +
+      '<rect x="10" y="21" width="24" height="10" fill="#BBF7D0" stroke="none"/><rect x="8" y="17" width="28" height="4" rx="1.2" fill="#fff"/>' +
+      '<rect x="10" y="21" width="4.5" height="10" fill="#fff"/><rect x="19.75" y="21" width="4.5" height="10" fill="#fff"/><rect x="29.5" y="21" width="4.5" height="10" fill="#fff"/>' +
+      '<rect x="6" y="31" width="32" height="4.5" rx="1.2" fill="#fff"/>' + MAS),
+    // tarjeta que se convierte en billete
+    swap: svgEmpty('<rect x="5" y="9" width="24" height="16" rx="3" fill="#22C55E"/><rect x="5" y="13" width="24" height="3.5" fill="#0F1512" stroke="none"/><rect x="5" y="9" width="24" height="16" rx="3"/>' +
+      '<path d="M33 10.5c4.5.8 7.2 3.8 7.8 8.5"/><path d="M37.6 17l3.2 3.2 3.2-3.2"/>' +
+      '<rect x="17" y="24" width="26" height="15" rx="2.6" fill="#DCFCE7"/><circle cx="30" cy="31.5" r="3.6" fill="#fff" stroke-width="1.6"/><path d="M21 28h2.5M36.5 35h2.5" stroke="#22C55E"/>'),
+    // reloj: todavía no hay historial
+    history: svgEmpty('<circle cx="24" cy="24" r="16" fill="#fff"/><circle cx="24" cy="24" r="11.5" fill="#DCFCE7" stroke="none"/>' +
+      '<path d="M24 10.5v2.5M24 35v2.5M10.5 24H13M35 24h2.5" stroke="#22C55E"/><path d="M24 17v7.5l5 3" stroke-width="2.4"/><circle cx="24" cy="24.5" r="1.6" fill="#0F1512" stroke="none"/>'),
+    // comprobante con visto bueno
+    receipt: svgEmpty('<path d="M12 7h22v33l-3.7-2.6-3.6 2.6-3.7-2.6-3.6 2.6-3.7-2.6L12 40z" fill="#fff"/>' +
+      '<path d="M17 15h12M17 21h12M17 27h7" stroke="#22C55E" stroke-width="2.4"/>' +
+      '<circle cx="35" cy="34" r="7.5" fill="#fff" stroke="#fff" stroke-width="5"/><circle cx="35" cy="34" r="7.5" fill="#22C55E"/><path d="M31.8 34.2l2.2 2.2 4-4.2" stroke="#fff" stroke-width="2.2"/>')
+  };
   var DOC_ICO = {
     tarjeta: '<span class="doc-ico">' + svg2('<rect x="2.5" y="5" width="19" height="14" rx="2.6" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/><path d="M2.5 9.5h19" stroke="#15803D" stroke-width="2.2"/><rect x="5.5" y="12.5" width="4" height="3" rx=".8" fill="#22C55E"/><path d="M13 15h5" stroke="#15803D" stroke-width="1.6"/>', 24) + "</span>",
     estado: '<span class="doc-ico">' + svg2('<path d="M6.5 2.8h7.8L18 6.5v14.7H6.5z" fill="#DCFCE7" stroke="#15803D" stroke-width="1.6"/><path d="M14 2.8V7h4" stroke="#15803D" stroke-width="1.6"/><path d="M9 11h6M9 14h6M9 17h3.5" stroke="#22C55E" stroke-width="1.7"/>', 24) + "</span>"
@@ -190,7 +217,7 @@
   function statusLabel(s) { return { activa: "ACTIVA", pend_pago: "PEND. PAGO", completada: "COMPLETADA", cancelada: "CANCELADA", review: "EN REVISIÓN", verified: "VERIFICADA", pending: "PENDIENTE" }[s] || s; }
   function statusBadge(s) { return '<span class="status ' + s + '">' + statusLabel(s) + "</span>"; }
   function emptyState(icon, title, text, btnHtml) {
-    return '<div class="empty"><div class="ic">' + ic(icon, 24) + "</div><b>" + esc(title) + "</b><p>" + esc(text) + "</p>" + (btnHtml ? '<div class="mt-16">' + btnHtml + "</div>" : "") + "</div>";
+    return '<div class="empty"><div class="ic' + (EMPTY_ICO[icon] ? " ilus" : "") + '">' + (EMPTY_ICO[icon] || ic(icon, 24)) + "</div><b>" + esc(title) + "</b><p>" + esc(text) + "</p>" + (btnHtml ? '<div class="mt-16">' + btnHtml + "</div>" : "") + "</div>";
   }
   function bankDot(name) { return '<span class="bank-dot" style="background:' + IC.bankColor(name) + '">' + esc(IC.bankShort(name)) + "</span>"; }
   function opTypeLabel(t) { return t === "autopago" ? "Autopago de tarjeta" : "Efectivización"; }
